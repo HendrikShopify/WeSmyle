@@ -1,0 +1,54 @@
+{%- comment -%}
+  Figma: Components Atoms / Active filters bar
+  Removable chips for every active filter plus a Clear all link. The wrapper stays in the DOM (hidden when no filter is active) so the filters script can swap it.
+  filters     results.filters (collection.filters on a collection page); each active value becomes a chip, a price range one chip
+  clear_href  url that removes every filter; omit for a button (JS hook: data-filter-clear)
+  items       captured chip markup instead of filters (demos, tests)
+  class       placement only
+  A chip is a link to the value's url_to_remove, so it works without JS.
+{%- endcomment -%}
+{%- liquid
+  assign has_active = false
+  if items != blank
+    assign has_active = true
+  else
+    for filter in filters
+      if filter.active_values.size > 0
+        assign has_active = true
+      elsif filter.type == 'price_range'
+        if filter.min_value.value != blank or filter.max_value.value != blank
+          assign has_active = true
+        endif
+      endif
+    endfor
+  endif
+  assign clear_label = 'products.facets.clear_all' | t
+-%}
+<div class="active-filters-bar flex flex-wrap items-center gap-2 {{ class }}" data-active-filters{% unless has_active %} hidden{% endunless %}>
+  {%- if has_active -%}
+    {%- if items != blank -%}
+      {{ items }}
+    {%- else -%}
+      {%- for filter in filters -%}
+        {%- if filter.type == 'price_range' -%}
+          {%- if filter.min_value.value != blank or filter.max_value.value != blank -%}
+            {%- liquid
+              assign from_value = filter.min_value.value | default: 0 | money
+              assign to_value = filter.max_value.value | default: filter.range_max | money
+              assign price_label = filter.label | append: ': ' | append: from_value | append: '–' | append: to_value
+              render 'chip', type: 'active', label: price_label, href: filter.url_to_remove
+            -%}
+          {%- endif -%}
+        {%- else -%}
+          {%- for value in filter.active_values -%}
+            {%- liquid
+              assign chip_label = filter.label | append: ': ' | append: value.label
+              render 'chip', type: 'active', label: chip_label, href: value.url_to_remove
+            -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+    {% render 'link', label: clear_label, href: clear_href, size: 'sm', attributes: 'data-filter-clear' %}
+  {%- endif -%}
+</div>

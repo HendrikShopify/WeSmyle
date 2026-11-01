@@ -1,0 +1,70 @@
+{%- comment -%}
+  Figma: Components Atoms / Comparison column header
+  type        text | logo | image | product                                       (Figma: Type)
+  name        column title; for product the product title is used
+  image       image for logo and image types
+  product     Product object for the product type (image, title and price come from it)
+  highlight   fill | card | tint, only on the highlighted column; fill is Tone=Inverse   (Figma: Tone)
+  edge        top, rounds the first cell of a Card or Tint column
+  divider     solid | dashed | dotted | none, the line under the row, default solid
+  class       placement only
+  Renders a <th scope="col">; use it inside the Comparison table header row.
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'text'
+  assign divider = divider | default: 'solid'
+  if type == 'product' and product == blank
+    assign type = 'text'
+  endif
+  assign tone = 'default'
+  if highlight == 'fill'
+    assign tone = 'inverse'
+  endif
+
+  case highlight
+    when 'fill'
+      assign surface = 'bg-accent text-accent-contrast'
+    when 'card'
+      assign surface = 'bg-surface-alt text-text'
+      if edge == 'top'
+        assign surface = surface | append: ' rounded-t-xl'
+      endif
+    when 'tint'
+      assign surface = 'bg-surface text-text'
+      if edge == 'top'
+        assign surface = surface | append: ' rounded-t-lg'
+      endif
+    else
+      assign surface = 'text-text'
+  endcase
+
+  case divider
+    when 'none'
+      assign line = ''
+    when 'dashed'
+      assign line = 'border-b border-dashed border-border'
+    when 'dotted'
+      assign line = 'border-b border-dotted border-border'
+    else
+      assign line = 'border-b border-border'
+  endcase
+-%}
+<th scope="col" class="comparison-column-header px-2 py-4 text-center align-bottom font-normal {{ surface }} {{ line }} {{ class }}" data-type="{{ type }}" data-tone="{{ tone }}">
+  <div class="flex flex-col items-center gap-2">
+    {%- case type -%}
+      {%- when 'logo' -%}
+        <div class="w-24">{% render 'media', media: image, ratio: 'natural', fit: 'contain', sizes: '96px', alt: name %}</div>
+      {%- when 'image' -%}
+        <div class="size-16 overflow-hidden rounded-full">{% render 'media', media: image, ratio: '1:1', sizes: '64px', alt: '' %}</div>
+        <span class="text-label-base">{{ name }}</span>
+      {%- when 'product' -%}
+        <a href="{{ product.url }}" class="flex flex-col items-center gap-2 rounded-xs focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus">
+          <span class="block size-24 overflow-hidden rounded-md">{% render 'media', media: product.featured_media, ratio: '1:1', sizes: '96px', alt: '' %}</span>
+          <span class="text-label-base">{{ product.title }}</span>
+        </a>
+        {% render 'price', product: product, size: 'sm' %}
+      {%- else -%}
+        <span class="text-label-base">{{ name }}</span>
+    {%- endcase -%}
+  </div>
+</th>

@@ -1,0 +1,454 @@
+{% comment %} Temporary: atom showcase on the homepage. Replaced by real sections at milestone 6. {% endcomment %}
+{%- liquid
+  assign demo_product = collections.all.products | where: 'available', true | first
+  assign demo_sale = collections.all.products | where: 'compare_at_price_max', 0 | first
+-%}
+<div class="mx-auto w-full max-w-page px-page-margin py-section-md">
+  <div class="flex flex-col gap-12">
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Button</h2>
+      <div class="flex flex-wrap items-center gap-4">
+        {% render 'button', label: 'Primary sm', style: 'primary', size: 'sm' %}
+        {% render 'button', label: 'Primary md', style: 'primary', size: 'md' %}
+        {% render 'button', label: 'Primary lg', style: 'primary', size: 'lg' %}
+        {% render 'button', label: 'Disabled', style: 'primary', disabled: true %}
+        {% render 'button', label: 'Loading', style: 'primary', loading: true %}
+        {% render 'button', label: 'Secondary', style: 'secondary' %}
+        {% render 'button', label: 'Add to cart', icon_leading: 'icon__cart.svg' %}
+        {% render 'button', label: 'Continue', style: 'secondary', icon_trailing: 'icon__arrow-right.svg' %}
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Icon button</h2>
+      <div class="flex flex-wrap items-center gap-4">
+        {% render 'icon-button', icon: 'icon__cart.svg', label: 'Cart', style: 'primary', size: 'sm' %}
+        {% render 'icon-button', icon: 'icon__cart.svg', label: 'Cart', style: 'primary', size: 'md' %}
+        {% render 'icon-button', icon: 'icon__cart.svg', label: 'Cart', style: 'primary', size: 'lg' %}
+        {% render 'icon-button', icon: 'icon__heart.svg', label: 'Wishlist', style: 'secondary' %}
+        {% render 'icon-button', icon: 'icon__search.svg', label: 'Search', style: 'ghost' %}
+        {% render 'icon-button', icon: 'icon__cart.svg', label: 'Cart', style: 'ghost', count: 3 %}
+        {% render 'icon-button', type: 'text', label: 'Filters', count: 2 %}
+        {% render 'icon-button', icon: 'icon__cart.svg', label: 'Cart', style: 'primary', disabled: true %}
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Badge, Count badge, Link</h2>
+      <div class="flex flex-wrap items-center gap-4">
+        {% render 'badge', label: 'Sale', type: 'sale' %}
+        {% render 'badge', label: 'Save 20%', type: 'sale', style: 'subtle', icon: 'icon__discount.svg' %}
+        {% render 'badge', label: 'New', type: 'new' %}
+        {% render 'badge', label: 'Low stock', type: 'low-stock', style: 'subtle' %}
+        {% render 'badge', label: 'Sold out', type: 'sold-out' %}
+        {% render 'badge', label: 'In stock', type: 'success', style: 'subtle', size: 'sm' %}
+        {% render 'badge', label: 'Neutral', type: 'neutral' %}
+        {% render 'count-badge', count: 3 %}
+        {% render 'count-badge', count: 120, style: 'neutral' %}
+        {% render 'link', label: 'View all', href: '/collections/all', icon_trailing: 'icon__arrow-right.svg' %}
+        {% render 'link', label: 'Size guide', size: 'sm' %}
+        {% render 'link', label: 'Disabled', disabled: true %}
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Price</h2>
+      <div class="flex flex-wrap items-start gap-8">
+        {% render 'price', price: 4900, size: 'sm' %}
+        {% render 'price', price: 4900, size: 'md', from: true %}
+        {% render 'price', price: 4900, compare_at_price: 5900, size: 'lg', show_savings: true %}
+        {% if demo_product %}{% render 'price', product: demo_product, use_variant: true, size: 'md', show_unit_price: true %}{% endif %}
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Rating</h2>
+      <div class="flex flex-wrap items-center gap-8">
+        {% render 'rating-stars', value: 4.3, size: 'sm' %}
+        {% render 'rating-stars', value: 4.3, size: 'md' %}
+        {% render 'rating-stars', value: 4.3, size: 'lg' %}
+        {% render 'rating', value: 4.8, count: 120, size: 'sm' %}
+        {% render 'rating', value: 4.8, count: 120, size: 'md' %}
+        {% render 'rating', value: 3.5, count: 7, show_score: false %}
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Media</h2>
+      <div class="grid grid-cols-2 gap-grid-gap-x lg:grid-cols-4">
+        {% render 'media', media: demo_product.featured_media, ratio: '1:1', sizes: '(min-width: 1024px) 25vw, 50vw' %}
+        {% render 'media', media: demo_product.featured_media, ratio: '4:5', sizes: '(min-width: 1024px) 25vw, 50vw' %}
+        {% render 'media', media: demo_product.featured_media, ratio: '16:9', sizes: '(min-width: 1024px) 25vw, 50vw' %}
+        {% render 'media', ratio: '4:5' %}
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Product card</h2>
+      {%- assign demo_products = collections.all.products | where: 'available', true -%}
+      {%- assign demo_labels = 'Quick add: none,Quick add: button + vendor,Quick add: icon,Quick add: variant picker,No wishlist + no badge,No rating + no swatches,Everything on,Eager image' | split: ',' -%}
+      <div class="grid grid-cols-2 gap-x-grid-gap-x gap-y-8 lg:grid-cols-4">
+        {%- for label in demo_labels -%}
+          {%- assign i = forloop.index0 -%}
+          <div class="flex flex-col gap-3">
+            <span class="text-label-sm text-text-muted">{{ label }}</span>
+            {%- case i -%}
+              {%- when 0 %}{% render 'product-card', product: demo_products[0], section_id: section.id, quick_add: 'none' %}
+              {%- when 1 %}{% render 'product-card', product: demo_products[1], section_id: section.id, quick_add: 'button', show_vendor: true %}
+              {%- when 2 %}{% render 'product-card', product: demo_products[2], section_id: section.id, quick_add: 'icon' %}
+              {%- when 3 %}{% render 'product-card', product: demo_products[3], section_id: section.id, quick_add: 'variant-picker' %}
+              {%- when 4 %}{% render 'product-card', product: demo_products[4], section_id: section.id, show_wishlist: false, show_badge: false %}
+              {%- when 5 %}{% render 'product-card', product: demo_products[5], section_id: section.id, show_rating: false, show_swatches: false %}
+              {%- when 6 %}{% render 'product-card', product: demo_products[6], section_id: section.id, quick_add: 'button', show_vendor: true, show_rating: true, show_swatches: true %}
+              {%- when 7 %}{% render 'product-card', product: demo_products[7], section_id: section.id, loading: 'eager' %}
+            {%- endcase -%}
+          </div>
+        {%- endfor -%}
+      </div>
+      <span class="text-label-sm text-text-muted">Horizontal: quick add button + description, and variant picker</span>
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {% render 'product-card', product: demo_products[8], section_id: section.id, layout: 'horizontal', quick_add: 'button', show_description: true %}
+        {% render 'product-card', product: demo_products[9], section_id: section.id, layout: 'horizontal', quick_add: 'variant-picker', show_description: true %}
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Step 9 atoms</h2>
+      <div class="flex flex-wrap items-center gap-4">
+        {% render 'toggle-switch', label: 'In stock only', id: 'demo-sw1' %}
+        {% render 'toggle-switch', label: 'Checked', id: 'demo-sw2', checked: true %}
+        {% render 'toggle-switch', label: 'Disabled', id: 'demo-sw3', disabled: true %}
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        {% render 'chip', type: 'active', label: 'Size: M', href: '#' %}
+        {% render 'chip', type: 'filter', label: 'In stock', count: 12, id: 'demo-chip1' %}
+        {% render 'chip', type: 'filter', label: 'Selected', id: 'demo-chip2', checked: true %}
+        {% render 'chip', type: 'filter', label: 'Disabled', id: 'demo-chip3', disabled: true %}
+        {% render 'chip', type: 'dropdown', label: 'Size' %}
+        {% render 'chip', type: 'dropdown', label: 'Color', count: 2, selected: true %}
+      </div>
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {%- capture demo_acc -%}
+          {%- capture c1 -%}<p>Orders ship within 2 working days. Delivery takes 2 to 5 days depending on your country.</p>{%- endcapture -%}
+          {% render 'accordion-item', title: 'How long does shipping take?', content: c1, open: true, name: 'demo-faq' %}
+          {% render 'accordion-item', title: 'Can I return an item?', content: c1, name: 'demo-faq' %}
+          {% render 'accordion-item', title: 'Do you ship internationally?', content: c1, name: 'demo-faq' %}
+        {%- endcapture -%}
+        {% render 'accordion', items: demo_acc, top_divider: true %}
+        {%- capture demo_acc2 -%}
+          {% render 'accordion-item', title: 'Ingredients', content: c1, icon: 'plus', open: true %}
+          {% render 'accordion-item', title: 'How to use', content: c1, icon: 'plus' %}
+        {%- endcapture -%}
+        {% render 'accordion', items: demo_acc2, top_divider: true %}
+      </div>
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {%- capture demo_tabs -%}
+          {% render 'tab-item', label: 'Description', id: 'demo-tab-1', panel: 'demo-panel-1', selected: true %}
+          {% render 'tab-item', label: 'Ingredients', id: 'demo-tab-2', panel: 'demo-panel-2' %}
+          {% render 'tab-item', label: 'Reviews', count: 12, id: 'demo-tab-3', panel: 'demo-panel-3' %}
+          {% render 'tab-item', label: 'Disabled', id: 'demo-tab-4', panel: 'demo-panel-4', disabled: true %}
+        {%- endcapture -%}
+        {%- capture demo_panels -%}
+          <div id="demo-panel-1" role="tabpanel" data-tab-panel aria-labelledby="demo-tab-1" class="text-body-base text-text">Panel one.</div>
+          <div id="demo-panel-2" role="tabpanel" data-tab-panel aria-labelledby="demo-tab-2" class="text-body-base text-text" hidden>Panel two.</div>
+          <div id="demo-panel-3" role="tabpanel" data-tab-panel aria-labelledby="demo-tab-3" class="text-body-base text-text" hidden>Panel three.</div>
+          <div id="demo-panel-4" role="tabpanel" data-tab-panel aria-labelledby="demo-tab-4" class="text-body-base text-text" hidden>Panel four.</div>
+        {%- endcapture -%}
+        {% render 'tabs', tabs: demo_tabs, panels: demo_panels, label: 'Product information' %}
+        {%- capture demo_tabs2 -%}
+          {% render 'tab-item', label: 'Description', id: 'demo-ptab-1', panel: 'demo-ppanel-1', selected: true, style: 'pill' %}
+          {% render 'tab-item', label: 'Ingredients', id: 'demo-ptab-2', panel: 'demo-ppanel-2', style: 'pill' %}
+          {% render 'tab-item', label: 'Reviews', count: 12, id: 'demo-ptab-3', panel: 'demo-ppanel-3', style: 'pill' %}
+        {%- endcapture -%}
+        {%- capture demo_panels2 -%}
+          <div id="demo-ppanel-1" role="tabpanel" data-tab-panel aria-labelledby="demo-ptab-1" class="text-body-base text-text">Panel one.</div>
+          <div id="demo-ppanel-2" role="tabpanel" data-tab-panel aria-labelledby="demo-ptab-2" class="text-body-base text-text" hidden>Panel two.</div>
+          <div id="demo-ppanel-3" role="tabpanel" data-tab-panel aria-labelledby="demo-ptab-3" class="text-body-base text-text" hidden>Panel three.</div>
+        {%- endcapture -%}
+        {% render 'tabs', tabs: demo_tabs2, panels: demo_panels2, style: 'pill', label: 'Product information' %}
+      </div>
+      <div class="flex flex-wrap items-center gap-8">
+        {% render 'breadcrumbs', style: 'slash' %}
+        {% render 'breadcrumbs', style: 'chevron' %}
+        {% render 'breadcrumbs', style: 'back' %}
+        <span class="text-body-sm text-text-muted">(breadcrumbs render nothing on the index template)</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-8">
+        <nav class="flex items-center gap-1">
+          {% render 'pagination-item', type: 'previous' %}
+          {% render 'pagination-item', type: 'number', label: '1', href: '#' %}
+          {% render 'pagination-item', type: 'number', label: '2', current: true %}
+          {% render 'pagination-item', type: 'number', label: '3', href: '#' %}
+          {% render 'pagination-item', type: 'ellipsis' %}
+          {% render 'pagination-item', type: 'number', label: '10', href: '#' %}
+          {% render 'pagination-item', type: 'next', href: '#' %}
+        </nav>
+        <nav class="flex items-center gap-1">
+          {% render 'pagination-item', type: 'previous-text', href: '#' %}
+          {% render 'pagination-item', type: 'number', label: '2', current: true %}
+          {% render 'pagination-item', type: 'next-text', href: '#' %}
+        </nav>
+        <nav class="flex items-center gap-3">
+          {% render 'pagination-item', type: 'previous', href: '#' %}
+          <span class="text-body-sm text-text-muted">Page 2 of 10</span>
+          {% render 'pagination-item', type: 'next', href: '#' %}
+        </nav>
+      </div>
+      <div class="flex flex-wrap items-center gap-8">
+        {% render 'carousel-indicators', count: 5, active: 2 %}
+        <div class="w-44">{% render 'carousel-indicators', count: 5, active: 2, type: 'line' %}</div>
+        {% render 'carousel-indicators', count: 5, active: 2, type: 'counter' %}
+        <div class="flex items-center gap-8 rounded-sm bg-text p-4">
+          {% render 'carousel-indicators', count: 5, active: 2, tone: 'inverse' %}
+          <div class="w-44">{% render 'carousel-indicators', count: 5, active: 2, type: 'line', tone: 'inverse' %}</div>
+          {% render 'carousel-indicators', count: 5, active: 2, type: 'counter', tone: 'inverse' %}
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Variant atoms</h2>
+      <div class="flex flex-wrap items-center gap-4">
+        {% render 'swatch', color: '#78716c', label: 'Stone', size: 'xs', name: 'demo-sw', value: 'stone', id: 'demo-swa', checked: true %}
+        {% render 'swatch', color: '#d6c4aa', label: 'Sand', size: 'xs', name: 'demo-sw', value: 'sand', id: 'demo-swb' %}
+        {% render 'swatch', color: '#5a6e50', label: 'Moss', size: 'xs', name: 'demo-sw', value: 'moss', id: 'demo-swc', sold_out: true %}
+        {% render 'swatch', color: '#78716c', label: 'Stone', size: 'sm', name: 'demo-sw2', value: 'stone', id: 'demo-swd', checked: true %}
+        {% render 'swatch', color: '#d6c4aa', label: 'Sand', size: 'sm', name: 'demo-sw2', value: 'sand', id: 'demo-swe' %}
+        {% render 'swatch', color: '#78716c', label: 'Stone', size: 'md', name: 'demo-sw3', value: 'stone', id: 'demo-swf', checked: true %}
+        {% render 'swatch', color: '#d6c4aa', label: 'Sand', size: 'md', name: 'demo-sw3', value: 'sand', id: 'demo-swg' %}
+        {% render 'swatch', color: '#1e1e28', label: 'Ink', size: 'md', name: 'demo-sw3', value: 'ink', id: 'demo-swh', sold_out: true %}
+        {% render 'swatch-overflow', count: 3, href: '#' %}
+        {% render 'swatch-overflow', count: 4, style: 'text', href: '#' %}
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        {% render 'variant-pill', label: 'XS', size: 'sm', name: 'demo-pill', value: 'xs', id: 'demo-p1' %}
+        {% render 'variant-pill', label: 'S', size: 'sm', name: 'demo-pill', value: 's', id: 'demo-p2', checked: true %}
+        {% render 'variant-pill', label: 'M', size: 'sm', name: 'demo-pill', value: 'm', id: 'demo-p3', sold_out: true %}
+        {% render 'variant-pill', label: 'XS', size: 'md', name: 'demo-pill2', value: 'xs', id: 'demo-p4' %}
+        {% render 'variant-pill', label: 'S', size: 'md', name: 'demo-pill2', value: 's', id: 'demo-p5', checked: true %}
+        {% render 'variant-pill', label: 'XL', size: 'md', name: 'demo-pill2', value: 'xl', id: 'demo-p6', sold_out: true %}
+      </div>
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {%- assign demo_variant_product = collections.all.products | where: 'has_only_default_variant', false | first -%}
+        {%- if demo_variant_product -%}
+          <variant-selects class="flex flex-col gap-6">
+            {%- for option in demo_variant_product.options_with_values -%}
+              {% render 'variant-option-group', option: option, product_form_id: 'demo-form', section_id: 'demo', size_guide_url: '#' %}
+            {%- endfor -%}
+          </variant-selects>
+          <variant-selects class="flex flex-col gap-6">
+            {%- for option in demo_variant_product.options_with_values limit: 1 -%}
+              {% render 'variant-option-group', option: option, type: 'dropdown', product_form_id: 'demo-form2', section_id: 'demo2' %}
+            {%- endfor -%}
+          </variant-selects>
+        {%- endif -%}
+      </div>
+      <div class="flex flex-wrap items-center gap-4">
+        {% render 'quantity-selector', id: 'demo-q1', size: 'sm', value: 1 %}
+        {% render 'quantity-selector', id: 'demo-q2', size: 'md', value: 3, max: 5 %}
+        {% render 'quantity-selector', id: 'demo-q3', size: 'lg', value: 1 %}
+        {% render 'quantity-selector', id: 'demo-q4', size: 'md', value: 1, disabled: true %}
+        {% render 'wishlist-toggle', product: demo_products[0], style: 'plain', size: 'sm' %}
+        {% render 'wishlist-toggle', product: demo_products[1], style: 'plain', size: 'md' %}
+        <span class="rounded-sm bg-surface-alt p-2">{% render 'wishlist-toggle', product: demo_products[2], style: 'floating', size: 'sm' %}</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Cart atoms</h2>
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div class="flex flex-col gap-6">
+          {% render 'free-shipping-bar', threshold: 100000 %}
+          {% render 'free-shipping-bar', threshold: 100 %}
+          <div class="flex flex-col gap-3">
+            {% render 'progress-bar', value: 40, size: 'sm' %}
+            {% render 'progress-bar', value: 70, size: 'md' %}
+            {% render 'progress-bar', value: 100, size: 'md', style: 'success' %}
+          </div>
+          {% render 'divider' %}
+          {% render 'divider', type: 'horizontal-label', label: 'or' %}
+          <div class="flex items-center gap-3"><span class="text-body-sm">Left</span>{% render 'divider', type: 'vertical', class: 'h-6' %}<span class="text-body-sm">Right</span></div>
+          <div class="flex flex-wrap gap-2">
+            {% render 'discount-tag', label: 'WELCOME10 (-€5,00)' %}
+            {% render 'discount-tag', label: 'WELCOME10 (-€5,00)', style: 'solid' %}
+          </div>
+          <dl class="flex flex-col gap-1 m-0">
+            {% render 'attribute', label: 'Skin type', value: 'Dry', size: 'xs' %}
+            {% render 'attribute', label: 'Skin type', value: 'Dry' %}
+            {% render 'attribute', label: 'Upload', value: 'photo.jpg', href: '#' %}
+          </dl>
+          {% render 'discount-code', id: 'DemoDiscount' %}
+        </div>
+        <div class="flex flex-col gap-6">
+          {%- if cart != empty -%}
+            <ul class="flex flex-col gap-6" role="list">
+              {%- for item in cart.items limit: 1 -%}
+                {% render 'line-item', item: item, layout: 'drawer', id_prefix: 'DemoDrawer' %}
+                {% render 'line-item', item: item, layout: 'drawer-row', id_prefix: 'DemoRow' %}
+                {% render 'line-item', item: item, layout: 'page', id_prefix: 'DemoPage' %}
+              {%- endfor -%}
+            </ul>
+          {%- else -%}
+            <span class="text-body-sm text-text-muted">Add something to the cart to see the line item layouts.</span>
+          {%- endif -%}
+          <dl class="flex flex-col gap-2 m-0">
+            {% render 'summary-row', label: 'Subtotal', value: '€98,00' %}
+            {% render 'summary-row', label: 'Total discounts', value: '-€9,80', type: 'discount' %}
+            {% render 'summary-row', label: 'Shipping', value: 'Calculated at checkout', type: 'muted' %}
+            {% render 'divider', class: 'my-1' %}
+            {% render 'summary-row', label: 'Total', value: '€88,20', type: 'total' %}
+          </dl>
+          <div class="rounded-sm border border-border">
+            {% render 'drawer-header', title: 'Your cart', subtitle: '3 items' %}
+            {% render 'cart-empty-state' %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Tooltip</h2>
+      <div class="flex flex-wrap items-center gap-10 py-10">
+        {%- capture tip1 -%}{% render 'icon-button', icon: 'icon__heart.svg', label: 'Wishlist', style: 'secondary', size: 'sm', attributes: 'aria-describedby="demo-tip-1"' %}{%- endcapture -%}
+        {% render 'tooltip', trigger: tip1, text: 'Add to wishlist', placement: 'top', id: 'demo-tip-1' %}
+        {%- capture tip2 -%}{% render 'icon-button', icon: 'icon__cart.svg', label: 'Cart', style: 'secondary', size: 'sm', attributes: 'aria-describedby="demo-tip-2"' %}{%- endcapture -%}
+        {% render 'tooltip', trigger: tip2, text: 'Quick add', placement: 'bottom', id: 'demo-tip-2' %}
+        {%- capture tip3 -%}{% render 'button', label: 'Left', style: 'secondary', size: 'sm' %}{%- endcapture -%}
+        {% render 'tooltip', trigger: tip3, text: 'Size guide', placement: 'left' %}
+        {%- capture tip4 -%}{% render 'button', label: 'Right', style: 'secondary', size: 'sm' %}{%- endcapture -%}
+        {% render 'tooltip', trigger: tip4, text: 'Size guide', placement: 'right' %}
+        {%- capture tip5 -%}{% render 'link', label: 'How to choose your size', size: 'sm' %}{%- endcapture -%}
+        {% render 'tooltip', trigger: tip5, title: 'How to choose your size', paragraph: 'Measure your skin type first. Dry skin does best with the richer formula, oily skin with the light one.', placement: 'top' %}
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Side drawer</h2>
+      <div class="flex flex-wrap items-center gap-4">
+        {% render 'button', label: 'Open right drawer (md, 700)', style: 'secondary', size: 'sm', attributes: 'data-drawer-trigger="demo-drawer-right" aria-controls="demo-drawer-right" aria-expanded="false"' %}
+        {% render 'button', label: 'Open left drawer (sm, 600)', style: 'secondary', size: 'sm', attributes: 'data-drawer-trigger="demo-drawer-left" aria-controls="demo-drawer-left" aria-expanded="false"' %}
+        {% render 'button', label: 'Open drawer with footer (lg, 800)', style: 'secondary', size: 'sm', attributes: 'data-drawer-trigger="demo-drawer-footer" aria-controls="demo-drawer-footer" aria-expanded="false"' %}
+      </div>
+      {%- capture drawer_body -%}
+        <p class="text-body-base text-text">Any captured markup goes in the body. It scrolls on its own; the header stays put.</p>
+        {% render 'accordion-item', title: 'Shipping', content: 'Free shipping on orders over 100 euro.', open: true %}
+        {% render 'accordion-item', title: 'Returns', content: '30 days, no questions asked.' %}
+      {%- endcapture -%}
+      {% render 'side-drawer', id: 'demo-drawer-right', title: 'Filters', subtitle: '24 results', body: drawer_body %}
+      {%- capture drawer_body_left -%}
+        <nav aria-label="Demo">
+          <ul class="flex flex-col gap-3 text-body-lg">
+            <li>{% render 'link', label: 'Shop all', href: '#' %}</li>
+            <li>{% render 'link', label: 'New in', href: '#' %}</li>
+            <li>{% render 'link', label: 'About', href: '#' %}</li>
+          </ul>
+        </nav>
+      {%- endcapture -%}
+      {% render 'side-drawer', id: 'demo-drawer-left', title: 'Menu', body: drawer_body_left, position: 'left', size: 'sm' %}
+      {%- capture drawer_footer -%}
+        {% render 'button', label: 'Show 24 results', class: 'w-full', attributes: 'data-drawer-close' %}
+      {%- endcapture -%}
+      {% render 'side-drawer', id: 'demo-drawer-footer', title: 'Filters', body: drawer_body, footer: drawer_footer, size: 'lg' %}
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Search atoms</h2>
+      <div class="flex flex-wrap items-center gap-4">
+        {% render 'button', label: 'Open search drawer', style: 'secondary', size: 'sm', attributes: 'data-drawer-trigger="search-drawer" aria-controls="search-drawer" aria-expanded="false"' %}
+      </div>
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {% render 'search-field', id: 'demo-search-boxed', style: 'boxed', size: 'md' %}
+        {% render 'search-field', id: 'demo-search-underline', style: 'underline', size: 'lg', value: 'rosehip' %}
+      </div>
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {%- capture demo_suggestions -%}
+          {% render 'search-suggestion', type: 'query', text: '<mark>rosehip</mark> face oil', label: 'rosehip face oil', href: '#', id: 'demo-sug-1' %}
+          {% render 'search-suggestion', type: 'query', text: '<mark>rosehip</mark> serum', label: 'rosehip serum', href: '#', id: 'demo-sug-2' %}
+          {% render 'search-suggestion', type: 'title', text: 'Face oils', href: '#', id: 'demo-sug-3' %}
+        {%- endcapture -%}
+        {% render 'search-result-group', title: 'Suggestions', items: demo_suggestions, id: 'demo-group-suggestions' %}
+        {%- capture demo_products -%}
+          {%- for product in collections.all.products limit: 2 -%}
+            {%- assign demo_option_id = 'demo-prod-' | append: forloop.index -%}
+            {% render 'search-product-result', product: product, id: demo_option_id, show_rating: true, show_quick_add: true, section_id: section.id %}
+          {%- endfor -%}
+        {%- endcapture -%}
+        {% render 'search-result-group', title: 'Products', items: demo_products, id: 'demo-group-products' %}
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Localization</h2>
+      {%- capture demo_items_en -%}
+        {% render 'localization-item', code: 'en', name: 'English', current: true, id: 'demo-loc-a-en' %}
+        {% render 'localization-item', code: 'nl', name: 'Nederlands', id: 'demo-loc-a-nl' %}
+        {% render 'localization-item', code: 'de', name: 'Deutsch', id: 'demo-loc-a-de' %}
+        {% render 'localization-item', code: 'fr', name: 'Français', id: 'demo-loc-a-fr' %}
+      {%- endcapture -%}
+      {%- capture demo_items_nl -%}
+        {% render 'localization-item', code: 'en', name: 'English', id: 'demo-loc-b-en' %}
+        {% render 'localization-item', code: 'nl', name: 'Nederlands', current: true, id: 'demo-loc-b-nl' %}
+        {% render 'localization-item', code: 'de', name: 'Deutsch', id: 'demo-loc-b-de' %}
+        {% render 'localization-item', code: 'fr', name: 'Français', id: 'demo-loc-b-fr' %}
+      {%- endcapture -%}
+      <p class="text-body-sm text-text-muted">Demo languages. The real switch sits in the header and only shows when the store has more than one language.</p>
+      <div class="flex flex-wrap items-start gap-6 pb-48">
+        {% render 'localization-selector', style: 'filled', id: 'demo-localization-filled', items: demo_items_en, current: 'en' %}
+        {% render 'localization-selector', style: 'ghost', id: 'demo-localization-ghost', items: demo_items_nl, current: 'nl' %}
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h2 class="text-heading-4">Form atoms</h2>
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div class="flex flex-col gap-2">
+          {% render 'field-label', label: 'Email', for: 'demo-email', required: true %}
+          {% render 'input', id: 'demo-email', type: 'email', placeholder: 'you@example.com', icon_leading: 'icon__account.svg' %}
+          {% render 'helper-text', text: 'We only use this to send your order updates.' %}
+        </div>
+        <div class="flex flex-col gap-2">
+          {% render 'field-label', label: 'Email', for: 'demo-email-error' %}
+          {% render 'input', id: 'demo-email-error', type: 'email', value: 'hendrik@slashcheckout', error: true, describedby: 'demo-email-error-help' %}
+          {% render 'helper-text', text: 'Enter a valid email address', type: 'error', id: 'demo-email-error-help' %}
+        </div>
+        <div class="flex flex-col gap-2">
+          {% render 'field-label', label: 'Amount', for: 'demo-amount', optional: true, disabled: true %}
+          {% render 'input', id: 'demo-amount', value: '49,00', prefix: '€', suffix: 'EUR', disabled: true %}
+          {% render 'helper-text', text: 'This field is not available', type: 'disabled' %}
+        </div>
+        <div class="flex flex-col gap-2">
+          {% render 'field-label', label: 'Country', for: 'demo-country' %}
+          {% assign demo_options = 'Netherlands,Belgium,Germany,France,Spain,Italy,Portugal,Austria' | split: ',' %}
+          {% render 'select', id: 'demo-country', name: 'demo-country', options: demo_options, selected: 'Netherlands' %}
+        </div>
+        <div class="flex flex-col gap-2 lg:col-span-2">
+          {% render 'field-label', label: 'Message', for: 'demo-message' %}
+          {% render 'textarea', id: 'demo-message', placeholder: 'Write your message' %}
+        </div>
+        <div class="flex flex-col gap-3">
+          {% render 'checkbox', label: 'Subscribe to our newsletter', id: 'demo-cb1' %}
+          {% render 'checkbox', label: 'Checked', id: 'demo-cb2', checked: true %}
+          {% render 'checkbox', label: 'Black', count: 12, id: 'demo-cb3', checked: true, indicator: 'square' %}
+          {% render 'checkbox', label: 'Disabled', id: 'demo-cb4', disabled: true %}
+        </div>
+        <div class="flex flex-col gap-3">
+          {% render 'radio', label: 'Standard shipping', name: 'demo-ship', id: 'demo-r1', checked: true %}
+          {% render 'radio', label: 'Express', count: 3, name: 'demo-ship', id: 'demo-r2' %}
+          {% render 'radio', label: 'Disabled', name: 'demo-ship2', id: 'demo-r3', disabled: true %}
+        </div>
+        <div class="flex flex-col gap-2">
+          {% render 'helper-text', text: 'Discount code applied', type: 'success' %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Main index",
+  "presets": [{ "name": "Main index" }]
+}
+{% endschema %}

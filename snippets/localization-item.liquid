@@ -1,0 +1,45 @@
+{%- comment -%}
+  Figma: Components Atoms / Localization item
+  field      language | country                    (Figma: Field)
+  code       language code or country code, e.g. en / NL   (Figma: Label)
+  name       language name for assistive tech (Nederlands), or the country name shown in the item (Netherlands)
+  currency   country only: currency object (iso_code, symbol), shown as "Netherlands (EUR €)"
+  current    boolean, shows the 2px bar and full-strength text   (Figma: State=Current)
+  id, class, attributes
+  Rendered as role="option" for use inside localization-menu (listbox, driven by custom-select.js).
+  States: Hover = :hover, Focus = :focus-visible, Current = [aria-selected=true]
+{%- endcomment -%}
+{%- liquid
+  assign field = field | default: 'language'
+  assign display = code | upcase
+  assign trigger_label = ''
+  if field == 'country'
+    assign display = name
+    if currency.iso_code != blank
+      assign money = currency.iso_code
+      if currency.symbol != currency.iso_code
+        assign money = money | append: ' ' | append: currency.symbol
+      endif
+      assign display = name | append: ' (' | append: money | append: ')'
+      assign trigger_label = code | upcase | append: ' / ' | append: currency.iso_code
+    else
+      assign trigger_label = code | upcase
+    endif
+  endif
+-%}
+<li
+  class="localization-item group relative flex h-9 w-full shrink-0 items-center whitespace-nowrap rounded-sm border border-transparent px-4 text-label-base text-text-muted cursor-pointer outline-none transition-colors hover:bg-surface hover:text-text focus-visible:border-focus aria-selected:text-text {{ class }}"
+  role="option"
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-value="{{ code | escape }}"
+  {%- if field == 'country' %} data-label="{{ trigger_label | escape }}"
+  {%- else %} lang="{{ code | escape }}"
+  {%- if name != blank %} aria-label="{{ name | escape }}"{% endif %}
+  {%- endif %}
+  aria-selected="{% if current %}true{% else %}false{% endif %}"
+  tabindex="-1"
+  {%- if attributes %} {{ attributes }}{% endif %}
+>
+  <span class="absolute left-0 top-1/2 h-7 w-0.5 -translate-y-1/2 rounded-full bg-accent invisible group-aria-selected:visible" aria-hidden="true"></span>
+  <span>{{ display }}</span>
+</li>

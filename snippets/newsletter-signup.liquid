@@ -1,0 +1,92 @@
+{%- comment -%}
+  Figma: Components Atoms / Newsletter signup
+  layout          stacked-left | stacked-center | side-by-side     (Figma: Layout)
+  input_style     inline | attached | underline                     (Newsletter input: Style)
+  id              unique id (form and field ids derive from it)
+  title, description, fine_print_html, placeholder, button_label   (Figma: Title, Description, Fine print); default to the newsletter.* locale strings
+  tag             heading tag for the title, default h2
+  show_description, show_fine_print   pass false to hide      (Figma: Show description, Show fine print)
+  icon_leading    asset name for the field icon
+  status          error | success | blank; blank follows the form result    (Figma: Show message + Message type)
+  message         text for a forced status
+  class           placement only
+  Posts to Shopify's customer form with the newsletter tag. The message under the field is the form result (error or thanks).
+{%- endcomment -%}
+{%- liquid
+  assign layout = layout | default: 'stacked-left'
+  assign id = id | default: 'newsletter'
+  assign tag = tag | default: 'h2'
+  assign title_text = title
+  if title_text == blank
+    assign title_text = 'newsletter.title' | t
+  endif
+  assign description_text = description
+  if description_text == blank
+    assign description_text = 'newsletter.description' | t
+  endif
+  assign fine_print_text = fine_print_html
+  if fine_print_text == blank
+    assign fine_print_text = 'newsletter.fine_print_html' | t: privacy_url: shop.privacy_policy.url
+  endif
+  case layout
+    when 'stacked-center'
+      assign root = 'flex-col items-center text-center max-w-120'
+      assign form_align = 'items-center'
+    when 'side-by-side'
+      assign root = 'flex-col md:flex-row md:items-start md:gap-10 max-w-240'
+      assign form_align = 'items-start'
+    else
+      assign root = 'flex-col items-start max-w-120'
+      assign form_align = 'items-start'
+  endcase
+  assign message_id = id | append: '-message'
+  assign field_id = id | append: '-email'
+-%}
+<div class="newsletter-signup flex w-full gap-6 {{ root }} {{ class }}" data-layout="{{ layout }}">
+  <div class="flex w-full flex-col gap-2 md:flex-1">
+    <{{ tag }} class="text-heading-4 text-text">{{ title_text }}</{{ tag }}>
+    {%- unless show_description == false -%}
+      <p class="text-body-base text-text-muted">{{ description_text }}</p>
+    {%- endunless -%}
+  </div>
+  {%- form 'customer', id: id, class: 'newsletter-signup__form flex w-full flex-col md:flex-1' -%}
+    {%- liquid
+      assign current_status = status
+      assign current_message = message
+      if current_status == blank
+        if form.errors
+          assign current_status = 'error'
+          assign current_message = form.errors.translated_fields.email | capitalize | append: ' ' | append: form.errors.messages.email
+        elsif form.posted_successfully?
+          assign current_status = 'success'
+        endif
+      endif
+      if current_status == 'success' and current_message == blank
+        assign current_message = 'newsletter.success' | t
+      endif
+      assign is_error = false
+      assign is_success = false
+      if current_status == 'error'
+        assign is_error = true
+      elsif current_status == 'success'
+        assign is_success = true
+      endif
+      assign described = ''
+      if current_status != blank
+        assign described = message_id
+      endif
+    -%}
+    <input type="hidden" name="contact[tags]" value="newsletter">
+    <div class="flex w-full flex-col gap-3 {{ form_align }}">
+      {% render 'newsletter-input', id: field_id, style: input_style, placeholder: placeholder, button_label: button_label, icon_leading: icon_leading, error: is_error, success: is_success, describedby: described, value: form.email %}
+      {%- if is_error -%}
+        {% render 'helper-text', text: current_message, type: 'error', id: message_id %}
+      {%- elsif is_success -%}
+        {% render 'helper-text', text: current_message, type: 'success', id: message_id, attributes: 'role="status"' %}
+      {%- endif -%}
+      {%- unless show_fine_print == false -%}
+        <p class="text-body-xs text-text-muted [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-text">{{ fine_print_text }}</p>
+      {%- endunless -%}
+    </div>
+  {%- endform -%}
+</div>

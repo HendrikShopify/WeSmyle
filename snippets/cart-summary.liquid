@@ -1,0 +1,57 @@
+{%- comment -%}
+  Figma: Components Atoms / Cart summary
+  form_id   the cart form the checkout button submits
+  id        base id for the discount code input
+  Discount code, totals, tax note, checkout button, payment icons.
+{%- endcomment -%}
+{%- liquid
+  assign id = id | default: 'CartSummary'
+  assign subtotal_label = 'sections.cart.sub_total' | t
+  assign discounts_label = 'sections.cart.total_discounts' | t
+  assign shipping_label = 'sections.cart.shipping' | t
+  assign shipping_value = 'sections.cart.calculated_at_checkout' | t
+  assign total_label = 'sections.cart.total' | t
+  assign subtotal = cart.original_total_price | money
+  assign discount_total = cart.total_discount | money | prepend: '-'
+  assign total = cart.total_price | money
+  assign checkout_label = 'sections.cart.checkout' | t
+  if cart.taxes_included
+    assign tax_note = 'sections.cart.taxes_included_shipping_at_checkout' | t
+  else
+    assign tax_note = 'sections.cart.taxes_at_checkout_shipping_at_checkout' | t
+  endif
+  assign discount_id = id | append: '-discount'
+-%}
+<div class="cart-summary flex w-full flex-col gap-5 {{ class }}">
+  {% render 'discount-code', id: discount_id %}
+
+  <dl class="flex flex-col gap-2 m-0" aria-live="polite">
+    {% render 'summary-row', label: subtotal_label, value: subtotal %}
+    {%- if cart.total_discount > 0 %}{% render 'summary-row', label: discounts_label, value: discount_total, type: 'discount' %}{% endif -%}
+    {% render 'summary-row', label: shipping_label, value: shipping_value, type: 'muted' %}
+    {%- if cart.cart_level_discount_applications.size > 0 -%}
+      <div class="flex flex-wrap gap-2">
+        {%- for discount in cart.cart_level_discount_applications -%}
+          {%- capture discount_label -%}{{ discount.title | escape }} (-{{ discount.total_allocated_amount | money }}){%- endcapture -%}
+          {%- assign tag_attrs = 'data-discount-code="' | append: discount.title | append: '"' -%}
+          {% render 'discount-tag', label: discount_label, style: 'solid', attributes: tag_attrs %}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    {% render 'divider', class: 'my-1' %}
+    {% render 'summary-row', label: total_label, value: total, type: 'total' %}
+  </dl>
+
+  <p class="text-body-xs text-text-muted">{{ tax_note }}</p>
+
+  {%- liquid
+    assign checkout_attrs = 'form="' | append: form_id | append: '"'
+    assign checkout_disabled = false
+    if cart.item_count == 0
+      assign checkout_disabled = true
+    endif
+  -%}
+  {% render 'button', label: checkout_label, style: 'primary', size: 'lg', type: 'submit', name: 'checkout', class: 'w-full', attributes: checkout_attrs, disabled: checkout_disabled %}
+
+  {% render 'payment-icons', class: 'justify-center' %}
+</div>

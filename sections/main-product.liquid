@@ -1,0 +1,60 @@
+{%- assign product_form_id = 'product-form-' | append: section.id -%}
+
+<div class="mx-auto w-full max-w-page px-page-margin py-4">{% render 'breadcrumbs' %}</div>
+
+<product-info
+  id="MainProduct-{{ section.id }}"
+  class=""
+  data-section="{{ section.id }}"
+  data-product-id="{{ product.id }}"
+  data-update-url="true"
+  data-url="{{ product.url }}"
+>
+  <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
+
+  <div class="mx-auto w-full max-w-page px-page-margin flex flex-col gap-6 lg:grid lg:grid-cols-12 lg:gap-x-gutter pb-12 lg:pb-20">
+    <div class="col-span-full -mx-4 lg:col-span-7 lg:mx-0">
+      {% render 'media-gallery', product: product, section_id: section.id %}
+    </div>
+
+    <div class="col-span-full flex flex-col gap-6 lg:col-span-5">
+      {% render 'product-title-block', product: product %}
+      {% render 'product-price-block', product: product %}
+      {%- assign short_description = product.description | strip_html | truncatewords: 20 -%}
+      {%- if short_description != blank -%}
+        <p class="text-body-base text-text-muted">{{ short_description }}</p>
+      {%- endif -%}
+      {% render 'product-form', product: product, section_id: section.id, product_form_id: product_form_id %}
+      {% render 'product-delivery' %}
+      {% render 'product-details', product: product %}
+
+      {% for block in section.blocks %}
+        {% if block.type == '@app' %}
+          {% render block %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</product-info>
+
+<script type="application/ld+json">
+  {{ product | structured_data }}
+</script>
+
+{% comment %}
+  {% schema %}
+  {
+    "name": "Custom Section",
+    "blocks": [
+      {
+        "type": "@app"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Custom Section"
+      }
+    ]
+  }
+  {% endschema %}
+{% endcomment %}

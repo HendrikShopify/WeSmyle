@@ -1,0 +1,75 @@
+{%- comment -%}
+  Figma: Components Atoms / Search field
+  Search input, separate from the form Input. Leading search icon, clear button when filled.
+  style        boxed | underline                   (Figma: Style)
+  size         md | lg                             (Figma: Size)
+  mobile_size  md, with size lg: md below the lg breakpoint, lg from it (the search drawer)
+  id, name (q), value, placeholder, form, label (accessible name), autocomplete
+  attributes   extra attributes on the <input>
+  class        placement only
+  States: Focus = :focus-within (focus token, 1px), Filled = value present (clear button visible).
+  JS: search-form.js toggles the clear button with the hidden attribute.
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'boxed'
+  assign size = size | default: 'md'
+  assign name = name | default: 'q'
+  assign placeholder = placeholder | default: 'general.search.search' | t
+  assign label = label | default: placeholder
+  assign reset_label = 'general.search.reset' | t
+
+  if size == 'lg' and mobile_size == 'md'
+    assign dim = 'h-11 lg:h-16 gap-3 text-body-base lg:text-body-lg'
+    assign icon_size = 'size-5 lg:size-6'
+  elsif size == 'lg'
+    assign dim = 'h-16 gap-3 text-body-lg'
+    assign icon_size = 'size-6'
+  else
+    assign dim = 'h-11 gap-3 text-body-base'
+    assign icon_size = 'size-5'
+  endif
+
+  if style == 'underline'
+    assign wrap = 'search-field flex w-full items-center border-b border-text transition-colors focus-within:border-focus'
+  else
+    assign wrap = 'search-field flex w-full items-center rounded-input border border-border-strong bg-background transition-colors hover:border-text focus-within:border-focus'
+    if size == 'lg' and mobile_size == 'md'
+      assign dim = dim | append: ' px-4 lg:px-5'
+    elsif size == 'lg'
+      assign dim = dim | append: ' px-5'
+    else
+      assign dim = dim | append: ' px-4'
+    endif
+  endif
+
+  if value != blank
+    assign clear_hidden = ''
+  else
+    assign clear_hidden = 'hidden'
+  endif
+-%}
+<div class="{{ wrap }} {{ dim }} {{ class }}" data-size="{{ size }}">
+  <span class="{{ icon_size }} shrink-0 text-text [&>svg]:size-full" aria-hidden="true">{{ 'icon__search.svg' | inline_asset_content }}</span>
+  <input
+    class="min-w-0 flex-1 bg-transparent text-text placeholder:text-text-muted outline-none [&::-webkit-search-cancel-button]:hidden"
+    type="search"
+    name="{{ name }}"
+    {%- if id %} id="{{ id }}"{% endif -%}
+    {%- if form %} form="{{ form }}"{% endif -%}
+    {%- if value %} value="{{ value | escape }}"{% endif -%}
+    placeholder="{{ placeholder | escape }}"
+    aria-label="{{ label | escape }}"
+    autocomplete="{{ autocomplete | default: 'off' }}"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false"
+    {%- if attributes %} {{ attributes }}{% endif -%}
+  >
+  <button
+    type="reset"
+    class="{{ icon_size }} shrink-0 rounded-xs text-text transition-colors cursor-pointer hover:text-text-muted focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus [&>svg]:size-full"
+    aria-label="{{ reset_label | escape }}"
+    {%- if form %} form="{{ form }}"{% endif %}
+    {{ clear_hidden }}
+  >{{ 'icon__close.svg' | inline_asset_content }}</button>
+</div>

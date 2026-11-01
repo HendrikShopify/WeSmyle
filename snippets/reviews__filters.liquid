@@ -1,0 +1,14 @@
+{%- comment -%}
+  Figma: Components Atoms / Reviews toolbar, Filter and Sort (Select sm, Width Hug from md and Fill below, + Dropdown menu of Menu items)
+  JS: reviews__ui.js clones one Select per custom question and one for the sort from the templates below, fills the options before it is attached, and listens for select:change (custom-select.js drives opening, keyboard and the check marks).
+  A filter shows the question label as placeholder; picking the selected value again clears the filter.
+{%- endcomment -%}
+<div class="contents" data-reviews-filters></div>
+
+<template data-reviews-dropdown>
+  {% render 'select', size: 'sm', width: 'hug', placeholder: '', class: 'max-md:w-full', attributes: 'data-reviews-dropdown' %}
+</template>
+
+<template data-reviews-option>
+  {% render 'menu-item', label: '', attributes: 'data-reviews-option' %}
+</template>

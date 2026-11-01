@@ -1,0 +1,26 @@
+{% doc %}
+  Gates a theme script until the visitor allows its consent category.
+  type="text/plain" keeps the browser from running it.
+  cookie-consent.js swaps in a real script once that category is allowed.
+
+  @param {string} category - analytics, marketing, preferences, or sale_of_data
+  @param {string} [src] - External script URL. Written to data-src.
+  @param {string} [code] - Inline script. Omit when src is set.
+
+  @example
+  {% render 'consent-script', category: 'analytics', src: 'https://example.com/tracker.js' %}
+{% enddoc %}
+
+{% unless category == blank %}
+  <script
+    type="text/plain"
+    data-consent="{{ category | escape }}"
+    {% if src != blank %}
+      data-src="{{ src | escape }}"
+    {% endif %}
+  >
+    {%- if src == blank -%}
+      {{ code }}
+    {%- endif -%}
+  </script>
+{% endunless %}

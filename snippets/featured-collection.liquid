@@ -1,0 +1,77 @@
+{%- comment -%}
+  Figma: Components Sections / Featured collection (213:5764)
+  collection       collection object
+  title            heading text                                          (Figma: Title)
+  layout           carousel | grid, default carousel                     (Figma: Layout)
+  show_view_all    boolean, default true                                 (Figma: Show view all)
+  limit            number of products; default 8 for carousel, 4 for grid
+  section_id       unique ids
+  class
+  Viewport Desktop / Mobile is responsive: heading-3 and 80px padding from lg, heading-4 and 48px below; arrows show from lg; the grid is 4 columns on lg and 2 below.
+  Carousel: from lg each card is a quarter of the container width (minus the gaps), so four fill the container and the fifth continues in the margin. Swiper track that starts at the page margin and bleeds off the right edge; segmented progress line below, one segment per product. JS: carousel-track.js (Swiper)
+{%- endcomment -%}
+{%- liquid
+  assign layout = layout | default: 'carousel'
+  if show_view_all == nil
+    assign show_view_all = true
+  endif
+  if limit == nil
+    if layout == 'grid'
+      assign limit = 4
+    else
+      assign limit = 8
+    endif
+  endif
+  assign product_count = collection.products_count
+  if product_count > limit
+    assign product_count = limit
+  endif
+  assign view_all_label = 'sections.featured_collection.view_all' | t
+  assign previous_label = 'sections.featured_collection.previous' | t
+  assign next_label = 'sections.featured_collection.next' | t
+  assign heading_id = 'FeaturedCollectionTitle-' | append: section_id
+-%}
+{%- if product_count > 0 -%}
+  <section class="featured-collection py-12 lg:py-20 {{ class }}" data-layout="{{ layout }}" aria-labelledby="{{ heading_id }}">
+    {%- if layout == 'carousel' -%}
+      <script src="{{ 'carousel-track.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+    {%- if layout == 'carousel' -%}<carousel-track class="flex flex-col gap-6 lg:gap-10">{%- else -%}<div class="flex flex-col gap-6 lg:gap-10">{%- endif -%}
+      <div data-page-edge class="mx-auto w-full max-w-page px-page-margin flex items-center justify-between gap-6">
+        <h2 id="{{ heading_id }}" class="text-heading-4 text-text lg:text-heading-3">{{ title }}</h2>
+        <div class="flex shrink-0 items-center gap-6">
+          {%- if show_view_all -%}
+            {% render 'link', label: view_all_label, href: collection.url, size: 'md', icon_trailing: 'icon__arrow-right.svg' %}
+          {%- endif -%}
+          {%- if layout == 'carousel' -%}
+            <div class="flex items-center gap-2 max-lg:hidden">
+              {% render 'icon-button', icon: 'icon__arrow-left.svg', label: previous_label, style: 'secondary', size: 'md', disabled: true, attributes: 'data-carousel-prev' %}
+              {% render 'icon-button', icon: 'icon__arrow-right.svg', label: next_label, style: 'secondary', size: 'md', attributes: 'data-carousel-next' %}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- if layout == 'grid' -%}
+        <div class="mx-auto w-full max-w-page px-page-margin">
+          <ul class="grid grid-cols-2 gap-x-2 gap-y-4 lg:grid-cols-4 lg:gap-x-3 lg:gap-y-6">
+            {%- for product in collection.products limit: limit -%}
+              <li>{% render 'product-card', product: product, section_id: section_id, quick_add: 'button', sizes: '(min-width: 1024px) 25vw, 50vw' %}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- else -%}
+        <div class="swiper overflow-hidden" data-carousel-track>
+          <ul class="swiper-wrapper flex">
+            {%- for product in collection.products limit: limit -%}
+              <li class="swiper-slide w-65 shrink-0 lg:w-[calc((min(100%,var(--container-page))_-_2*var(--page-margin)_-_36px)/4)]" data-carousel-slide>{% render 'product-card', product: product, section_id: section_id, quick_add: 'button', sizes: '(min-width: 1024px) 331px, 260px' %}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+        <div class="mx-auto w-full max-w-page px-page-margin">
+          {% render 'carousel-indicators', count: product_count, active: 1, type: 'line' %}
+        </div>
+      {%- endif -%}
+    {%- if layout == 'carousel' -%}</carousel-track>{%- else -%}</div>{%- endif -%}
+  </section>
+{%- endif -%}

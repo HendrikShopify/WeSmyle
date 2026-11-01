@@ -1,0 +1,24 @@
+{%- comment -%}
+  Figma: Components Molecules / Search drawer (side-drawer, size md)
+  Header: Search field (underline, lg) + close. Body: predictive search results.
+  The form is the real search form (GET /search); predictive results load from the predictive-search section.
+  JS: search-form.js (PredictiveSearch) and side-drawer.js. The drawer focuses the input on drawer:open.
+{%- endcomment -%}
+{%- liquid
+  assign search_label = 'general.search.search' | t
+  assign close_label = 'accessibility.close' | t
+  assign loading_label = 'accessibility.loading' | t
+-%}
+{%- capture content -%}
+  <predictive-search class="flex min-h-0 flex-1 flex-col" data-loading-text="{{ loading_label | escape }}">
+    <form action="{{ routes.search_url }}" method="get" role="search" id="search-drawer-form" class="flex items-center gap-4 p-6">
+      <input type="hidden" name="type" value="product">
+      <input type="hidden" name="options[prefix]" value="last">
+      {% render 'search-field', style: 'underline', size: 'lg', mobile_size: 'md', id: 'search-drawer-input', form: 'search-drawer-form', value: search.terms, label: search_label, attributes: 'role="combobox" aria-expanded="false" aria-owns="predictive-search-results-groups-wrapper" aria-controls="predictive-search-results-groups-wrapper" aria-haspopup="listbox" aria-autocomplete="list" aria-activedescendant=""' %}
+      {% render 'icon-button', icon: 'icon__close.svg', label: close_label, style: 'ghost', size: 'sm', attributes: 'data-drawer-close' %}
+    </form>
+    <div class="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pb-6" data-predictive-search tabindex="-1"></div>
+    <span class="predictive-search-status sr-only" role="status" aria-hidden="true"></span>
+  </predictive-search>
+{%- endcapture -%}
+{% render 'side-drawer', id: 'search-drawer', title: search_label, content: content, attributes: 'data-search-drawer' %}

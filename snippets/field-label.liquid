@@ -1,0 +1,28 @@
+{%- comment -%}
+  Figma: Components Atoms / Field label
+  label      text                                   (Figma: Label)
+  for        id of the control (label only)
+  tag        label | legend, legend for a fieldset group
+  attributes extra attributes, e.g. a JS hook
+  required   boolean, shows the asterisk            (Figma: Required)
+  optional   boolean, shows "(optional)"            (Figma: Optional)
+  disabled   boolean                                (Figma: State=Disabled)
+  class      placement only
+{%- endcomment -%}
+{%- liquid
+  if disabled
+    assign color = 'text-text-disabled'
+    assign muted = 'text-text-disabled'
+    assign star = 'text-text-disabled'
+  else
+    assign color = 'text-text'
+    assign muted = 'text-text-muted'
+    assign star = 'text-error'
+  endif
+-%}
+{%- assign tag = tag | default: 'label' -%}
+<{{ tag }} class="field-label inline-flex items-center gap-1 text-label-base {{ color }} {{ class }}"{% if for and tag == 'label' %} for="{{ for }}"{% endif %}{% if attributes %} {{ attributes }}{% endif %}>
+  {{- label -}}
+  {%- if required %}<span class="{{ star }}" aria-hidden="true">*</span>{% endif -%}
+  {%- if optional %}<span class="text-body-sm {{ muted }}">{{ 'general.forms.optional' | t }}</span>{% endif -%}
+</{{ tag }}>

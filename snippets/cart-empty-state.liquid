@@ -1,0 +1,12 @@
+{%- comment -%}
+  Figma: Components Atoms / Cart empty state
+  Title + primary button to the all-products collection.
+{%- endcomment -%}
+{%- liquid
+  assign title = 'sections.cart.empty' | t
+  assign cta = 'general.continue_shopping' | t
+-%}
+<div class="cart-empty-state flex w-full flex-col items-center gap-6 py-16 text-center {{ class }}">
+  <h2 class="text-heading-4 text-text">{{ title }}</h2>
+  {% render 'button', label: cta, href: routes.all_products_collection_url, style: 'primary', size: 'md' %}
+</div>

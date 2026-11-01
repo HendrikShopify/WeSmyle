@@ -1,0 +1,14 @@
+{%- comment -%}
+  Figma: Sections / Main 404 (Desktop, Mobile)
+  Not found block: Empty state type 404 (code, heading, body, Continue shopping).
+  Then Featured collection in grid layout, "Popular right now", 4 products of the fixed collection set here.
+{%- endcomment -%}
+{%- liquid
+  assign popular_handle = 'all'
+  assign popular_collection = collections[popular_handle]
+  assign popular_title = 'templates.404.popular' | t
+-%}
+<div class="mx-auto w-full max-w-page px-page-margin py-16 lg:py-12 flex flex-col items-center">
+  {% render 'empty-state', type: '404' %}
+</div>
+{% render 'featured-collection', collection: popular_collection, title: popular_title, layout: 'grid', limit: 4, section_id: section.id %}

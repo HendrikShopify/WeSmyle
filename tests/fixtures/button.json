@@ -1,0 +1,15 @@
+{
+  "snippet": "button",
+  "figma": "Components Atoms / Button (63:278)",
+  "matrix": {
+    "style": ["primary", "secondary"],
+    "size": ["sm", "md", "lg"],
+    "state": ["default", "hover", "focus", "disabled", "loading"]
+  },
+  "params": { "label": "Button" },
+  "extras": [
+    { "label": "Add to cart", "icon_leading": "icon__cart.svg" },
+    { "label": "Continue", "icon_trailing": "icon__arrow-right.svg", "style": "secondary" },
+    { "label": "Full width", "class": "w-full", "size": "lg" }
+  ]
+}

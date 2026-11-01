@@ -1,0 +1,42 @@
+{%- comment -%}
+  Figma: Components Atoms / Mega menu panel (Layout=Columns)
+  link   the top-level linklist link whose children fill the panel
+  class
+  Full-width panel under a dropdown nav item. Each child with sub-links is a column (heading, links, View all); when no child has sub-links, the children form one column titled with the top-level link. Page margin follows layout/page-margin.
+  Not built yet: Columns + featured, Tiles and Tabbed (they need images and merchant content, so they wait for settings).
+{%- endcomment -%}
+{%- liquid
+  assign grouped = false
+  for child in link.links
+    if child.links != blank
+      assign grouped = true
+      break
+    endif
+  endfor
+  assign view_all_label = 'sections.header.view_all' | t
+-%}
+<div class="mega-menu bg-background {{ class }}">
+  <div class="mx-auto flex max-w-page gap-16 px-page-margin py-10">
+    {%- if grouped -%}
+      {%- for child in link.links -%}
+        {%- assign child_title = child.title | escape -%}
+        <div class="flex w-50 flex-col gap-4">
+          {% render 'menu-heading', title: child_title, style: 'link', href: child.url, tag: 'span' %}
+          {% render 'menu-links', links: child.links, size: 'md' %}
+          {%- if child.links != blank and child.url != blank and child.url != '#' -%}
+            <a href="{{ child.url }}" class="inline-flex items-center gap-2 self-start rounded-xs text-body-base text-text transition-colors hover:text-text-muted focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus">
+              {{ view_all_label }}
+              <span class="size-4 shrink-0 [&>svg]:size-full" aria-hidden="true">{{ 'icon__arrow-right.svg' | inline_asset_content }}</span>
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      {%- assign link_title = link.title | escape -%}
+      <div class="flex w-50 flex-col gap-4">
+        {% render 'menu-heading', title: link_title, style: 'link', href: link.url, tag: 'span' %}
+        {% render 'menu-links', links: link.links, size: 'md' %}
+      </div>
+    {%- endif -%}
+  </div>
+</div>

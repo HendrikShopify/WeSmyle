@@ -1,0 +1,20 @@
+{%- comment -%}
+  Figma: Components Atoms / Divider
+  type    horizontal | horizontal-label | vertical     (Figma: Type)
+  label   text for horizontal-label
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'horizontal'
+-%}
+{%- case type -%}
+  {%- when 'vertical' -%}
+    <div class="divider w-px self-stretch bg-border {{ class }}" role="separator" aria-orientation="vertical"></div>
+  {%- when 'horizontal-label' -%}
+    <div class="divider flex w-full items-center gap-3 {{ class }}" role="separator">
+      <span class="h-px flex-1 bg-border"></span>
+      <span class="text-body-sm text-text-muted">{{ label }}</span>
+      <span class="h-px flex-1 bg-border"></span>
+    </div>
+  {%- else -%}
+    <hr class="divider h-px w-full border-0 bg-border {{ class }}">
+{%- endcase -%}

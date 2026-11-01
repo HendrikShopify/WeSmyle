@@ -1,0 +1,32 @@
+{%- comment -%}
+  Figma: Components Atoms / Field
+  label, required, optional   passed to field-label
+  control          the control as HTML: capture a render of input, textarea, select, rating-input or file-upload
+  for              id of the control, for the label (leave empty for a group)
+  group            boolean, a <fieldset> with a <legend> (radio chips, rating) instead of a <label>; the legend gets mb-2 because a fieldset ignores the flex gap
+  helper           helper text under the control
+  helper_id, helper_attributes
+  error            boolean, adds a hidden error Helper text; error_id, error_attributes. JS fills [data-helper-text] and removes hidden
+  label_attributes extra attributes on the label (JS hook)
+  class, attributes   placement and JS hooks on the wrapper
+{%- endcomment -%}
+{%- liquid
+  assign tag = 'div'
+  assign label_tag = 'label'
+  assign label_class = ''
+  if group
+    assign tag = 'fieldset'
+    assign label_tag = 'legend'
+    assign label_class = 'mb-2'
+  endif
+  assign error_attrs = 'hidden'
+  if error_attributes
+    assign error_attrs = error_attrs | append: ' ' | append: error_attributes
+  endif
+-%}
+<{{ tag }} class="field flex min-w-0 flex-col items-start gap-2 {{ class }}"{% if attributes %} {{ attributes }}{% endif %}>
+  {%- render 'field-label', tag: label_tag, label: label, for: for, required: required, optional: optional, class: label_class, attributes: label_attributes -%}
+  {{- control -}}
+  {%- if helper %}{% render 'helper-text', text: helper, id: helper_id, attributes: helper_attributes %}{% endif -%}
+  {%- if error or error_id %}{% render 'helper-text', type: 'error', text: '', id: error_id, attributes: error_attrs %}{% endif -%}
+</{{ tag }}>

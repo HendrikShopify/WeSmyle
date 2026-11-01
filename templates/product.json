@@ -1,0 +1,21 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product"
+    },
+    "recommendations": {
+      "type": "product-recommendations"
+    },
+    "reviews": {
+      "type": "reviews",
+      "settings": {
+        "per_page": 10
+      }
+    }
+  },
+  "order": [
+    "main",
+    "recommendations",
+    "reviews"
+  ]
+}

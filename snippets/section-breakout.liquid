@@ -1,0 +1,63 @@
+{%- comment -%}
+  Figma: Sections / Section breakout (Preset, Viewport)
+  preset            media_band | bleed_right                                  (Figma: Preset)
+                      media_band    heading and text, a full-bleed media band, then up to three columns
+                      bleed_right   text beside media that runs to the right edge
+  eyebrow, heading, body            text block copy
+  button_label, button_url          primary button
+  secondary_label, secondary_url    secondary button, bleed_right only (Buttons=2)
+  media             Shopify media or image object, empty renders the Media placeholder
+  items             media_band only: list of "title::text" strings, one per column
+  class             placement only
+  Layout: .section-breakout (tailwind/tokens.css) is a grid of 12 content columns (4 on mobile) flanked by two outer tracks.
+  Cells set --start and --span as content column numbers (--start-mobile, --span-mobile below lg). data-bleed full runs a cell edge to edge,
+  right runs it from its start to the right edge.
+{%- endcomment -%}
+{%- liquid
+  assign preset = preset | default: 'media_band'
+-%}
+<section class="section-shell {{ class }}" data-padding-top="md" data-padding-bottom="md">
+  <div class="section-breakout">
+    {%- case preset -%}
+      {%- when 'bleed_right' -%}
+        <div class="flex flex-col gap-5 pb-8 lg:self-center lg:pb-0" style="--start-mobile: 1; --span-mobile: 4; --start: 1; --span: 5;">
+          {%- if eyebrow != blank -%}<p class="text-label-caps text-text-muted">{{ eyebrow }}</p>{%- endif -%}
+          {%- if heading != blank -%}<h2 class="text-heading-2 text-text">{{ heading }}</h2>{%- endif -%}
+          {%- if body != blank -%}<p class="text-body-base text-text-muted">{{ body }}</p>{%- endif -%}
+          {%- if button_label != blank or secondary_label != blank -%}
+            <div class="flex flex-wrap items-center gap-3">
+              {%- if button_label != blank -%}{% render 'button', label: button_label, href: button_url, style: 'primary', size: 'md' %}{%- endif -%}
+              {%- if secondary_label != blank -%}{% render 'button', label: secondary_label, href: secondary_url, style: 'secondary', size: 'md' %}{%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+        <div data-bleed="right" style="--start-mobile: 1; --start: 7;">
+          <div class="lg:hidden">{% render 'media', media: media, ratio: '4:5', sizes: '100vw' %}</div>
+          <div class="max-lg:hidden">{% render 'media', media: media, ratio: '1:1', sizes: '50vw' %}</div>
+        </div>
+      {%- else -%}
+        <div class="flex flex-col gap-5 lg:self-end" style="--start-mobile: 1; --span-mobile: 4; --start: 1; --span: 7;">
+          {%- if eyebrow != blank -%}<p class="text-label-caps text-text-muted">{{ eyebrow }}</p>{%- endif -%}
+          {%- if heading != blank -%}<h2 class="text-heading-2 text-text">{{ heading }}</h2>{%- endif -%}
+        </div>
+        <div class="flex flex-col items-start gap-5 lg:self-end" style="--start-mobile: 1; --span-mobile: 4; --start: 9; --span: 4;">
+          {%- if body != blank -%}<p class="text-body-base text-text-muted">{{ body }}</p>{%- endif -%}
+          {%- if button_label != blank -%}{% render 'button', label: button_label, href: button_url, style: 'primary', size: 'md' %}{%- endif -%}
+        </div>
+        <div class="pt-8 lg:pt-12" data-bleed="full">
+          <div class="lg:hidden">{% render 'media', media: media, ratio: '4:5', sizes: '100vw' %}</div>
+          <div class="max-lg:hidden">{% render 'media', media: media, ratio: '21:9', sizes: '100vw' %}</div>
+        </div>
+        {%- for item in items -%}
+          {%- liquid
+            assign fields = item | split: '::'
+            assign start = forloop.index0 | times: 4 | plus: 1
+          -%}
+          <div class="flex flex-col gap-5 pt-8 lg:pt-12" style="--start-mobile: 1; --span-mobile: 4; --start: {{ start }}; --span: 4;">
+            <h3 class="text-heading-5 text-text">{{ fields[0] }}</h3>
+            <p class="text-body-base text-text-muted">{{ fields[1] }}</p>
+          </div>
+        {%- endfor -%}
+    {%- endcase -%}
+  </div>
+</section>

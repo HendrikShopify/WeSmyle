@@ -1,0 +1,23 @@
+{
+ "snippet": "empty-state",
+ "figma": "Molecules / Empty state (207:2892)",
+ "width": 520,
+ "matrix": {
+  "type": [
+   "404",
+   "empty-collection",
+   "no-results",
+   "generic"
+  ]
+ },
+ "params": {},
+ "extras": [
+  {
+   "type": "generic",
+   "secondary_label": "Contact us",
+   "secondary_href": "#",
+   "heading": "Custom heading",
+   "body": "Heading and body are overridable per use."
+  }
+ ]
+}

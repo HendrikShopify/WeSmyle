@@ -1,0 +1,15 @@
+{%- comment -%}
+  Figma: Components Atoms / Drawer header
+  title, subtitle (optional caps label), id (sets the heading id for aria-labelledby)
+  Close button is an icon-button ghost sm with data-drawer-close; the drawer element listens for it.
+{%- endcomment -%}
+{%- liquid
+  assign close_label = 'accessibility.close' | t
+-%}
+<div class="drawer-header flex items-center justify-between gap-3 p-6 bg-background {{ class }}">
+  <div class="flex items-center gap-4">
+    <h2 class="text-heading-5 text-text"{% if id %} id="{{ id }}-title"{% endif %}>{{ title }}</h2>
+    {%- if subtitle %}<span class="text-label-caps text-text">{{ subtitle }}</span>{% endif -%}
+  </div>
+  {% render 'icon-button', icon: 'icon__close.svg', label: close_label, style: 'ghost', size: 'sm', attributes: 'data-drawer-close' %}
+</div>

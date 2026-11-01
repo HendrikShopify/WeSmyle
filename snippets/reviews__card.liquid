@@ -1,0 +1,66 @@
+{%- comment -%}
+  Figma: Components Atoms / Review card (Layout Desktop | Mobile is responsive: 224px meta column + content 64px apart from lg, stacked below)
+  loading   boolean, renders the skeleton (data-loading on the text slots; the list swaps these for real cards)
+  JS: reviews__ui.js clones this from <template data-reviews-card> and fills the data-reviews-* slots. Hidden slots stay hidden until filled.
+  Shows Recommend (icon-text sm), Answers (attribute xs), Stars (star icons, JS sets data-empty per star), Media (review media thumbnails), Vote (vote buttons) and Reply (left border) when present.
+{%- endcomment -%}
+{%- liquid
+  assign vote_question = 'reviews.voting.question' | t
+  assign vote_yes = 'reviews.voting.yes' | t
+  assign vote_no = 'reviews.voting.no' | t
+  assign vote_helpful = 'reviews.voting.helpful' | t
+  assign vote_not_helpful = 'reviews.voting.not_helpful' | t
+  assign vote_error = 'reviews.voting.error' | t
+  assign skeleton = 'data-[loading]:rounded-xs data-[loading]:bg-surface-alt data-[loading]:text-transparent data-[loading]:animate-pulse'
+  assign vote_button = 'inline-flex h-5 items-center rounded px-2 text-label-sm text-text border border-border-strong bg-background transition-colors cursor-pointer hover:border-text focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus aria-pressed:border-accent aria-pressed:bg-accent aria-pressed:text-accent-contrast disabled:cursor-default disabled:text-text-disabled disabled:border-disabled disabled:aria-pressed:text-accent-contrast disabled:aria-pressed:border-accent'
+-%}
+<article class="review-card flex flex-col gap-5 lg:grid lg:grid-cols-[14rem_1fr] lg:gap-x-16" data-reviews-card{% if loading %} data-loading aria-hidden="true"{% endif %}>
+  <div class="flex flex-col items-start gap-3" data-reviews-meta>
+    <p class="text-label-base text-text {{ skeleton }} data-[loading]:h-4 data-[loading]:w-32" data-reviews-author{% if loading %} data-loading{% endif %}></p>
+    <p class="flex items-center gap-2 text-body-sm text-text" data-reviews-recommend hidden>
+      <span class="size-4 shrink-0 text-text [&>svg]:size-full" aria-hidden="true">{{ 'icon__check.svg' | inline_asset_content }}</span>
+      <span data-reviews-recommend-text></span>
+    </p>
+    <dl class="flex flex-col gap-1" data-reviews-answers hidden></dl>
+  </div>
+
+  <div class="flex min-w-0 flex-col gap-5" data-reviews-content>
+    <div class="flex flex-col gap-2" data-reviews-head>
+      <div class="flex flex-col gap-1 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+        <h3 class="text-heading-6 text-text {{ skeleton }} data-[loading]:h-4 data-[loading]:w-48" data-reviews-title{% if loading %} data-loading{% endif %}></h3>
+        <time class="shrink-0 text-body-xs text-text-muted {{ skeleton }} data-[loading]:h-3.5 data-[loading]:w-20" data-reviews-date{% if loading %} data-loading{% endif %}></time>
+      </div>
+      <div class="inline-flex gap-1 text-rating data-[loading]:text-surface-alt" data-reviews-stars{% if loading %} data-loading{% endif %} role="img">
+        {%- for i in (1..5) -%}
+          <span class="size-4 shrink-0 data-[empty]:text-rating-empty [&>svg]:size-full" data-reviews-star>{{ 'icon__star.svg' | inline_asset_content }}</span>
+        {%- endfor -%}
+      </div>
+    </div>
+    <div class="text-body-sm text-text [&_p+p]:mt-3 {{ skeleton }} data-[loading]:h-16 data-[loading]:w-full" data-reviews-body{% if loading %} data-loading{% endif %}></div>
+    <ul class="flex flex-wrap gap-1" data-reviews-media hidden role="list"></ul>
+    {%- unless loading -%}
+      {%- if section.settings.show_voting -%}
+        <div class="flex flex-wrap items-center gap-3" data-reviews-vote>
+          <p class="text-body-xs text-text-muted">{{ vote_question }}</p>
+          <div class="flex items-center gap-1">
+            <button type="button" class="{{ vote_button }}" data-reviews-vote-up aria-pressed="false">
+              <span class="sr-only">{{ vote_helpful }}</span>
+              {{ vote_yes }}&nbsp;(<span data-reviews-vote-up-count>0</span>)
+            </button>
+            {%- if section.settings.show_downvote -%}
+              <button type="button" class="{{ vote_button }}" data-reviews-vote-down aria-pressed="false">
+                <span class="sr-only">{{ vote_not_helpful }}</span>
+                {{ vote_no }}&nbsp;(<span data-reviews-vote-down-count>0</span>)
+              </button>
+            {%- endif -%}
+          </div>
+          <p class="basis-full text-body-xs text-error" data-reviews-vote-error role="status" hidden>{{ vote_error }}</p>
+        </div>
+      {%- endif -%}
+    {%- endunless -%}
+    <div class="flex flex-col gap-1 border-l border-text pl-4" data-reviews-reply hidden>
+      <p class="text-label-base text-text" data-reviews-reply-author></p>
+      <div class="text-body-sm text-text [&_p+p]:mt-3" data-reviews-reply-body></div>
+    </div>
+  </div>
+</article>

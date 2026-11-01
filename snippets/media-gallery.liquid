@@ -1,0 +1,192 @@
+{%- comment -%}
+  Figma: Molecules / Media gallery
+  product        Product object (media, variants)
+  layout         thumbnails-left | thumbnails-bottom | grid | carousel   (Figma: Layout; below lg every layout is the mobile carousel, carousel stays one at every width, used in the quick view)
+  show_zoom      boolean, default true: one zoom button on the slider, opens the lightbox at the current media (Figma: Show zoom; grid layout puts it on the first image at lg)
+  show_badge     boolean, default true: Sale / Sold out on the media         (Figma: Show badge)
+  show_counter   boolean, default false: "2 / 5" over the mobile carousel    (Figma: Show counter)
+  sizes          sizes attribute for the images
+  section_id     unique id base
+  class          placement only
+  Mobile carousel = Swiper track + carousel-indicators dots. Thumbnails left/bottom = desktop only.
+  Variant change: the gallery listens for input[name=id] changes inside the closest product-info and
+  scrolls to the variant's media (data-variant-media). The badge slots carry data-replace so product-info refreshes them.
+  JS: media-gallery.js (media-gallery + media-lightbox). Lightbox: snippets/media-lightbox.liquid
+{%- endcomment -%}
+<script src="{{ 'media-gallery.js' | asset_url }}" defer="defer"></script>
+{%- liquid
+  assign layout = layout | default: 'thumbnails-left'
+  if show_zoom == nil
+    assign show_zoom = true
+  endif
+  if show_badge == nil
+    assign show_badge = true
+  endif
+  assign sizes = sizes | default: '(min-width: 1024px) 50vw, 100vw'
+  assign section_id = section_id | default: 'gallery'
+  assign media_list = product.media
+  assign count = media_list.size
+  assign variant = product.selected_or_first_available_variant
+
+  assign selected_index = 1
+  for m in media_list
+    if m.id == variant.featured_media.id
+      assign selected_index = forloop.index
+    endif
+  endfor
+
+  assign badge_type = nil
+  if variant.available == false
+    assign badge_type = 'sold-out'
+  elsif variant.compare_at_price > variant.price
+    assign badge_type = 'sale'
+  endif
+
+  assign entries = ''
+  for v in product.variants
+    if v.featured_media
+      assign pos = 0
+      for m in media_list
+        if m.id == v.featured_media.id
+          assign pos = forloop.index
+        endif
+      endfor
+      if pos > 0
+        assign entry = '"' | append: v.id | append: '":' | append: pos
+        assign entries = entries | append: entry | append: ','
+      endif
+    endif
+  endfor
+  assign entries = entries | remove_last: ','
+
+  case layout
+    when 'grid'
+      assign root_class = 'lg:grid lg:grid-cols-2 lg:gap-2'
+      assign main_class = 'lg:contents'
+      assign track_class = 'lg:contents'
+      assign slide_class = 'lg:w-auto'
+    when 'thumbnails-bottom'
+      assign root_class = 'lg:gap-4'
+      assign main_class = ''
+      assign track_class = ''
+      assign slide_class = ''
+    when 'carousel'
+      assign root_class = ''
+      assign main_class = ''
+      assign track_class = ''
+      assign slide_class = ''
+    else
+      assign root_class = 'lg:flex-row lg:items-start lg:gap-1'
+      assign main_class = 'lg:flex-1'
+      assign track_class = ''
+      assign slide_class = ''
+  endcase
+  assign counter_class = 'absolute bottom-4 left-4 lg:hidden'
+  assign dots_class = 'justify-center lg:hidden'
+  if layout == 'carousel'
+    assign counter_class = 'absolute bottom-4 left-4'
+    assign dots_class = 'justify-center'
+  endif
+  assign has_thumbs = false
+  if layout != 'grid' and layout != 'carousel' and count > 1
+    assign has_thumbs = true
+  endif
+  assign zoom_label = 'products.product.media.zoom' | t
+  assign gallery_label = 'products.product.media.gallery_label' | t
+-%}
+<media-gallery
+  class="media-gallery block {{ class }}"
+  data-layout="{{ layout }}"
+  data-count="{{ count }}"
+  data-selected="{{ selected_index }}"
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="{{ gallery_label }}"
+>
+  <div class="flex flex-col gap-3 {{ root_class }}">
+    {%- if has_thumbs and layout == 'thumbnails-left' -%}
+      <div class="hidden shrink-0 flex-col gap-1 lg:flex" data-gallery-thumbs>
+        {%- for m in media_list -%}
+          {%- liquid
+            assign is_selected = false
+            if forloop.index == selected_index
+              assign is_selected = true
+            endif
+          -%}
+          {% render 'media-thumbnail', media: m, selected: is_selected, index: forloop.index, attributes: 'data-g-thumb' %}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="relative min-w-0 {{ main_class }}">
+      <div class="swiper overflow-hidden {{ track_class }}" data-gallery-track tabindex="0">
+      <div class="swiper-wrapper flex {{ track_class }}">
+        {%- if count == 0 -%}
+          <div class="swiper-slide relative w-full shrink-0" data-gallery-slide>
+            {% render 'media', media: nil, ratio: '4:5' %}
+          </div>
+        {%- endif -%}
+        {%- for m in media_list -%}
+          {%- liquid
+            assign only_first = ''
+            if layout == 'grid' and forloop.index > 1
+              assign only_first = 'lg:hidden'
+            endif
+            assign slide_loading = 'lazy'
+            if forloop.first
+              assign slide_loading = 'eager'
+            endif
+          -%}
+          <div class="swiper-slide relative w-full shrink-0 {{ slide_class }}" data-gallery-slide data-media-id="{{ m.id }}" role="group" aria-roledescription="slide" aria-label="{{ forloop.index }} / {{ count }}">
+            {% render 'media', media: m, ratio: '4:5', sizes: sizes, loading: slide_loading %}
+            {%- if show_badge -%}
+              <span class="absolute left-4 top-4 z-[1] empty:hidden {{ only_first }}" data-replace="media-badge-{{ forloop.index }}">
+                {%- if badge_type -%}{% render 'badge', type: badge_type, size: 'sm' %}{%- endif -%}
+              </span>
+            {%- endif -%}
+            {%- if show_zoom and layout == 'grid' and forloop.first -%}
+              <span class="absolute right-4 top-4 z-[1] max-lg:hidden">{% render 'icon-button', icon: 'icon__search.svg', label: zoom_label, style: 'secondary', size: 'sm', attributes: 'data-lightbox-open' %}</span>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+      </div>
+      {%- if show_zoom and count > 0 -%}
+        {%- liquid
+          assign zoom_class = 'absolute right-4 top-4 z-[1]'
+          if layout == 'grid'
+            assign zoom_class = zoom_class | append: ' lg:hidden'
+          endif
+        -%}
+        <span class="{{ zoom_class }}">{% render 'icon-button', icon: 'icon__search.svg', label: zoom_label, style: 'secondary', size: 'sm', attributes: 'data-lightbox-open' %}</span>
+      {%- endif -%}
+      {%- if show_counter and count > 1 -%}
+        {% render 'carousel-indicators', type: 'counter', count: count, active: selected_index, class: counter_class %}
+      {%- endif -%}
+    </div>
+
+    {%- if has_thumbs and layout == 'thumbnails-bottom' -%}
+      <div class="hidden flex-wrap gap-2 lg:flex" data-gallery-thumbs>
+        {%- for m in media_list -%}
+          {%- liquid
+            assign is_selected = false
+            if forloop.index == selected_index
+              assign is_selected = true
+            endif
+          -%}
+          {% render 'media-thumbnail', media: m, selected: is_selected, index: forloop.index, attributes: 'data-g-thumb' %}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- if count > 1 -%}
+      {% render 'carousel-indicators', count: count, active: selected_index, class: dots_class %}
+    {%- endif -%}
+  </div>
+
+  {%- if show_zoom and count > 0 -%}
+    {% render 'media-lightbox', product: product, id: section_id %}
+  {%- endif -%}
+
+  <script type="application/json" data-variant-media>{ {{ entries }} }</script>
+</media-gallery>

@@ -1,0 +1,35 @@
+{%- comment -%}
+  Reviews pagination (Pagination item atoms as buttons: previous, numbers, ellipsis, next). Hidden with one page.
+  JS: reviews__ui.js renders the items from the templates into [data-reviews-pages].
+{%- endcomment -%}
+{%- liquid
+  assign nav_label = 'reviews.pagination_label' | t
+  assign prev_label = 'reviews.previous' | t
+  assign next_label = 'reviews.next' | t
+  assign item = 'pagination-item inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-button px-2 text-label-base transition-colors cursor-pointer outline-none focus-visible:border focus-visible:border-focus'
+  assign page = item | append: ' text-text hover:bg-surface aria-[current=page]:bg-accent aria-[current=page]:text-accent-contrast'
+  assign arrow = item | append: ' text-text hover:bg-surface disabled:text-text-disabled disabled:hover:bg-transparent disabled:cursor-default'
+-%}
+<nav class="flex justify-center pt-10" data-reviews-pagination hidden aria-label="{{ nav_label | escape }}">
+  <div class="flex items-center gap-1" data-reviews-pages></div>
+</nav>
+
+<template data-reviews-page>
+  <button type="button" class="{{ page }}" data-reviews-page></button>
+</template>
+
+<template data-reviews-page-current>
+  <button type="button" class="{{ page }}" data-reviews-page></button>
+</template>
+
+<template data-reviews-page-prev>
+  <button type="button" class="{{ arrow }}" data-reviews-page aria-label="{{ prev_label | escape }}"><span class="size-5 [&>svg]:size-full" aria-hidden="true">{{ 'icon__chevron-left.svg' | inline_asset_content }}</span></button>
+</template>
+
+<template data-reviews-page-next>
+  <button type="button" class="{{ arrow }}" data-reviews-page aria-label="{{ next_label | escape }}"><span class="size-5 [&>svg]:size-full" aria-hidden="true">{{ 'icon__chevron-right.svg' | inline_asset_content }}</span></button>
+</template>
+
+<template data-reviews-page-ellipsis>
+  <span class="{{ item }} text-text-muted" aria-hidden="true">…</span>
+</template>

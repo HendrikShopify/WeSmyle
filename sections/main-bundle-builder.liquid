@@ -1,0 +1,46 @@
+{%- comment -%}
+  Figma: Templates / Bundle builder (Desktop, Mobile)
+  Build your own box: pick products from a collection, add them to the cart in one request.
+  Products: page metafield custom.bundle_collection (collection reference), falls back to all products.
+  Title is the page title. No theme settings: tiers are static here and only communicate the discount,
+  which is made in the Shopify admin (an automatic discount on the same quantities).
+{%- endcomment -%}
+{%- liquid
+  assign tier_items = '2,4,6' | split: ','
+  assign tier_percents = '10,15,20' | split: ','
+  assign capacity = tier_items.last
+  assign max_percent = tier_percents.last
+  assign source = page.metafields.custom.bundle_collection.value
+  if source == blank
+    assign source = collections.all
+  endif
+  assign subtitle = 'sections.bundle_builder.subtitle' | t: number: capacity, percent: max_percent
+-%}
+<script src="{{ 'bundle-builder.js' | asset_url }}" defer="defer"></script>
+<bundle-builder
+  class="mx-auto flex w-full max-w-page flex-col gap-8 px-page-margin pt-8 pb-12 lg:pt-12 lg:pb-20"
+  data-tier-items="{{ tier_items | join: ',' }}"
+  data-tier-percents="{{ tier_percents | join: ',' }}"
+  data-label-add="{{ 'sections.bundle_builder.add' | t | escape }}"
+  data-label-full="{{ 'sections.bundle_builder.full' | t | escape }}"
+  data-label-remove="{{ 'sections.bundle_builder.remove' | t: title: '[title]' | escape }}"
+>
+  <header class="flex max-w-prose-width flex-col gap-2">
+    <h1 class="text-heading-3 text-text lg:text-heading-2">{{ page.title | escape }}</h1>
+    <p class="text-body-base text-text-muted">{{ subtitle }}</p>
+  </header>
+  {%- if source.products.size == 0 -%}
+    <p class="py-16 text-center text-body-base text-text-muted">{{ 'sections.bundle_builder.empty' | t }}</p>
+  {%- else -%}
+    <div class="flex flex-col gap-8 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-gutter">
+      <ul role="list" class="grid grid-cols-2 gap-x-grid-gap-x gap-y-grid-gap-y lg:col-span-8 lg:grid-cols-4">
+        {%- for product in source.products limit: 24 %}
+          <li>{% render 'bundle-tile', product: product, section_id: section.id %}</li>
+        {%- endfor %}
+      </ul>
+      <div class="z-10 max-lg:sticky max-lg:bottom-0 max-lg:-mx-page-margin lg:sticky lg:top-24 lg:col-span-4">
+        {% render 'bundle-tray', tier_items: tier_items, tier_percents: tier_percents %}
+      </div>
+    </div>
+  {%- endif -%}
+</bundle-builder>

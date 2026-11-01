@@ -1,0 +1,73 @@
+{
+ "snippet": "localization-menu",
+ "figma": "Atoms / Localization menu (135:2670)",
+ "matrix": {
+  "current": [
+   "en"
+  ]
+ },
+ "params": {
+  "id": "demo-menu",
+  "open": true,
+  "languages": [
+   {
+    "iso_code": "en",
+    "endonym_name": "English"
+   },
+   {
+    "iso_code": "nl",
+    "endonym_name": "Nederlands"
+   },
+   {
+    "iso_code": "de",
+    "endonym_name": "Deutsch"
+   },
+   {
+    "iso_code": "fr",
+    "endonym_name": "Fran\u00e7ais"
+   }
+  ]
+ },
+ "extras": [
+  {
+   "field": "country",
+   "countries": [
+    {
+     "iso_code": "NL",
+     "name": "Netherlands",
+     "currency": {
+      "iso_code": "EUR",
+      "symbol": "\u20ac"
+     }
+    },
+    {
+     "iso_code": "DE",
+     "name": "Germany",
+     "currency": {
+      "iso_code": "EUR",
+      "symbol": "\u20ac"
+     }
+    },
+    {
+     "iso_code": "BE",
+     "name": "Belgium",
+     "currency": {
+      "iso_code": "EUR",
+      "symbol": "\u20ac"
+     }
+    },
+    {
+     "iso_code": "GB",
+     "name": "United Kingdom",
+     "currency": {
+      "iso_code": "GBP",
+      "symbol": "\u00a3"
+     }
+    }
+   ],
+   "current": "NL",
+   "id": "demo-menu-country",
+   "height": 200
+  }
+ ]
+}

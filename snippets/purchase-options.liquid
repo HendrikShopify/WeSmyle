@@ -1,0 +1,135 @@
+{%- comment -%}
+  Figma: Components Molecules / Purchase options
+  Buy box choice between one-time purchase and a subscription (selling plans). Renders nothing when the product has no selling plan for the selected variant.
+  product          product object
+  product_form_id  id of the product form; the chosen plan goes into it as selling_plan
+  layout           stacked | checkbox                        (Figma: Layout) stacked = two Purchase option cards, checkbox = compact "Subscribe & save" toggle
+  frequency        dropdown | buttons                        (Figma: Frequency) delivery intervals as a select or as pills
+  selected         one-time | subscription (default one-time)  initial choice; the page script keeps it in sync afterwards
+  id               default purchase-options
+  The first selling plan group is used; each of its plans is one delivery frequency.
+  Radios and the frequency control are not part of the form: purchase-options.js writes the plan id into the hidden selling_plan input.
+  JS: purchase-options.js
+{%- endcomment -%}
+{%- liquid
+  assign group = product.selling_plan_groups.first
+  assign variant = product.selected_or_first_available_variant
+  assign layout = layout | default: 'stacked'
+  assign frequency = frequency | default: 'dropdown'
+  assign id = id | default: 'purchase-options'
+  assign is_subscription = false
+  if selected == 'subscription'
+    assign is_subscription = true
+  endif
+  assign is_one_time = true
+  if is_subscription
+    assign is_one_time = false
+  endif
+  assign first_alloc = nil
+  assign plan_names = ''
+  assign plan_ids = ''
+  assign plan_short = ''
+  for plan in group.selling_plans
+    assign plan_alloc = nil
+    for a in variant.selling_plan_allocations
+      if a.selling_plan.id == plan.id
+        assign plan_alloc = a
+      endif
+    endfor
+    if plan_alloc
+      if first_alloc == nil
+        assign first_alloc = plan_alloc
+        assign first_plan = plan
+      endif
+      assign plan_names = plan_names | append: plan.name | append: '||'
+      assign plan_ids = plan_ids | append: plan.id | append: ','
+      assign short = plan.options.first.value | default: plan.name
+      assign plan_short = plan_short | append: short | append: '||'
+    endif
+  endfor
+  assign saving = 0
+  if first_alloc and variant.price > first_alloc.price
+    assign saving = variant.price | minus: first_alloc.price | times: 100.0 | divided_by: variant.price | round
+  endif
+  assign saving_badge = ''
+  if saving > 0
+    assign saving_badge = 'products.product.price.save_percent' | t: percent: saving
+  endif
+  assign t_legend = 'products.product.purchase_options.legend' | t
+  assign t_one_time = 'products.product.purchase_options.one_time' | t
+  assign t_subscribe = 'products.product.purchase_options.subscribe' | t
+  assign t_description = 'products.product.purchase_options.description' | t
+  assign t_every = 'products.product.purchase_options.deliver_every' | t
+  assign t_shipping = 'products.product.purchase_options.free_shipping' | t
+  assign t_cancel = 'products.product.purchase_options.cancel_anytime' | t
+  assign t_note = 'products.product.purchase_options.note' | t
+  assign t_checkbox = 'products.product.purchase_options.subscribe_save' | t: percent: saving
+  assign names = plan_names | split: '||'
+  assign shorts = plan_short | split: '||'
+  assign ids = plan_ids | split: ','
+  assign first_plan_id = first_plan.id | append: ''
+  assign type_name = 'purchase-type-' | append: id
+  assign one_time_id = type_name | append: '-one-time'
+  assign subscription_id = type_name | append: '-subscription'
+  assign freq_name = 'purchase-frequency-' | append: id
+-%}
+{%- if first_alloc -%}
+<script src="{{ 'purchase-options.js' | asset_url }}" defer="defer"></script>
+<purchase-options class="purchase-options block" id="{{ id }}" data-layout="{{ layout }}" data-frequency-style="{{ frequency }}">
+  <input type="hidden" name="selling_plan" value="" form="{{ product_form_id }}" data-purchase-plan>
+
+  <div hidden data-replace="purchase-prices-{{ id }}" data-purchase-prices>
+    <template data-plan="one-time">{% render 'price', price: variant.price, compare_at_price: variant.compare_at_price, size: 'md' %}</template>
+    {%- for plan in group.selling_plans -%}
+      {%- for a in variant.selling_plan_allocations -%}
+        {%- if a.selling_plan.id == plan.id -%}
+          <template data-plan="{{ plan.id }}">{% render 'price', price: a.price, compare_at_price: variant.price, size: 'md' %}</template>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  </div>
+
+  {%- capture frequency_control -%}
+    {%- if frequency == 'buttons' -%}
+      <div class="flex flex-col gap-2" role="radiogroup" aria-label="{{ t_every | escape }}">
+        <span class="text-label-sm text-text-muted">{{ t_every }}</span>
+        <div class="flex flex-wrap gap-2">
+          {%- for plan_id in ids -%}
+            {%- assign pill_id = freq_name | append: '-' | append: plan_id -%}
+            {%- assign pill_label = shorts[forloop.index0] -%}
+            {% render 'variant-pill', label: pill_label, size: 'sm', id: pill_id, name: freq_name, value: plan_id, checked: forloop.first, attributes: 'data-frequency-pill' %}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- else -%}
+      <div data-frequency>
+        {% render 'select', options: names, values: ids, selected: first_plan_id, name: freq_name, id: freq_name, size: 'sm' %}
+      </div>
+    {%- endif -%}
+  {%- endcapture -%}
+
+  {%- if layout == 'checkbox' -%}
+    <div class="flex flex-col gap-3">
+      {% render 'checkbox', label: t_checkbox, id: type_name, name: type_name, value: 'subscription', checked: is_subscription, attributes: 'data-purchase-checkbox' %}
+      <div class="flex flex-col gap-2"{% unless is_subscription %} hidden{% endunless %} data-purchase-details>
+        {{ frequency_control }}
+        <p class="text-body-xs text-text-muted">{{ t_note }}</p>
+      </div>
+    </div>
+  {%- else -%}
+    {%- capture details -%}
+      <p class="text-body-sm text-text-muted">{{ t_description }}</p>
+      {{ frequency_control }}
+      <ul class="flex flex-col gap-1" role="list">
+        <li class="flex items-center gap-2 text-body-sm text-text"><span class="size-4 shrink-0 [&>svg]:size-full" aria-hidden="true">{{ 'icon__truck.svg' | inline_asset_content }}</span>{{ t_shipping }}</li>
+        <li class="flex items-center gap-2 text-body-sm text-text"><span class="size-4 shrink-0 [&>svg]:size-full" aria-hidden="true">{{ 'icon__refresh-ccw.svg' | inline_asset_content }}</span>{{ t_cancel }}</li>
+      </ul>
+    {%- endcapture -%}
+    <fieldset class="flex flex-col gap-2">
+      <legend class="sr-only">{{ t_legend }}</legend>
+      {% render 'purchase-option', type: 'one-time', label: t_one_time, price: variant.price, compare_at_price: variant.compare_at_price, name: type_name, value: 'one-time', id: one_time_id, checked: is_one_time, price_key: 'one-time' %}
+      {% render 'purchase-option', type: 'subscription', label: t_subscribe, badge: saving_badge, price: first_alloc.price, compare_at_price: variant.price, name: type_name, value: 'subscription', id: subscription_id, content: details, checked: is_subscription, price_key: first_plan.id %}
+    </fieldset>
+  {%- endif -%}
+</purchase-options>
+{%- endif -%}

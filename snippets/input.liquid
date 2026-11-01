@@ -1,0 +1,51 @@
+{%- comment -%}
+  Figma: Components Atoms / Input
+  id, name, type (text), value, placeholder, autocomplete, required, disabled, readonly, describedby
+  size            sm | md | lg                      (Figma: Size)
+  icon_leading    asset name                        (Figma: Leading icon)
+  icon_trailing   asset name                        (Figma: Trailing icon)
+  prefix, suffix  short text, e.g. € and EUR        (Figma: Prefix, Suffix)
+  error           boolean, sets aria-invalid        (Figma: State=Error)
+  class           placement only (the wrapper)
+  attributes      extra attributes on the <input>
+  States: Hover = :hover, Focus = :focus-within, Filled = the value, Disabled = [disabled], Error = [aria-invalid]
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  assign type = type | default: 'text'
+  case size
+    when 'sm'
+      assign dim = 'h-9 px-3'
+    when 'lg'
+      assign dim = 'h-13 px-4'
+    else
+      assign dim = 'h-11 px-4'
+  endcase
+  assign wrap = 'input flex w-full items-center gap-2 rounded-input border bg-background text-body-base transition-colors hover:border-text focus-within:border-focus has-[[aria-invalid=true]]:border-error has-[:disabled]:bg-surface-alt has-[:disabled]:border-disabled has-[:disabled]:text-text-disabled has-[:disabled]:cursor-not-allowed'
+  if error
+    assign wrap = wrap | append: ' border-error'
+  else
+    assign wrap = wrap | append: ' border-border-strong'
+  endif
+-%}
+<div class="{{ wrap }} {{ dim }} {{ class }}" data-size="{{ size }}">
+  {%- if icon_leading %}<span class="size-5 shrink-0 text-text-muted [&>svg]:size-full" aria-hidden="true">{{ icon_leading | inline_asset_content }}</span>{% endif -%}
+  {%- if prefix %}<span class="shrink-0 text-text-muted">{{ prefix }}</span>{% endif -%}
+  <input
+    class="min-w-0 flex-1 bg-transparent text-text placeholder:text-text-muted outline-none disabled:text-text-disabled disabled:cursor-not-allowed"
+    type="{{ type }}"
+    {%- if id %} id="{{ id }}"{% endif -%}
+    {%- if name %} name="{{ name }}"{% endif -%}
+    {%- if value %} value="{{ value | escape }}"{% endif -%}
+    {%- if placeholder %} placeholder="{{ placeholder | escape }}"{% endif -%}
+    {%- if autocomplete %} autocomplete="{{ autocomplete }}"{% endif -%}
+    {%- if required %} required{% endif -%}
+    {%- if disabled %} disabled{% endif -%}
+    {%- if readonly %} readonly{% endif -%}
+    {%- if error %} aria-invalid="true"{% endif -%}
+    {%- if describedby %} aria-describedby="{{ describedby }}"{% endif -%}
+    {%- if attributes %} {{ attributes }}{% endif -%}
+  >
+  {%- if suffix %}<span class="shrink-0 text-text-muted">{{ suffix }}</span>{% endif -%}
+  {%- if icon_trailing %}<span class="size-5 shrink-0 text-text-muted [&>svg]:size-full" aria-hidden="true">{{ icon_trailing | inline_asset_content }}</span>{% endif -%}
+</div>

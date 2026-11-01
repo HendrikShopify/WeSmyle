@@ -1,0 +1,25 @@
+{%- comment -%}
+  Figma: Components Atoms / Menu item
+  label      text                                    (Figma: Label)
+  value      data-value for the option
+  icon       asset name, optional                    (Figma: Leading icon)
+  selected   boolean, shows the check                (Figma: State=Selected)
+  disabled   boolean                                 (Figma: State=Disabled)
+  id         option id, optional
+  class, attributes
+  Rendered as role="option" for use inside dropdown-menu (listbox). Hover = :hover and :focus-visible. The label span carries data-menu-item-label for scripts that fill items from a template; the check follows aria-selected.
+{%- endcomment -%}
+<li
+  class="menu-item group/item flex h-10 w-full items-center gap-2 rounded-sm px-3 text-body-base text-text cursor-pointer outline-none transition-colors hover:bg-surface focus:bg-surface aria-disabled:text-text-disabled aria-disabled:cursor-not-allowed aria-disabled:hover:bg-transparent {{ class }}"
+  role="option"
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-value="{{ value | default: label | escape }}"
+  aria-selected="{% if selected %}true{% else %}false{% endif %}"
+  {%- if disabled %} aria-disabled="true"{% endif %}
+  tabindex="-1"
+  {%- if attributes %} {{ attributes }}{% endif %}
+>
+  {%- if icon %}<span class="size-4 shrink-0 [&>svg]:size-full" aria-hidden="true">{{ icon | inline_asset_content }}</span>{% endif -%}
+  <span class="flex-1 truncate" data-menu-item-label>{{ label }}</span>
+  <span class="menu-item__check invisible size-4 shrink-0 group-aria-selected/item:visible [&>svg]:size-full" aria-hidden="true">{{ 'icon__check.svg' | inline_asset_content }}</span>
+</li>

@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/testing/Documents/GitHub/Blanc/assets -type f -name \"*.js\" -exec grep -l \"card\\\\|variant\\\\|swatch\" {} \\\\;)"
+    ]
+  }
+}

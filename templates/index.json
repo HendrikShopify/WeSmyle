@@ -1,0 +1,22 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-index"
+    },
+    "ugc": {
+      "type": "ugc-carousel"
+    },
+    "blog_posts": {
+      "type": "blog-posts"
+    },
+    "newsletter": {
+      "type": "newsletter"
+    }
+  },
+  "order": [
+    "main",
+    "ugc",
+    "blog_posts",
+    "newsletter"
+  ]
+}

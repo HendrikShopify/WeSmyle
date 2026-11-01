@@ -1,0 +1,35 @@
+{%- comment -%}
+  Figma: Components Atoms / File upload
+  label        text                                  (Figma: Label)
+  style        tile | inline                         (Figma: Style)
+  id, name, accept, multiple, disabled, describedby
+  error        boolean, sets aria-invalid            (Figma: State=Error)
+  class        placement only
+  attributes   extra attributes on the <input> (JS hooks)
+  A label wrapping a visually hidden file input.
+  States: Hover = :hover, Focus = :has(:focus-visible), Error = [aria-invalid], Disabled = [disabled]
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'tile'
+  if style == 'inline'
+    assign dim = 'h-11 flex-row gap-2 px-4'
+  else
+    assign dim = 'size-36 flex-col gap-3 px-3'
+  endif
+-%}
+<label class="file-upload inline-flex shrink-0 items-center justify-center rounded-input border border-dashed border-border-strong bg-surface-alt text-label-base text-text transition-colors cursor-pointer hover:bg-disabled has-[:focus-visible]:border-solid has-[:focus-visible]:border-focus has-[[aria-invalid=true]]:border-solid has-[[aria-invalid=true]]:border-error has-[:disabled]:border-border-strong has-[:disabled]:bg-surface has-[:disabled]:text-text-disabled has-[:disabled]:cursor-not-allowed {{ dim }} {{ class }}" data-style="{{ style }}">
+  <input
+    class="sr-only"
+    type="file"
+    {%- if id %} id="{{ id }}"{% endif -%}
+    {%- if name %} name="{{ name }}"{% endif -%}
+    {%- if accept %} accept="{{ accept }}"{% endif -%}
+    {%- if multiple %} multiple{% endif -%}
+    {%- if disabled %} disabled{% endif -%}
+    {%- if error %} aria-invalid="true"{% endif -%}
+    {%- if describedby %} aria-describedby="{{ describedby }}"{% endif -%}
+    {%- if attributes %} {{ attributes }}{% endif -%}
+  >
+  <span class="size-5 shrink-0 [&>svg]:size-full" aria-hidden="true">{{ 'icon__upload.svg' | inline_asset_content }}</span>
+  <span>{{ label }}</span>
+</label>

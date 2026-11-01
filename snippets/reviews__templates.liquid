@@ -1,0 +1,133 @@
+<template data-reviews-card>
+  {% render 'reviews__card' %}
+</template>
+
+<template data-reviews-answer>
+  <div class="attribute text-body-xs">
+    <dt class="inline text-text-muted" data-reviews-answer-label></dt>
+    <dd class="inline m-0 ml-1 text-text" data-reviews-answer-value></dd>
+  </div>
+</template>
+
+<template data-reviews-photo>
+  <li>
+    <button type="button" class="relative block size-25 overflow-hidden bg-surface-alt cursor-pointer outline-none focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus [&>img]:size-full [&>img]:object-cover" data-reviews-photo-open>
+      <img data-reviews-photo-img src="" alt="" loading="lazy" width="100" height="100">
+    </button>
+  </li>
+</template>
+
+<template data-reviews-form>
+  {%- liquid
+    assign sid = section.id
+    assign error_attrs = 'data-reviews-form-error'
+    assign rating_label = 'reviews.form.rating' | t
+    assign rating_id = 'ReviewsFormRating-' | append: sid
+    assign rating_error_id = 'ReviewsFormRatingError-' | append: sid
+    assign title_label = 'reviews.form.title_label' | t
+    assign title_id = 'ReviewsFormReviewTitle-' | append: sid
+    assign title_placeholder = 'reviews.form.title_placeholder' | t
+    assign body_label = 'reviews.form.body' | t
+    assign body_id = 'ReviewsFormBody-' | append: sid
+    assign body_error_id = 'ReviewsFormBodyError-' | append: sid
+    assign body_placeholder = 'reviews.form.body_placeholder' | t
+    assign photos_label = 'reviews.form.photos' | t
+    assign photos_id = 'ReviewsFormPhotos-' | append: sid
+    assign photos_error_id = 'ReviewsFormPhotosError-' | append: sid
+    assign photos_hint_id = 'ReviewsFormPhotosHint-' | append: sid
+    assign photos_hint = 'reviews.form.photos_hint' | t
+    assign photos_upload = 'reviews.form.photos_upload' | t
+    assign photos_attrs = 'data-reviews-form-photos data-describedby="' | append: photos_hint_id | append: '"'
+    assign email_label = 'reviews.form.email' | t
+    assign email_id = 'ReviewsFormEmail-' | append: sid
+    assign email_error_id = 'ReviewsFormEmailError-' | append: sid
+    assign email_hint_id = 'ReviewsFormEmailHint-' | append: sid
+    assign email_hint = 'reviews.form.email_hint' | t
+    assign email_placeholder = 'reviews.form.email_placeholder' | t
+    assign email_attrs = 'data-reviews-form-email data-describedby="' | append: email_hint_id | append: '"'
+    assign name_label = 'reviews.form.name' | t
+    assign name_id = 'ReviewsFormName-' | append: sid
+    assign name_error_id = 'ReviewsFormNameError-' | append: sid
+    assign name_placeholder = 'reviews.form.name_placeholder' | t
+    assign format_label = 'reviews.form.name_format' | t
+    assign format_full = 'reviews.form.name_full' | t
+    assign format_initial = 'reviews.form.name_initial' | t
+    assign format_anonymous = 'reviews.form.name_anonymous' | t
+    assign website_label = 'reviews.form.website' | t
+    assign submit_label = 'reviews.form.submit' | t
+    assign close_label = 'reviews.close' | t
+  -%}
+  <form class="flex flex-col gap-6" data-reviews-form novalidate>
+    {%- capture control -%}{% render 'rating-input', name: 'rating', id: rating_id, required: true %}{%- endcapture -%}
+    {% render 'field', group: true, label: rating_label, required: true, control: control, error: true, error_id: rating_error_id, error_attributes: error_attrs, attributes: 'data-reviews-form-rating' %}
+
+    {%- capture control -%}{% render 'input', id: title_id, name: 'title', placeholder: title_placeholder, attributes: 'data-reviews-form-title' %}{%- endcapture -%}
+    {% render 'field', label: title_label, for: title_id, control: control, attributes: 'data-reviews-form-field' %}
+
+    {%- capture control -%}{% render 'textarea', id: body_id, name: 'body', placeholder: body_placeholder, required: true, attributes: 'data-reviews-form-body' %}{%- endcapture -%}
+    {% render 'field', label: body_label, required: true, for: body_id, control: control, error: true, error_id: body_error_id, error_attributes: error_attrs, attributes: 'data-reviews-form-field' %}
+
+    <div class="flex flex-col items-start gap-2" data-reviews-form-field>
+      {% render 'field-label', label: photos_label, for: photos_id %}
+      {% render 'helper-text', text: photos_hint, id: photos_hint_id %}
+      <div class="flex w-full flex-wrap items-start gap-x-1 gap-y-2">
+        {% render 'file-upload', label: photos_upload, id: photos_id, name: 'photos', accept: 'image/*', multiple: true, describedby: photos_hint_id, attributes: photos_attrs %}
+        <ul class="contents" data-reviews-form-previews></ul>
+      </div>
+      {% render 'helper-text', type: 'error', text: '', id: photos_error_id, attributes: 'hidden data-reviews-form-error' %}
+    </div>
+
+    <div class="flex flex-col gap-6 empty:hidden" data-reviews-form-questions></div>
+
+    {%- capture control -%}{% render 'input', id: email_id, name: 'email', type: 'email', autocomplete: 'email', required: true, placeholder: email_placeholder, describedby: email_hint_id, attributes: email_attrs %}{%- endcapture -%}
+    {% render 'field', label: email_label, required: true, for: email_id, control: control, helper: email_hint, helper_id: email_hint_id, helper_attributes: 'data-reviews-form-hint', error: true, error_id: email_error_id, error_attributes: error_attrs, attributes: 'data-reviews-form-field' %}
+
+    {%- capture control -%}{% render 'input', id: name_id, name: 'name', autocomplete: 'name', required: true, placeholder: name_placeholder, attributes: 'data-reviews-form-name' %}{%- endcapture -%}
+    {% render 'field', label: name_label, required: true, for: name_id, control: control, error: true, error_id: name_error_id, error_attributes: error_attrs, attributes: 'data-reviews-form-field' %}
+
+    {%- capture control -%}
+      <div class="flex w-full flex-wrap gap-2">
+        {% render 'chip', type: 'filter', input_type: 'radio', name: 'name-format', value: 'full', label: format_full, checked: true %}
+        {% render 'chip', type: 'filter', input_type: 'radio', name: 'name-format', value: 'last_initial', label: format_initial %}
+        {% render 'chip', type: 'filter', input_type: 'radio', name: 'name-format', value: 'anonymous', label: format_anonymous %}
+      </div>
+    {%- endcapture -%}
+    {% render 'field', group: true, label: format_label, control: control, attributes: 'data-reviews-form-name-format' %}
+
+    <div class="sr-only" aria-hidden="true">
+      <label for="ReviewsFormWebsite-{{ sid }}">{{ website_label }}</label>
+      <input id="ReviewsFormWebsite-{{ sid }}" name="website" type="text" tabindex="-1" autocomplete="off">
+    </div>
+
+    {% render 'helper-text', text: '', attributes: 'hidden data-reviews-form-status aria-live="polite"' %}
+    {% render 'button', label: submit_label, type: 'submit', class: 'self-start', attributes: 'data-reviews-form-submit' %}
+  </form>
+  <div class="flex flex-col items-start gap-6" data-reviews-form-success hidden>
+    <p class="text-body-base text-text" id="ReviewsFormSuccess-{{ sid }}" data-reviews-form-success-message></p>
+    {% render 'button', label: close_label, style: 'secondary', type: 'button', attributes: 'data-reviews-form-success-close' %}
+  </div>
+</template>
+
+<template data-reviews-form-photo>
+  <li class="contents">
+    {% render 'upload-preview', remove_attributes: 'data-reviews-form-photo-remove' %}
+  </li>
+</template>
+
+<template data-reviews-form-question>
+  {%- capture control -%}<div class="flex w-full flex-wrap gap-2" data-reviews-form-question-options></div>{%- endcapture -%}
+  {% render 'field', group: true, label: '', label_attributes: 'data-reviews-form-question-label', control: control, error: true, error_attributes: 'data-reviews-form-error', attributes: 'data-reviews-form-question' %}
+</template>
+
+<template data-reviews-form-option>
+  {% render 'chip', type: 'filter', input_type: 'radio', label: '', label_attributes: 'data-reviews-form-option-label', attributes: 'data-reviews-form-option' %}
+</template>
+
+<template data-reviews-video>
+  <li>
+    <button type="button" class="relative flex size-25 items-center justify-center overflow-hidden bg-surface-alt cursor-pointer outline-none focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus [&>img]:absolute [&>img]:inset-0 [&>img]:size-full [&>img]:object-cover" data-reviews-video-open>
+      <img data-reviews-video-img src="" alt="" loading="lazy" width="100" height="100">
+      <span class="relative flex size-9 items-center justify-center rounded-full bg-background text-text" data-reviews-video-icon aria-hidden="true"><span class="size-4 [&>svg]:size-full">{{ 'icon__play.svg' | inline_asset_content }}</span></span>
+    </button>
+  </li>
+</template>

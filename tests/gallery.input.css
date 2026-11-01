@@ -1,0 +1,8 @@
+/* Gallery build: the real theme CSS plus hooks that force :hover and :focus-visible for screenshots. */
+@import "../assets/tailwind.input.css";
+@source "../snippets";
+@source "./gallery/*.html";
+@custom-variant hover (&:hover, .force-hover &);
+@custom-variant focus-visible (&:focus-visible, .force-focus &);
+@custom-variant focus-within (&:focus-within, .force-focus &);
+@custom-variant peer-focus-visible (&:is(:where(.peer):focus-visible ~ *), .force-focus &);

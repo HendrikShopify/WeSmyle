@@ -1,0 +1,9 @@
+{%- if product.options_with_values != blank -%}
+  <ul data-variant-options>
+    {%- for option in product.options_with_values -%}
+      <li>
+        <strong>{{ option.name }}:</strong> {{ product.selected_or_first_available_variant.options[forloop.index0] }}
+      </li>
+    {%- endfor -%}
+  </ul>
+{%- endif -%}

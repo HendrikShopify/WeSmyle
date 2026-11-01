@@ -1,0 +1,74 @@
+{%- comment -%}
+  Figma: Sections / Main search (Results, No results; Desktop, Mobile)
+  Products only: every search form sends type=product. Articles and pages are not part of the design.
+{%- endcomment -%}
+{%- liquid
+  assign encoded_terms = search.terms | url_encode
+  assign clear_url = routes.search_url | append: '?q=' | append: encoded_terms
+  assign popular_terms = 'templates.search.popular_terms' | t | split: ', '
+-%}
+{% paginate search.results by 24 %}
+  <collection-filters data-section-id="{{ section.id }}">
+    <div class="mx-auto w-full max-w-page px-page-margin pt-8 pb-12 lg:pt-12 lg:pb-20 flex flex-col gap-6 lg:gap-8">
+      <div class="flex flex-col items-start gap-5 lg:items-center">
+        <h1 class="text-heading-3 lg:text-heading-2 text-text">
+          {%- if search.performed -%}
+            {{- 'templates.search.title' | t -}}
+          {%- else -%}
+            {{- 'general.search.search' | t -}}
+          {%- endif -%}
+        </h1>
+        <search-form class="block w-full lg:max-w-160">
+          <form action="{{ routes.search_url }}" method="get" role="search">
+            <input type="hidden" name="type" value="product">
+            <input type="hidden" name="options[prefix]" value="last">
+            {% render 'search-field', size: 'lg', mobile_size: 'md', value: search.terms, id: 'search-page-field' %}
+          </form>
+        </search-form>
+        {%- if search.performed -%}
+          <p class="text-body-base text-text-muted">
+            {%- if search.results_count > 0 -%}
+              {{- 'templates.search.results_with_count_and_term' | t: count: search.results_count, terms: search.terms -}}
+            {%- else -%}
+              {{- 'templates.search.no_results_for' | t: terms: search.terms -}}
+            {%- endif -%}
+          </p>
+        {%- endif -%}
+      </div>
+
+      {%- if search.performed -%}
+        {%- if search.results_count > 0 or search.filters.size > 0 -%}
+          {% render 'collection-toolbar', results: search, clear_href: clear_url %}
+        {%- endif -%}
+
+        <div id="ProductGridContainer" class="group/grid flex flex-col gap-section-sm" data-density="large" data-density-mobile="small">
+          {%- if search.results_count == 0 -%}
+            {%- assign empty_title = 'templates.search.empty_title' | t -%}
+            {%- assign empty_body = 'templates.search.empty_body' | t -%}
+            <div class="flex flex-col items-center gap-8 py-section-sm">
+              {% render 'empty-state', type: 'empty-collection', heading: empty_title, body: empty_body %}
+              {%- if popular_terms.size > 0 -%}
+                <div class="flex flex-wrap items-center justify-center gap-2">
+                  <span class="text-label-sm text-text-muted">{{ 'templates.search.popular' | t }}</span>
+                  {%- for term in popular_terms -%}
+                    {%- capture term_href -%}{{ routes.search_url }}?q={{ term | url_encode }}&type=product&options[prefix]=last{%- endcapture -%}
+                    {% render 'chip', type: 'filter', label: term, href: term_href %}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- else -%}
+            {% render 'product-grid', products: search.results, section_id: section.id %}
+          {%- endif -%}
+
+          {%- if search.results_count > 0 and paginate.pages > 1 -%}
+            <div class="flex flex-col items-center gap-3">
+              {% render 'pagination-status', paginate: paginate, size: 'sm' %}
+              {% render 'pagination', paginate: paginate %}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </collection-filters>
+{% endpaginate %}

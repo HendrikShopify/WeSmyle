@@ -1,0 +1,43 @@
+{%- comment -%}
+  Figma: Components Atoms / Comparison row label
+  label        the row title
+  description  optional second line                        (Figma: Show description)
+  info         optional tooltip text behind an info icon    (Figma: Show info)
+  id           unique id for the tooltip, e.g. ComparisonTip-{section.id}-{index}
+  hidden_label boolean, hides the label visually (the empty corner cell above the labels)
+  scope        row (default) | col
+  divider      solid | dashed | dotted | none, the line under the row, default solid
+  class        placement only (the table passes the sticky classes)
+  Renders a <th>; use it inside the Comparison table. The info icon is a button that opens a Tooltip on hover, focus and tap (comparison-table.js).
+{%- endcomment -%}
+{%- liquid
+  assign scope = scope | default: 'row'
+  assign divider = divider | default: 'solid'
+  case divider
+    when 'none'
+      assign line = ''
+    when 'dashed'
+      assign line = 'border-b border-dashed border-border'
+    when 'dotted'
+      assign line = 'border-b border-dotted border-border'
+    else
+      assign line = 'border-b border-border'
+  endcase
+  assign info_label = 'sections.comparison_table.info_label' | t: label: label
+-%}
+<th scope="{{ scope }}" class="comparison-row-label p-4 text-left align-middle font-normal text-text {{ line }} {{ class }}">
+  <div class="flex items-center gap-2">
+    <div class="flex min-w-0 flex-1 flex-col gap-1">
+      <span class="text-label-base{% if hidden_label %} sr-only{% endif %}">{{ label }}</span>
+      {%- if description != blank -%}
+        <span class="text-body-sm text-text-muted">{{ description }}</span>
+      {%- endif -%}
+    </div>
+    {%- if info != blank -%}
+      {%- capture trigger -%}
+        <button type="button" class="inline-flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-full text-text-muted transition-colors duration-150 hover:text-text focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus [&>svg]:size-full" aria-label="{{ info_label | escape }}" aria-describedby="{{ id }}" data-comparison-info>{{ 'icon__info.svg' | inline_asset_content }}</button>
+      {%- endcapture -%}
+      {% render 'tooltip', trigger: trigger, paragraph: info, placement: 'bottom', id: id %}
+    {%- endif -%}
+  </div>
+</th>

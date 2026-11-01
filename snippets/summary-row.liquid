@@ -1,0 +1,27 @@
+{%- comment -%}
+  Figma: Components Atoms / Summary row
+  label, value   text
+  type           default | discount | muted | total    (Figma: Type)
+  Renders a <div> with <dt>/<dd>; place inside a <dl>.
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'default'
+  case type
+    when 'discount'
+      assign label_cls = 'text-body-sm text-text'
+      assign value_cls = 'text-body-sm text-sale'
+    when 'muted'
+      assign label_cls = 'text-body-sm text-text'
+      assign value_cls = 'text-body-sm text-text-muted'
+    when 'total'
+      assign label_cls = 'text-label-lg text-text'
+      assign value_cls = 'text-heading-6 text-text'
+    else
+      assign label_cls = 'text-body-sm text-text'
+      assign value_cls = 'text-body-sm text-text'
+  endcase
+-%}
+<div class="summary-row flex items-center justify-between gap-2 {{ class }}" data-type="{{ type }}">
+  <dt class="{{ label_cls }}">{{ label }}</dt>
+  <dd class="m-0 {{ value_cls }}">{{ value }}</dd>
+</div>

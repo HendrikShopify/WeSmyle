@@ -1,0 +1,124 @@
+{%- comment -%}
+  Figma: Sections / Header (Announcement bar not built yet: it needs merchant text, so it waits for settings)
+  layout   logo-left | logo-center                       (Figma: Layout)
+  Logo left: logo, menu, actions. Logo center: menu, logo, actions. Desktop bar 72px, mobile 56px with a menu button that opens the mobile menu (search moves next to it in logo-center). Wishlist and language live in the mobile menu below lg.
+  Menu: linklists['header-menu'], falling back to main-menu. Top-level links with children open a mega menu panel under the bar (header-nav.js: data-nav-item, data-nav-toggle, data-nav-panel, data-nav-panel-inner).
+  Backdrop: a fixed overlay (Figma: Backdrop in State=Menu open) that fades in while a dropdown has data-open; header-nav.js closes the dropdown on any pointerdown outside it.
+  Show account follows shop.customer_accounts_enabled, Show localization follows the language count (the selector renders nothing for one language).
+{%- endcomment -%}
+{%- liquid
+  assign layout = layout | default: 'logo-left'
+  assign menu = linklists['header-menu']
+  if menu == blank
+    assign menu = linklists['main-menu']
+  endif
+  assign uid = section.id | default: 'header'
+  assign search_label = 'general.search.search' | t
+-%}
+
+{%- capture logo -%}{% render 'header__logo' %}{%- endcapture -%}
+{%- capture menu_button -%}{% render 'mobile-menu', menu: menu %}{%- endcapture -%}
+
+{%- capture search_attrs -%}data-drawer-trigger="search-drawer" aria-controls="search-drawer" aria-haspopup="dialog" aria-expanded="false"{%- endcapture -%}
+{%- capture search_all -%}{% render 'icon-button', icon: 'icon__search.svg', label: search_label, style: 'ghost', size: 'md', attributes: search_attrs %}{%- endcapture -%}
+{%- capture search_mobile -%}{% render 'icon-button', icon: 'icon__search.svg', label: search_label, style: 'ghost', size: 'md', class: 'lg:hidden', attributes: search_attrs %}{%- endcapture -%}
+{%- capture search_desktop -%}{% render 'icon-button', icon: 'icon__search.svg', label: search_label, style: 'ghost', size: 'md', class: 'max-lg:hidden', attributes: search_attrs %}{%- endcapture -%}
+
+{%- capture localization -%}
+  {% render 'localization-selector', style: 'ghost', id: 'header-localization' %}
+  {% render 'localization-selector', field: 'country', style: 'ghost', id: 'header-country' %}
+{%- endcapture -%}
+{%- assign localization = localization | strip -%}
+
+{%- capture account -%}
+  {%- if shop.customer_accounts_enabled -%}
+    {%- liquid
+      if customer
+        assign account_url = routes.account_url
+        assign account_label = 'customer.account_fallback' | t
+      else
+        assign account_url = routes.account_login_url
+        assign account_label = 'customer.log_in' | t
+      endif
+    -%}
+    {% render 'icon-button', href: account_url, icon: 'icon__account.svg', label: account_label, style: 'ghost', size: 'md', attributes: 'rel="nofollow"' %}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- capture nav -%}
+  <header-nav class="max-lg:hidden" data-desktop-query="(min-width: 1024px)">
+    <nav aria-label="Main">
+      <ul class="flex items-center gap-1" role="list">
+        {%- for link in menu.links -%}
+          {%- liquid
+            assign has_url = false
+            if link.url != blank and link.url != '#'
+              assign has_url = true
+            endif
+            assign is_current = false
+            if link.current or link.child_current
+              assign is_current = true
+            endif
+            assign panel_id = 'NavPanel-' | append: uid | append: '-' | append: forloop.index
+          -%}
+          {%- if link.links != blank -%}
+            <li class="group" data-nav-item>
+              {%- if has_url -%}
+                {% render 'nav-item', label: link.title, href: link.url, type: 'dropdown', current: is_current, controls: panel_id %}
+              {%- else -%}
+                {% render 'nav-item', label: link.title, type: 'dropdown', current: is_current, controls: panel_id %}
+              {%- endif -%}
+              <div id="{{ panel_id }}" class="absolute inset-x-0 top-full z-30 hidden group-data-[open]:!block" data-nav-panel>
+                <div data-nav-panel-inner>
+                  {% render 'mega-menu', link: link %}
+                </div>
+              </div>
+            </li>
+          {%- else -%}
+            <li>
+              {% render 'nav-item', label: link.title, href: link.url, type: 'link', current: is_current %}
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </nav>
+  </header-nav>
+{%- endcapture -%}
+
+<header class="header group/header relative z-20">
+  <div class="pointer-events-none fixed inset-0 bg-overlay opacity-0 transition-opacity duration-150 group-has-[[data-nav-item][data-open]]/header:opacity-30" aria-hidden="true" data-nav-backdrop></div>
+  <div class="relative z-10 border-b border-border bg-background">
+  {%- if layout == 'logo-center' -%}
+    <div class="mx-auto grid h-14 max-w-page grid-cols-[1fr_auto_1fr] items-center gap-2 px-page-margin lg:h-18 lg:gap-6">
+      <div class="flex items-center gap-1">
+        {{ menu_button }}
+        {{ search_mobile }}
+        {{ nav }}
+      </div>
+      {{ logo }}
+      <div class="flex items-center justify-end gap-1">
+        {%- if localization != blank -%}<div class="flex items-center gap-1 max-lg:hidden">{{ localization }}</div>{%- endif -%}
+        {{ search_desktop }}
+        {{ account }}
+        <div class="max-lg:hidden">{% render 'wishlist__link' %}</div>
+        <div id="cart-icon-bubble">{% render 'cart-icon-bubble' %}</div>
+      </div>
+    </div>
+  {%- else -%}
+    <div class="mx-auto flex h-14 max-w-page items-center gap-2 px-page-margin lg:h-18 lg:gap-10">
+      <div class="flex items-center gap-2">
+        {{ menu_button }}
+        {{ logo }}
+      </div>
+      {{ nav }}
+      <div class="ml-auto flex items-center gap-1">
+        {%- if localization != blank -%}<div class="flex items-center gap-1 max-lg:hidden">{{ localization }}</div>{%- endif -%}
+        {{ search_all }}
+        {{ account }}
+        <div class="max-lg:hidden">{% render 'wishlist__link' %}</div>
+        <div id="cart-icon-bubble">{% render 'cart-icon-bubble' %}</div>
+      </div>
+    </div>
+  {%- endif -%}
+  </div>
+</header>

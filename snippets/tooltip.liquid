@@ -1,0 +1,54 @@
+{%- comment -%}
+  Figma: Components Atoms / Tooltip
+  trigger      captured markup of the element the tooltip describes (a button, icon button, link)
+  text         label text                                       (Figma: Text, Type=Label)
+  title        optional bold first line                         (Figma: Title, Show title, Type=Paragraph)
+  paragraph    body text                                        (Figma: Paragraph, Type=Paragraph)
+  placement    top | bottom | left | right                      (Figma: Placement)
+  id           used for aria-describedby; pass the same id to the trigger's attributes when you can
+  class
+  Shows on hover (pointer devices only, Tailwind wraps hover in @media (hover: hover)) and on keyboard focus (:focus-visible). Never on touch. Hidden from pointer events so it never blocks the trigger.
+{%- endcomment -%}
+{%- liquid
+  assign placement = placement | default: 'top'
+  if paragraph != blank
+    assign type = 'paragraph'
+  else
+    assign type = 'label'
+  endif
+  case placement
+    when 'bottom'
+      assign pos = 'top-full left-1/2 -translate-x-1/2 mt-2'
+      assign arrow = 'bottom-full left-1/2 -translate-x-1/2 border-x-[5px] border-b-[5px] border-x-transparent border-b-text'
+    when 'left'
+      assign pos = 'right-full top-1/2 -translate-y-1/2 mr-2'
+      assign arrow = 'left-full top-1/2 -translate-y-1/2 border-y-[5px] border-l-[5px] border-y-transparent border-l-text'
+    when 'right'
+      assign pos = 'left-full top-1/2 -translate-y-1/2 ml-2'
+      assign arrow = 'right-full top-1/2 -translate-y-1/2 border-y-[5px] border-r-[5px] border-y-transparent border-r-text'
+    else
+      assign pos = 'bottom-full left-1/2 -translate-x-1/2 mb-2'
+      assign arrow = 'top-full left-1/2 -translate-x-1/2 border-x-[5px] border-t-[5px] border-x-transparent border-t-text'
+  endcase
+  if type == 'paragraph'
+    assign bubble = 'w-60 flex-col gap-1 rounded-sm bg-text p-3 text-left'
+  else
+    assign bubble = 'whitespace-nowrap rounded-sm bg-text px-2 py-1 text-label-sm'
+  endif
+-%}
+<span class="tooltip group/tip relative inline-flex {{ class }}" data-placement="{{ placement }}" data-type="{{ type }}">
+  {{ trigger }}
+  <span
+    class="pointer-events-none absolute z-30 flex {{ pos }} {{ bubble }} text-text-inverse opacity-0 transition-opacity duration-150 group-hover/tip:opacity-100 group-has-[:focus-visible]/tip:opacity-100"
+    role="tooltip"
+    {%- if id %} id="{{ id }}"{% endif %}
+  >
+    {%- if type == 'paragraph' -%}
+      {%- if title %}<span class="text-label-sm">{{ title }}</span>{% endif -%}
+      <span class="text-body-xs">{{ paragraph }}</span>
+    {%- else -%}
+      {{ text }}
+    {%- endif -%}
+    <span class="absolute size-0 {{ arrow }}" aria-hidden="true"></span>
+  </span>
+</span>

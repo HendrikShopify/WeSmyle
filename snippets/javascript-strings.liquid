@@ -1,0 +1,26 @@
+<script>
+  var Shopify = Shopify || {};
+  Shopify.money_format = '{{ shop.money_format }}';
+
+  window.shopUrl = '{{ request.origin }}';
+  window.routes = {
+    cart_add_url: '{{ routes.cart_add_url }}',
+    cart_change_url: '{{ routes.cart_change_url }}',
+    cart_update_url: '{{ routes.cart_update_url }}',
+    cart_url: '{{ routes.cart_url }}',
+    predictive_search_url: '{{ routes.predictive_search_url }}',
+  };
+
+  window.cartStrings = {
+    error: `An error occurred`,
+    discountError: `{{ 'sections.cart.discount_error' | t }}`,
+    quantityError: `{{ 'sections.cart.cart_quantity_error_html' | t: quantity: '[quantity]' }}`,
+  };
+
+  window.variantStrings = {
+    addToCart: `Add to cart`,
+    soldOut: `Sold out`,
+    unavailable: `Unavailable`,
+    unavailable_with_option: `Unavailable`,
+  };
+</script>

@@ -1,0 +1,197 @@
+{%- comment -%}
+  Figma: Components Molecules / Product card
+  product            Product object
+  layout             vertical | horizontal                                  (Figma: Layout)
+  quick_add          none | button | icon | variant-picker                  (Figma: Quick add)
+  show_vendor, show_badge, show_wishlist, show_rating, show_swatches, show_description  booleans (Figma: Show …)
+  sizes              sizes attribute for the image, the grid passes it
+  loading            eager for above-the-fold cards
+  section_id         for unique ids
+  class
+  Rating reads product.metafields.reviews.rating / rating_count (Shopify standard product reviews metafields).
+  Quick add: button and icon open the quick view; variant-picker is a form of submit buttons, one per variant, each adds straight to the cart.
+{%- endcomment -%}
+{%- liquid
+  assign layout = layout | default: 'vertical'
+  assign quick_add = quick_add | default: 'none'
+  if show_badge == nil
+    assign show_badge = true
+  endif
+  if show_wishlist == nil
+    assign show_wishlist = true
+  endif
+  if show_rating == nil
+    assign show_rating = true
+  endif
+  if show_swatches == nil
+    assign show_swatches = true
+  endif
+  assign variant = product.selected_or_first_available_variant
+  assign card_id = 'ProductCard-' | append: section_id | append: '-' | append: product.id
+
+  assign badge_type = nil
+  if product.available == false
+    assign badge_type = 'sold-out'
+    assign badge_label = 'products.product.sold_out' | t
+  elsif variant.compare_at_price > variant.price
+    assign badge_type = 'sale'
+    assign badge_label = 'products.product.on_sale' | t
+  endif
+
+  assign rating_value = product.metafields.reviews.rating.value.rating
+  assign rating_count = product.metafields.reviews.rating_count.value
+
+  assign swatch_option = nil
+  for option in product.options_with_values
+    assign swatch_count = option.values | map: 'swatch' | compact | size
+    if swatch_count > 0
+      assign swatch_option = option
+      break
+    endif
+  endfor
+
+  if layout == 'horizontal'
+    assign root = 'product-card group relative flex gap-6'
+    assign media_wrap = 'relative w-50 shrink-0'
+    assign ratio = '1:1'
+  else
+    assign root = 'product-card group relative flex flex-col gap-3'
+    assign media_wrap = 'relative'
+    assign ratio = '4:5'
+  endif
+  assign sizes = sizes | default: '(min-width: 1024px) 25vw, 50vw'
+  assign choose_label = 'products.product.choose_options' | t
+  assign add_label = 'products.product.add_to_cart' | t
+  if product.has_only_default_variant
+    assign quick_label = add_label
+  else
+    assign quick_label = choose_label
+  endif
+-%}
+<product-card class="{{ root }} {{ class }}" id="{{ card_id }}" data-layout="{{ layout }}" data-quick-add="{{ quick_add }}">
+  <div class="{{ media_wrap }}">
+    <a href="{{ product.url }}" class="block" tabindex="-1" aria-hidden="true">
+      {% render 'media', media: product.featured_media, ratio: ratio, sizes: sizes, loading: loading %}
+    </a>
+    {%- if show_badge and badge_type %}{% render 'badge', label: badge_label, type: badge_type, size: 'sm', class: 'absolute top-3 left-3 z-[1]' %}{% endif -%}
+    {%- if show_wishlist %}{% render 'wishlist-toggle', product: product, style: 'floating', size: 'sm', class: 'absolute top-2 right-2 z-[1]' %}{% endif -%}
+
+    {%- case quick_add -%}
+      {%- when 'button' -%}
+        <div class="absolute inset-x-3 bottom-3 z-[1] lg:opacity-0 lg:transition-opacity lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
+          <button type="button" class="button inline-flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-button border border-accent bg-background px-5 text-label-lg text-accent transition-colors cursor-pointer hover:bg-accent-subtle focus-visible:outline-none focus-visible:border-focus" aria-haspopup="dialog" data-quick-view-trigger data-product-url="{{ product.url | split: '?' | first }}">{{ quick_label }}</button>
+        </div>
+      {%- when 'icon' -%}
+        <div class="absolute right-3 bottom-3 z-[1] lg:opacity-0 lg:transition-opacity lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
+          <button type="button" class="icon-button inline-flex size-9 items-center justify-center rounded-button border border-accent bg-background text-accent transition-colors cursor-pointer hover:bg-accent-subtle focus-visible:outline-none focus-visible:border-focus" aria-haspopup="dialog" data-quick-view-trigger aria-label="{{ quick_label | escape }}" data-product-url="{{ product.url | split: '?' | first }}"><span class="size-4 [&>svg]:size-full" aria-hidden="true">{{ 'icon__plus.svg' | inline_asset_content }}</span></button>
+        </div>
+      {%- when 'variant-picker' -%}
+        {%- if product.has_only_default_variant -%}
+          <product-form class="absolute inset-x-3 bottom-3 z-[1] lg:opacity-0 lg:transition-opacity lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
+            {%- form 'product', product, class: 'flex', novalidate: 'novalidate' -%}
+              <input type="hidden" name="id" value="{{ variant.id }}">
+              {%- assign add_disabled = false -%}
+              {%- unless product.available %}{% assign add_disabled = true %}{% endunless -%}
+              {% render 'button', label: add_label, style: 'secondary', size: 'md', type: 'submit', name: 'add', class: 'w-full', disabled: add_disabled %}
+            {%- endform -%}
+          </product-form>
+        {%- else -%}
+          {%- liquid
+            assign pick_option = product.options_with_values | last
+            assign pick_index = pick_option.position | minus: 1
+            assign pick_name = pick_option.name | downcase
+            assign picker_label = 'products.product.select_option' | t: option: pick_name
+          -%}
+          <product-form class="absolute inset-x-3 bottom-3 z-[1] lg:opacity-0 lg:transition-opacity lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
+            {%- form 'product', product, class: 'flex flex-col gap-2 rounded-input bg-background p-3', novalidate: 'novalidate' -%}
+              <span class="text-label-sm text-text-muted">{{ picker_label }}</span>
+              <div class="flex flex-wrap gap-1">
+                {%- for value in pick_option.values -%}
+                  {%- liquid
+                    assign pick_variant = nil
+                    for v in product.variants
+                      assign matches = true
+                      for opt in product.options_with_values
+                        assign i = opt.position | minus: 1
+                        if i == pick_index
+                          if v.options[i] != value.name
+                            assign matches = false
+                          endif
+                        elsif v.options[i] != variant.options[i]
+                          assign matches = false
+                        endif
+                      endfor
+                      if matches
+                        assign pick_variant = v
+                        break
+                      endif
+                    endfor
+                    assign sold_out = true
+                    if pick_variant and pick_variant.available
+                      assign sold_out = false
+                    endif
+                    assign pill_id = card_id | append: '-' | append: forloop.index
+                  -%}
+                  {%- if pick_variant -%}
+                    {%- if sold_out -%}
+                      {% render 'variant-pill', label: value.name, size: 'sm', id: pill_id, type: 'submit', name: 'id', value: pick_variant.id, sold_out: true %}
+                    {%- else -%}
+                      {%- liquid
+                        assign tip_id = pill_id | append: '-tip'
+                        assign pill_attrs = 'aria-describedby="' | append: tip_id | append: '"'
+                      -%}
+                      {%- capture pill -%}{% render 'variant-pill', label: value.name, size: 'sm', id: pill_id, type: 'submit', name: 'id', value: pick_variant.id, attributes: pill_attrs %}{%- endcapture -%}
+                      {% render 'tooltip', trigger: pill, text: add_label, placement: 'top', id: tip_id %}
+                    {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endform -%}
+          </product-form>
+        {%- endif -%}
+    {%- endcase -%}
+  </div>
+
+  <div class="flex min-w-0 flex-1 flex-col gap-2">
+    <div class="flex flex-col gap-1">
+      {%- if show_vendor %}<span class="text-label-caps text-text-muted">{{ product.vendor }}</span>{% endif -%}
+      <h3 class="text-label-base text-text">
+        <a href="{{ product.url }}" class="after:absolute after:inset-0 after:z-0 focus-visible:outline-none focus-visible:underline">{{ product.title }}</a>
+      </h3>
+      {%- if show_description and layout == 'horizontal' and product.description != blank %}<p class="text-body-sm text-text-muted line-clamp-2">{{ product.description | strip_html | truncatewords: 24 }}</p>{% endif -%}
+    </div>
+    {%- if show_rating and rating_count > 0 %}{% render 'rating', value: rating_value, count: rating_count, size: 'sm' %}{% endif -%}
+    {% render 'price', product: product, size: 'sm' %}
+    {%- if show_swatches and swatch_option -%}
+      <div class="card-swatches relative z-[1] flex items-center gap-1">
+        {%- for value in swatch_option.values -%}
+          {%- liquid
+            assign sold_out = false
+            unless value.available
+              assign sold_out = true
+            endunless
+            assign swatch_href = product.url | append: '?variant=' | append: value.variant.id
+            if value.variant == blank
+              assign swatch_href = product.url
+            endif
+            assign preview_attrs = ''
+            assign variant_media = value.variant.featured_media
+            if variant_media
+              assign preview_image = variant_media.preview_image
+              assign preview_360 = preview_image | image_url: width: 360
+              assign preview_720 = preview_image | image_url: width: 720
+              assign preview_1080 = preview_image | image_url: width: 1080
+              assign preview_attrs = 'data-swatch-preview data-image-src="' | append: preview_720 | append: '" data-image-srcset="' | append: preview_360 | append: ' 360w, ' | append: preview_720 | append: ' 720w, ' | append: preview_1080 | append: ' 1080w"'
+            endif
+          -%}
+          {%- capture swatch_markup -%}{% render 'swatch', swatch: value.swatch, label: value.name, size: 'xs', href: swatch_href, sold_out: sold_out, attributes: preview_attrs %}{%- endcapture -%}
+          {%- if forloop.index > 4 -%}<span class="contents" data-swatch-extra hidden>{{ swatch_markup }}</span>{%- else -%}{{ swatch_markup }}{%- endif -%}
+        {%- endfor -%}
+        {%- if swatch_option.values.size > 4 -%}
+          {%- assign overflow = swatch_option.values.size | minus: 4 -%}
+          {% render 'swatch-overflow', count: overflow, size: 'xs', attributes: 'data-swatch-more' %}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</product-card>

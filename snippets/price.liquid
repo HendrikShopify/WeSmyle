@@ -1,0 +1,85 @@
+{%- comment -%}
+  Figma: Components Atoms / Price
+  Data (one of):
+    product           Product object; prices come from it            (Dawn: product)
+    use_variant       boolean; use selected_or_first_available_variant instead of product price range
+    price             amount in cents, with optional compare_at_price (line items, custom)
+  Parameters:
+    size              sm | md | lg                                   (Figma: Size)
+    from              boolean override for the "From" prefix; defaults to product.price_varies (Figma: From)
+    show_unit_price   boolean                                        (Figma: Unit price)
+    show_savings      boolean, renders the Badge with "Save n%"      (Figma: Savings badge)
+    savings_label     text for the badge; defaults to the locale string
+    class, attributes placement and JS hooks (e.g. data-replace="price")
+  Type Regular/Sale is derived: compare_at_price > price.
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  if product
+    if use_variant
+      assign target = product.selected_or_first_available_variant
+    else
+      assign target = product
+    endif
+    assign price = target.price
+    assign compare_at_price = target.compare_at_price
+    if from == nil and target == product and product.price_varies
+      assign from = true
+    endif
+    if product.price_varies == false and product.compare_at_price_varies
+      assign compare_at_price = nil
+    endif
+    assign unit_variant = product.selected_or_first_available_variant
+    if unit_variant.unit_price_measurement
+      assign unit_price = unit_variant.unit_price
+      assign unit_measurement = unit_variant.unit_price_measurement
+    endif
+  endif
+  assign on_sale = false
+  if compare_at_price > price
+    assign on_sale = true
+  endif
+  case size
+    when 'sm'
+      assign price_text = 'text-label-base'
+      assign muted_text = 'text-body-sm'
+      assign unit_text = 'text-body-xs'
+    when 'lg'
+      assign price_text = 'text-heading-5'
+      assign muted_text = 'text-body-lg'
+      assign unit_text = 'text-body-sm'
+    else
+      assign price_text = 'text-label-lg'
+      assign muted_text = 'text-body-base'
+      assign unit_text = 'text-body-xs'
+  endcase
+  if on_sale
+    assign price_color = 'text-sale'
+  else
+    assign price_color = 'text-text'
+  endif
+  if show_savings and on_sale and savings_label == blank
+    assign saved = compare_at_price | minus: price | times: 100.0 | divided_by: compare_at_price | round
+    assign savings_label = 'products.product.price.save_percent' | t: percent: saved
+  endif
+-%}
+<div class="price flex flex-col items-start gap-1 {{ class }}" data-size="{{ size }}" data-type="{% if on_sale %}sale{% else %}regular{% endif %}"{% if attributes %} {{ attributes }}{% endif %}>
+  <div class="flex flex-wrap items-center gap-2">
+    {%- if from %}<span class="{{ muted_text }} text-text-muted">{{ 'products.product.price.from' | t }}</span>{% endif -%}
+    {%- if on_sale -%}
+      <span class="sr-only">{{ 'products.product.price.sale_price' | t }}</span>
+      <span class="price__current {{ price_text }} {{ price_color }}">{{ price | money }}</span>
+      <span class="sr-only">{{ 'products.product.price.regular_price' | t }}</span>
+      <s class="price__compare-at {{ muted_text }} text-text-muted">{{ compare_at_price | money }}</s>
+      {%- if show_savings %}{% render 'badge', label: savings_label, type: 'sale', style: 'subtle', size: 'sm' %}{% endif -%}
+    {%- else -%}
+      <span class="sr-only">{{ 'products.product.price.regular_price' | t }}</span>
+      <span class="price__current {{ price_text }} {{ price_color }}">{{ price | money }}</span>
+    {%- endif -%}
+  </div>
+  {%- if show_unit_price and unit_price -%}
+    <span class="price__unit {{ unit_text }} text-text-muted">
+      {{- unit_price | money }} / {% if unit_measurement.reference_value != 1 %}{{ unit_measurement.reference_value }} {% endif %}{{ unit_measurement.reference_unit -}}
+    </span>
+  {%- endif -%}
+</div>

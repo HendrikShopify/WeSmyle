@@ -1,0 +1,4 @@
+{ "snippet": "icon-button", "figma": "Components Atoms / Icon button (63:459)",
+  "matrix": { "type": ["icon","text"], "style": ["primary","secondary","ghost"], "size": ["sm","md","lg"], "state": ["default","hover","focus","disabled"] },
+  "params": { "icon": "icon__cart.svg", "label": "Cart" },
+  "extras": [ { "icon": "icon__cart.svg", "label": "Cart", "count": 3, "style": "ghost" }, { "type": "text", "label": "Cart", "count": 3 }, { "icon": "icon__heart.svg", "label": "Wishlist", "style": "secondary", "size": "sm" } ] }

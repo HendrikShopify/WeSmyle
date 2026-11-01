@@ -1,0 +1,64 @@
+{%- comment -%}
+  Figma: Components Atoms / Sort dropdown
+  Collection and search sort control: custom-select trigger + Sort menu + hidden input (name sort_by).
+  options    array of { name, value }, defaults to collection.sort_options
+  current    selected value, defaults to collection.sort_by or collection.default_sort_by
+  items      captured menu-item markup instead of options (demos, tests); pass current_label too
+  current_label  visible value when items is used
+  style      chip | select | text                       (Figma: Style)
+  show_label boolean, default true: "Sort by:"          (Figma: Show label)
+  label      text, default "Sort by:"                   (Figma: Label)
+  name       hidden input name, default sort_by
+  form       form attribute for the hidden input
+  open       boolean, renders the menu open             (Figma: State=Open)
+  placement  bottom | top, opens below (default) or above the trigger
+  align      start | end, which edge of the trigger the menu lines up with (default start)
+  id, class
+  Emits select:change (see custom-select.js); the filters script submits the new sort.
+  States: Hover = :hover, Focus = :focus-visible, Open = [aria-expanded=true]
+{%- endcomment -%}
+{%- liquid
+  assign options = options | default: collection.sort_options
+  assign current = current | default: collection.sort_by | default: collection.default_sort_by
+  assign style = style | default: 'chip'
+  assign id = id | default: 'sort-dropdown'
+  assign name = name | default: 'sort_by'
+  if show_label == nil
+    assign show_label = true
+  endif
+  if label == blank
+    assign label = 'products.facets.sort_by_label' | t
+  endif
+  assign listbox_id = id | append: '-listbox'
+  assign trigger_id = id | append: '-trigger'
+  assign expanded = 'false'
+  if open
+    assign expanded = 'true'
+  endif
+  assign value_label = current_label
+  if value_label == blank
+    for option in options
+      if option.value == current
+        assign value_label = option.name
+      endif
+    endfor
+  endif
+  assign base = 'inline-flex h-9 w-full items-center gap-1 whitespace-nowrap text-label-base text-text cursor-pointer outline-none transition-colors'
+  case style
+    when 'select'
+      assign look = base | append: ' rounded-input border border-border-strong bg-background px-3 hover:border-text focus-visible:border-focus aria-expanded:border-text'
+    when 'text'
+      assign look = base | append: ' rounded-xs border border-transparent px-0 hover:text-text-muted focus-visible:border-focus'
+    else
+      assign look = base | append: ' rounded-chip border border-border-strong bg-background px-3 hover:border-text focus-visible:border-focus aria-expanded:border-text'
+  endcase
+-%}
+<custom-select class="sort-dropdown relative inline-block min-w-0 {{ class }}" data-style="{{ style }}">
+  <button type="button" class="{{ look }}" id="{{ trigger_id }}" aria-haspopup="listbox" aria-expanded="{{ expanded }}" aria-controls="{{ listbox_id }}">
+    {%- if show_label %}<span class="text-text-muted">{{ label }}</span>{% else %}<span class="sr-only">{{ label }}</span>{% endif -%}
+    <span class="min-w-0 truncate" data-selected-label>{{ value_label }}</span>
+    <span class="select__chevron size-4 shrink-0 transition-transform [&>svg]:size-full{% if open %} rotate-180{% endif %}" aria-hidden="true">{{ 'icon__chevron-down.svg' | inline_asset_content }}</span>
+  </button>
+  {% render 'sort-menu', options: options, current: current, items: items, id: listbox_id, labelledby: trigger_id, open: open, align: align, placement: placement %}
+  <input type="hidden" name="{{ name }}" value="{{ current | escape }}"{% if form %} form="{{ form }}"{% endif %}>
+</custom-select>

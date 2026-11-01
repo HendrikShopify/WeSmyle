@@ -1,0 +1,15 @@
+{%- comment -%}
+  Figma: Components Atoms / Bundle slot
+  One place in the bundle tray. State (Empty, Filled) is data-state, written by bundle-builder.js.
+  Size follows the viewport: sm (56px) on mobile, md (120px) from lg.
+  Hooks: data-bundle-slot, data-bundle-slot-image, data-bundle-slot-remove
+{%- endcomment -%}
+<li class="bundle-slot group/slot relative size-14 shrink-0 lg:size-30" data-bundle-slot data-state="empty">
+  <span class="flex size-full items-center justify-center rounded-input border border-dashed border-border-strong text-text-muted group-data-[state=filled]/slot:hidden" aria-hidden="true">
+    <span class="size-4 lg:size-5 [&>svg]:size-full">{{ 'icon__plus.svg' | inline_asset_content }}</span>
+  </span>
+  <img width="120" height="120" class="hidden size-full rounded-media bg-surface-alt object-cover group-data-[state=filled]/slot:block" alt="" data-bundle-slot-image>
+  <button type="button" class="absolute -top-1.5 -right-1.5 hidden size-4 cursor-pointer items-center justify-center rounded-full bg-accent text-accent-contrast transition-colors hover:bg-accent-hover group-data-[state=filled]/slot:flex lg:size-5" data-bundle-slot-remove>
+    <span class="size-2.5 lg:size-3 [&>svg]:size-full" aria-hidden="true">{{ 'icon__x.svg' | inline_asset_content }}</span>
+  </button>
+</li>

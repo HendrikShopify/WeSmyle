@@ -1,0 +1,57 @@
+{%- comment -%}
+  Figma: Components Atoms / Search product result
+  Product in predictive search, a listbox option.
+  product      required
+  layout       row | card                                       (Figma: Layout)
+               card renders the Product card (vertical) inside the option
+  show_price, show_rating, show_quick_add  booleans (Figma: Show …), default price on
+  id           required, the option id
+  section_id   for the product card ids
+  Hover = :hover (surface), Selected = [aria-selected=true] (surface-alt).
+{%- endcomment -%}
+{%- liquid
+  assign layout = layout | default: 'row'
+  if show_price == nil
+    assign show_price = true
+  endif
+  assign rating_value = product.metafields.reviews.rating.value.rating
+  assign rating_count = product.metafields.reviews.rating_count.value
+  if product.has_only_default_variant
+    assign quick_label = 'products.product.add_to_cart' | t
+  else
+    assign quick_label = 'products.product.choose_options' | t
+  endif
+-%}
+<li
+  id="{{ id }}"
+  class="search-product-result rounded-xs transition-colors hover:bg-surface aria-selected:bg-surface-alt"
+  role="option"
+  aria-selected="false"
+>
+  {%- if layout == 'card' -%}
+    <div class="p-2">
+      {% render 'product-card', product: product, section_id: section_id, show_vendor: false, show_rating: show_rating, show_badge: false, show_wishlist: false, show_swatches: true, quick_add: 'icon', sizes: '200px' %}
+    </div>
+  {%- else -%}
+    <div class="relative flex items-center gap-3 p-3">
+      <a href="{{ product.url }}" class="absolute inset-0 rounded-xs outline-none" tabindex="-1" aria-label="{{ product.title | escape }}"></a>
+      <div class="w-16 shrink-0">
+        {% render 'media', media: product.featured_media, ratio: '1:1', sizes: '64px', loading: 'lazy' %}
+      </div>
+      <div class="flex min-w-0 flex-1 flex-col gap-1">
+        <span class="truncate text-body-base text-text">{{ product.title | escape }}</span>
+        {%- if show_rating and rating_value -%}
+          {% render 'rating', value: rating_value, count: rating_count, size: 'sm' %}
+        {%- endif -%}
+        {%- if show_price -%}
+          {% render 'price', product: product, size: 'sm' %}
+        {%- endif -%}
+      </div>
+      {%- if show_quick_add -%}
+        <div class="relative z-[1] shrink-0">
+          <button type="button" class="icon-button inline-flex size-9 items-center justify-center rounded-button border border-accent bg-background text-accent transition-colors cursor-pointer hover:bg-accent-subtle focus-visible:outline-none focus-visible:border-focus" aria-haspopup="dialog" data-quick-view-trigger aria-label="{{ quick_label | escape }}" data-product-url="{{ product.url | split: '?' | first }}" tabindex="-1"><span class="size-4 [&>svg]:size-full" aria-hidden="true">{{ 'icon__plus.svg' | inline_asset_content }}</span></button>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</li>

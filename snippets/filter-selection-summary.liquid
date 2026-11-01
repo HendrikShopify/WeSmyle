@@ -1,0 +1,29 @@
+{%- comment -%}
+  Figma: Components Atoms / Filter selection summary
+  Selection count and Reset link at the top of an open Filter group ("2 selected  Reset").
+  count       number of selected values; 0 disables Reset         (Figma: Selection None | Some)
+  summary     text override, e.g. "€20–€80" for price             (Figma: Summary)
+  reset_href  url that clears this group; omit for a button (JS hook: data-filter-reset)
+  show_reset  boolean, default true                                (Figma: Show reset)
+  class
+{%- endcomment -%}
+{%- liquid
+  assign count = count | default: 0
+  if show_reset == nil
+    assign show_reset = true
+  endif
+  if summary == blank
+    assign summary = 'products.facets.filters_selected' | t: count: count
+  endif
+  assign reset_label = 'products.facets.reset' | t
+  assign none = false
+  if count == 0
+    assign none = true
+  endif
+-%}
+<div class="filter-selection-summary flex items-center justify-between gap-4 {{ class }}" data-selection="{% if none %}none{% else %}some{% endif %}">
+  <span class="text-body-sm text-text-muted" data-filter-summary>{{ summary }}</span>
+  {%- if show_reset -%}
+    {% render 'link', label: reset_label, href: reset_href, size: 'sm', disabled: none, attributes: 'data-filter-reset' %}
+  {%- endif -%}
+</div>

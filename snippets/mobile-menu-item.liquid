@@ -1,0 +1,44 @@
+{%- comment -%}
+  Figma: Components Atoms / Mobile menu item
+  Row in the mobile menu.
+  label    text                                              (Figma: Label)
+  type     link | accordion | drill-down                      (Figma: Type)
+  level    1 | 2                                              (Figma: Level) 1 = 56px row with divider, 2 = indented 44px row, lighter
+  href     url, for type link
+  current  boolean                                            (Figma: State=Current) medium weight
+  open     boolean, accordion rendered open                   (Figma: State=Open)
+  content  captured markup for the accordion body (the child rows)
+  target   id of the drill-down panel to open, for type drill-down
+  name     details name, so only one accordion at this level stays open
+  class, attributes
+  Accordion = <details>, Drill-down = button (data-drill-open, handled by mobile-menu.js).
+  States: Hover = :hover, Focus = :focus-visible, Open = [open]
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'link'
+  assign level = level | default: 1
+  if level == 2
+    assign row = 'flex w-full min-h-11 items-center justify-between pl-4 text-label-base text-text-muted transition-colors cursor-pointer hover:text-text focus-visible:outline-none focus-visible:underline aria-[current=page]:text-text aria-[current=page]:font-medium'
+  else
+    assign row = 'flex w-full min-h-14 items-center justify-between border-b border-border text-label-lg text-text transition-colors cursor-pointer hover:text-text-muted focus-visible:outline-none focus-visible:underline aria-[current=page]:font-medium'
+  endif
+-%}
+{%- case type -%}
+  {%- when 'accordion' -%}
+    <details class="mobile-menu-item group {{ class }}"{% if name %} name="{{ name }}"{% endif %}{% if open %} open{% endif %}{% if attributes %} {{ attributes }}{% endif %}>
+      <summary class="{{ row }} list-none [&::-webkit-details-marker]:hidden">
+        <span>{{ label }}</span>
+        <span class="size-5 shrink-0 transition-transform group-open:rotate-180" aria-hidden="true">{{ 'icon__chevron-down.svg' | inline_asset_content }}</span>
+      </summary>
+      <div class="pb-3">{{ content }}</div>
+    </details>
+  {%- when 'drill-down' -%}
+    <button type="button" class="mobile-menu-item {{ row }} {{ class }}" data-drill-open="{{ target }}" aria-expanded="false"{% if current %} aria-current="page"{% endif %}{% if attributes %} {{ attributes }}{% endif %}>
+      <span>{{ label }}</span>
+      <span class="size-5 shrink-0" aria-hidden="true">{{ 'icon__chevron-right.svg' | inline_asset_content }}</span>
+    </button>
+  {%- else -%}
+    <a href="{{ href }}" class="mobile-menu-item {{ row }} {{ class }}"{% if current %} aria-current="page"{% endif %}{% if attributes %} {{ attributes }}{% endif %}>
+      <span>{{ label }}</span>
+    </a>
+{%- endcase -%}

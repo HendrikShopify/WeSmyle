@@ -1,0 +1,12 @@
+{%- comment -%} Line items form in the drawer. <cart-items> from cart.js handles quantity changes and removes. {%- endcomment -%}
+<cart-items{% if cart == empty %} class="is-empty"{% endif %}>
+  <form action="{{ routes.cart_url }}" id="cart-drawer-form" method="post">
+    {%- if cart != empty -%}
+      <ul class="flex flex-col gap-6" role="list">
+        {%- for item in cart.items -%}
+          {% render 'line-item', item: item, layout: 'drawer', id_prefix: 'CartDrawer-Item' %}
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </form>
+</cart-items>

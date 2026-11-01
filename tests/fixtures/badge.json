@@ -1,0 +1,3 @@
+{ "snippet": "badge", "figma": "Components Atoms / Badge (66:234)",
+  "matrix": { "type": ["sale","new","low-stock","sold-out","success","neutral"], "style": ["solid","subtle"], "size": ["sm","md"] },
+  "params": {}, "extras": [ { "type": "sale", "label": "Save 20%", "icon": "icon__discount.svg" }, { "type": "success", "size": "sm", "label": "In bundle" } ] }

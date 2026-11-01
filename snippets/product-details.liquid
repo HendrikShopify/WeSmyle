@@ -1,0 +1,29 @@
+{%- comment -%}
+  Figma: Components Molecules / Product form / Details
+  product   product object
+  class
+  Accordion with Description (product description, open), Ingredients, How to use and Shipping and returns.
+  Ingredients and How to use read product.metafields.custom.ingredients / how_to_use and fall back to the locale text (products.product.details).
+{%- endcomment -%}
+{%- capture details_items -%}
+  {%- if product.description != blank -%}
+    {%- assign details_title = 'products.product.details.description' | t -%}
+    {%- capture details_body -%}<div class="rte text-text-muted">{{ product.description }}</div>{%- endcapture -%}
+    {% render 'accordion-item', title: details_title, content: details_body, icon: 'plus', name: 'product-details', open: true %}
+  {%- endif -%}
+  {%- assign ingredients_title = 'products.product.details.ingredients_title' | t -%}
+  {%- assign ingredients_text = product.metafields.custom.ingredients.value -%}
+  {%- if ingredients_text == blank -%}{%- assign ingredients_text = 'products.product.details.ingredients_body' | t -%}{%- endif -%}
+  {%- capture ingredients_body -%}<div class="rte text-text-muted">{{ ingredients_text }}</div>{%- endcapture -%}
+  {% render 'accordion-item', title: ingredients_title, content: ingredients_body, icon: 'plus', name: 'product-details' %}
+  {%- assign how_to_use_title = 'products.product.details.how_to_use_title' | t -%}
+  {%- assign how_to_use_text = product.metafields.custom.how_to_use.value -%}
+  {%- if how_to_use_text == blank -%}{%- assign how_to_use_text = 'products.product.details.how_to_use_body' | t -%}{%- endif -%}
+  {%- capture how_to_use_body -%}<div class="rte text-text-muted">{{ how_to_use_text }}</div>{%- endcapture -%}
+  {% render 'accordion-item', title: how_to_use_title, content: how_to_use_body, icon: 'plus', name: 'product-details' %}
+  {%- assign shipping_title = 'products.product.details.shipping_title' | t -%}
+  {%- assign shipping_text = 'products.product.details.shipping_body' | t -%}
+  {%- capture shipping_body -%}<div class="text-text-muted">{{ shipping_text }}</div>{%- endcapture -%}
+  {% render 'accordion-item', title: shipping_title, content: shipping_body, icon: 'plus', name: 'product-details' %}
+{%- endcapture -%}
+{% render 'accordion', items: details_items, top_divider: true, class: class %}

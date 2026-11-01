@@ -1,0 +1,126 @@
+{%- comment -%}
+  Figma: Components Atoms / Mobile menu
+  Full-screen menu behind the header menu button, sliding in from the left (side-drawer pattern).
+  menu         linklist
+  style        accordion | drill-down                          (Figma: Style) accordion expands in place, drill-down opens each category as its own panel
+  show_extras  boolean, default true                           (Figma: Show extras) account link, language and social links
+  open         boolean, renders the menu open (demos, tests)
+  JS: mobile-menu.js (open/close, focus trap, inert; data-drill-open / data-drill-back for drill-down)
+  Not built yet: Menu feature card tiles under the list.
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'accordion'
+  if show_extras == nil
+    assign show_extras = true
+  endif
+  assign uid = section.id | default: 'menu'
+  assign all_template = 'mobile_menu.all_of' | t: title: '__title__'
+  assign menu_label = 'mobile_menu.title' | t
+  assign close_label = 'mobile_menu.close' | t
+  assign group_name = 'mobile-nav-' | append: uid
+-%}
+<mobile-menu class="contents" data-desktop-query="(min-width: 1024px)" data-scroll-lock="false">
+  {%- capture menu_attributes -%}data-mobile-menu-open aria-expanded="false" aria-controls="MobileMenu-{{ uid }}"{%- endcapture -%}
+  {% render 'icon-button', icon: 'icon__menu.svg', label: menu_label, style: 'ghost', size: 'md', class: 'lg:hidden', attributes: menu_attributes %}
+
+  <div id="MobileMenu-{{ uid }}" class="header__mobile-panel" data-mobile-menu-panel data-state="{% if open %}open{% else %}closed{% endif %}" role="dialog" aria-modal="true" aria-labelledby="MobileMenuTitle-{{ uid }}">
+    <div class="header__mobile-backdrop" data-mobile-menu-backdrop></div>
+    <div class="header__mobile-drawer flex flex-col bg-background" data-mobile-menu-drawer data-style="{{ style }}">
+      <h2 id="MobileMenuTitle-{{ uid }}" class="sr-only">{{ 'mobile_menu.title' | t }}</h2>
+      <div class="flex shrink-0 items-center justify-between px-4 py-2">
+        {% render 'header__logo' %}
+        {% render 'icon-button', icon: 'icon__close.svg', label: close_label, style: 'ghost', size: 'md', attributes: 'data-mobile-menu-close' %}
+      </div>
+
+      <nav class="flex-1 overflow-y-auto px-4" aria-label="Main">
+        <div data-drill-root>
+          {%- for link in menu.links -%}
+            {%- liquid
+              assign has_url = false
+              if link.url != blank and link.url != '#'
+                assign has_url = true
+              endif
+              assign link_current = false
+              if link.current or link.child_current
+                assign link_current = true
+              endif
+              assign all_label = all_template | replace: '__title__', link.title
+            -%}
+            {%- if link.links != blank -%}
+              {%- if style == 'drill-down' -%}
+                {%- assign panel_id = 'MobileMenuPanel-' | append: uid | append: '-' | append: forloop.index -%}
+                {% render 'mobile-menu-item', type: 'drill-down', label: link.title, target: panel_id, current: link_current %}
+              {%- else -%}
+                {%- capture children -%}
+                  {%- if has_url -%}{% render 'mobile-menu-item', label: all_label, href: link.url, level: 2, current: link.current %}{%- endif -%}
+                  {%- for child in link.links -%}
+                    {%- if child.links != blank -%}
+                      {%- capture grandchildren -%}
+                        {%- for grandchild in child.links -%}
+                          {% render 'mobile-menu-item', label: grandchild.title, href: grandchild.url, level: 2, current: grandchild.current, class: 'pl-8' %}
+                        {%- endfor -%}
+                      {%- endcapture -%}
+                      {% render 'mobile-menu-item', type: 'accordion', label: child.title, level: 2, content: grandchildren, open: child.child_active %}
+                    {%- else -%}
+                      {% render 'mobile-menu-item', label: child.title, href: child.url, level: 2, current: child.current %}
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endcapture -%}
+                {% render 'mobile-menu-item', type: 'accordion', label: link.title, content: children, open: link.child_active, name: group_name %}
+              {%- endif -%}
+            {%- else -%}
+              {% render 'mobile-menu-item', label: link.title, href: link.url, current: link.current %}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if style == 'drill-down' -%}
+          {%- for link in menu.links -%}
+            {%- if link.links != blank -%}
+              {%- liquid
+                assign all_label = all_template | replace: '__title__', link.title
+                assign has_url = false
+                if link.url != blank and link.url != '#'
+                  assign has_url = true
+                endif
+              -%}
+              <div id="MobileMenuPanel-{{ uid }}-{{ forloop.index }}" data-drill-panel hidden>
+                {% render 'mobile-menu-header', title: link.title %}
+                {%- if has_url -%}{% render 'mobile-menu-item', label: all_label, href: link.url, current: link.current %}{%- endif -%}
+                {%- for child in link.links -%}
+                  {%- if child.links != blank -%}
+                    {%- capture grandchildren -%}
+                      {%- for grandchild in child.links -%}
+                        {% render 'mobile-menu-item', label: grandchild.title, href: grandchild.url, level: 2, current: grandchild.current %}
+                      {%- endfor -%}
+                    {%- endcapture -%}
+                    {% render 'mobile-menu-item', type: 'accordion', label: child.title, content: grandchildren, open: child.child_active %}
+                  {%- else -%}
+                    {% render 'mobile-menu-item', label: child.title, href: child.url, current: child.current %}
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      </nav>
+
+      {%- if show_extras -%}
+        <div class="flex shrink-0 flex-col gap-5 bg-surface p-4">
+          <ul class="flex flex-col gap-3" role="list">
+            {%- if routes.account_url != blank -%}
+              <li><a href="{{ routes.account_url }}" class="text-label-base text-text transition-colors hover:text-text-muted focus-visible:outline-none focus-visible:underline">{{ 'mobile_menu.account' | t }}</a></li>
+            {%- endif -%}
+          </ul>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1">
+              {% render 'localization-selector', style: 'ghost', id: 'mobile-localization' %}
+              {% render 'localization-selector', field: 'country', style: 'ghost', id: 'mobile-country' %}
+            </div>
+            {% render 'social-links', size: 'sm' %}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</mobile-menu>

@@ -1,0 +1,13 @@
+{%- comment -%}
+  Figma: Components Atoms / Search result group
+  title    required, the group heading (Menu heading, caps)
+  items    captured <li> options (search-suggestion / search-product-result)
+  id       required; the list gets id "{id}-list" and aria-labelledby
+  class
+{%- endcomment -%}
+<div class="search-result-group flex flex-col gap-3 {{ class }}">
+  {% render 'menu-heading', title: title, style: 'caps', tag: 'h3', id: id %}
+  <ul id="{{ id }}-list" class="flex flex-col gap-1" role="group" aria-labelledby="{{ id }}">
+    {{ items }}
+  </ul>
+</div>

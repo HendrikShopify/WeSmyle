@@ -1,0 +1,11 @@
+{ "snippet": "price", "figma": "Components Atoms / Price (67:152)",
+  "matrix": { "size": ["sm","md","lg"] },
+  "params": { "price": 4900 },
+  "extras": [
+    { "price": 4900, "compare_at_price": 5900, "size": "sm", "show_savings": true },
+    { "price": 4900, "compare_at_price": 5900, "size": "md", "show_savings": true },
+    { "price": 4900, "compare_at_price": 5900, "size": "lg", "show_savings": true },
+    { "price": 4900, "from": true, "size": "md" },
+    { "price": 4900, "size": "md", "show_unit_price": true, "unit_price": 2450, "unit_measurement": { "reference_value": 100, "reference_unit": "ml" } },
+    { "price": 4900, "compare_at_price": 5900, "size": "lg", "show_savings": true, "show_unit_price": true, "unit_price": 2450, "unit_measurement": { "reference_value": 100, "reference_unit": "ml" } }
+  ] }

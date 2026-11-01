@@ -1,0 +1,27 @@
+{%- comment -%}
+  Figma: Components Atoms / Radio
+  label, count, id, name, value, checked, disabled, required, class, attributes
+  States: Hover = :hover, Focus = :focus-visible, Checked = :checked, Disabled = [disabled]
+{%- endcomment -%}
+<label class="radio inline-flex items-center gap-3 text-body-base text-text cursor-pointer has-[:disabled]:text-text-disabled has-[:disabled]:cursor-not-allowed {{ class }}">
+  <span class="relative inline-flex size-5 shrink-0">
+    <input
+      type="radio"
+      class="peer size-5 shrink-0 appearance-none rounded-full border border-border-strong bg-background transition-colors cursor-pointer hover:border-text focus-visible:outline-none focus-visible:border-focus checked:bg-accent checked:border-accent disabled:cursor-not-allowed disabled:bg-disabled disabled:border-disabled"
+      {%- if id %} id="{{ id }}"{% endif -%}
+      {%- if name %} name="{{ name }}"{% endif -%}
+      {%- if value %} value="{{ value | escape }}"{% endif -%}
+      {%- if checked %} checked{% endif -%}
+      {%- if disabled %} disabled{% endif -%}
+      {%- if required %} required{% endif -%}
+      {%- if attributes %} {{ attributes }}{% endif -%}
+    >
+    <span class="pointer-events-none absolute inset-0 m-auto size-2 rounded-full bg-accent-contrast opacity-0 peer-checked:opacity-100 peer-disabled:bg-text-disabled" aria-hidden="true"></span>
+  </span>
+  {%- if label -%}
+    <span class="inline-flex items-center gap-1">
+      <span>{{ label }}</span>
+      {%- if count %}<span class="text-text-muted">({{ count }})</span>{% endif -%}
+    </span>
+  {%- endif -%}
+</label>

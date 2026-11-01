@@ -1,0 +1,19 @@
+{%- comment -%}
+  Figma: Components Atoms / Discount code
+  id   base id
+  Input sm + secondary sm button. discount-code in cart.js applies it via cart/update.js and re-renders the cart sections.
+{%- endcomment -%}
+{%- liquid
+  assign id = id | default: 'DiscountCode'
+  assign placeholder = 'sections.cart.discount_code' | t
+  assign apply_label = 'sections.cart.apply' | t
+  assign error_id = id | append: '-error'
+-%}
+<discount-code class="discount-code flex flex-col gap-2 {{ class }}">
+  <form class="flex items-center gap-2" data-discount-form novalidate>
+    {% render 'field-label', label: placeholder, for: id, class: 'sr-only' %}
+    {% render 'input', id: id, name: 'discount', placeholder: placeholder, size: 'sm', autocomplete: 'off', describedby: error_id, attributes: 'autocapitalize="characters" spellcheck="false"' %}
+    {% render 'button', label: apply_label, style: 'secondary', size: 'sm', type: 'submit' %}
+  </form>
+  {% render 'helper-text', text: '', type: 'error', id: error_id, attributes: 'hidden data-discount-error' %}
+</discount-code>

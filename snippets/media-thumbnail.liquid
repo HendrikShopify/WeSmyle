@@ -1,0 +1,35 @@
+{%- comment -%}
+  Figma: Components Atoms / Media thumbnail
+  media      Shopify media object
+  selected   boolean, marks the media currently shown            (Figma: State=Selected)
+  size       md | sm, 72px (gallery) or 56px (lightbox)
+  index      1-based position, feeds data-thumb-index and the label
+  attributes extra JS hooks, e.g. 'data-media-thumb'
+  class      placement only
+  Video media shows the play mark (Figma: Type=Video). Selected = [aria-current=true], Hover = :hover, Focus = :focus-visible
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  if size == 'sm'
+    assign dim = 'size-14'
+  else
+    assign dim = 'size-18'
+  endif
+  assign label = 'products.product.media.show_media' | t: index: index
+  assign type = media.media_type | default: 'image'
+-%}
+<button
+  type="button"
+  class="media-thumbnail relative flex shrink-0 cursor-pointer items-center justify-center overflow-hidden border-2 border-transparent bg-surface-alt outline-none transition-colors hover:border-border-strong aria-[current=true]:border-accent focus-visible:border-focus {{ dim }} {{ class }}"
+  aria-current="{% if selected %}true{% else %}false{% endif %}"
+  aria-label="{{ label }}"
+  data-thumb-index="{{ index }}"
+  {%- if attributes %} {{ attributes }}{% endif -%}
+>
+  {%- if media.preview_image != blank -%}
+    {{ media.preview_image | image_url: width: 200 | image_tag: widths: '100, 144, 200', sizes: '72px', alt: '', class: 'size-full object-cover', loading: 'lazy' }}
+  {%- endif -%}
+  {%- if type != 'image' and type != 'placeholder' -%}
+    <span class="absolute flex size-6 items-center justify-center rounded-full bg-background text-text"><span class="size-3 [&>svg]:size-full">{{ 'icon__play.svg' | inline_asset_content }}</span></span>
+  {%- endif -%}
+</button>

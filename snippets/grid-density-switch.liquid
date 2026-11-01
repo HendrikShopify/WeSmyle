@@ -1,0 +1,60 @@
+{%- comment -%}
+  Figma: Components Molecules / Grid density switch (+ Atoms / Grid density option)
+  Two card sizes for the product grid. Large = 4 columns (1 on mobile), Small = 6 columns (2 on mobile).
+  In 6 columns the cards drop rating and swatches (grid.css). The choice is remembered per breakpoint in localStorage.
+  icon           matrix | outline | text                         (Figma: Icon)
+  show_label     boolean, default false                           (Figma: Show label)
+  label          text, default "View by"
+  current        large | small, desktop selection, default large   (Figma: Selected)
+  current_mobile large | small, mobile selection, default small    (Figma: Selected, Breakpoint=Mobile)
+  id, class
+  The grid container (#ProductGridContainer) carries data-density and data-density-mobile; grid-density.js flips them.
+  States: Hover = :hover, Selected = aria-pressed, Focus = :focus-visible
+{%- endcomment -%}
+{%- liquid
+  assign icon = icon | default: 'matrix'
+  assign current = current | default: 'large'
+  assign current_mobile = current_mobile | default: 'small'
+  if label == blank
+    assign label = 'products.facets.grid_density_label' | t
+  endif
+  assign large_label = 'products.facets.grid_density_large' | t
+  assign small_label = 'products.facets.grid_density_small' | t
+  assign option = 'grid-density__option inline-flex size-9 items-center justify-center rounded-xs border border-transparent text-text-muted transition-colors cursor-pointer hover:bg-surface hover:text-text aria-pressed:bg-surface-alt aria-pressed:text-text focus-visible:outline-none focus-visible:border-focus'
+  if icon == 'text'
+    assign option = option | append: ' text-label-base aria-pressed:underline aria-pressed:bg-transparent'
+  endif
+-%}
+<grid-density class="grid-density flex items-center gap-1 {{ class }}"{% if id %} id="{{ id }}"{% endif %} data-icon="{{ icon }}" data-current="{{ current }}" data-current-mobile="{{ current_mobile }}">
+  {%- if show_label -%}<span class="text-label-base text-text-muted" id="{{ id | default: 'grid-density' }}-label">{{ label }}</span>{%- endif -%}
+  <div class="flex items-center" role="group" {% if show_label %}aria-labelledby="{{ id | default: 'grid-density' }}-label"{% else %}aria-label="{{ label | escape }}"{% endif %}>
+    {%- for size in (1..2) -%}
+      {%- if forloop.first -%}
+        {%- assign value = 'large' -%}{%- assign name = large_label -%}{%- assign d_cols = 4 -%}{%- assign m_cols = 1 -%}
+      {%- else -%}
+        {%- assign value = 'small' -%}{%- assign name = small_label -%}{%- assign d_cols = 6 -%}{%- assign m_cols = 2 -%}
+      {%- endif -%}
+      <button type="button" class="{{ option }}" data-density="{{ value }}" aria-pressed="{% if value == current %}true{% else %}false{% endif %}" aria-label="{{ name | escape }}">
+        {%- if icon == 'text' -%}
+          <span class="max-lg:hidden" aria-hidden="true">{{ d_cols }}</span>
+          <span class="lg:hidden" aria-hidden="true">{{ m_cols }}</span>
+        {%- else -%}
+          {%- for bp in (1..2) -%}
+            <span class="{% if forloop.first %}max-lg:hidden{% else %}lg:hidden{% endif %} size-5" aria-hidden="true">
+              <svg viewBox="0 0 20 20" class="size-full" fill="currentColor" stroke="none">
+                {%- if icon == 'outline' -%}
+                  <rect x="3" y="3" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                  {%- if value == 'small' %}<line x1="10" y1="3" x2="10" y2="17" stroke="currentColor" stroke-width="1.5"/>{% endif -%}
+                {%- elsif value == 'large' -%}
+                  <rect x="2.5" y="2.5" width="7" height="7"/><rect x="10.5" y="2.5" width="7" height="7"/><rect x="2.5" y="10.5" width="7" height="7"/><rect x="10.5" y="10.5" width="7" height="7"/>
+                {%- else -%}
+                  {%- for row in (0..3) -%}{%- for col in (0..3) -%}<rect x="{{ col | times: 4 | plus: 2.5 }}" y="{{ row | times: 4 | plus: 2.5 }}" width="3" height="3"/>{%- endfor -%}{%- endfor -%}
+                {%- endif -%}
+              </svg>
+            </span>
+          {%- endfor -%}
+        {%- endif -%}
+      </button>
+    {%- endfor -%}
+  </div>
+</grid-density>

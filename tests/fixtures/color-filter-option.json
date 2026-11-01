@@ -1,0 +1,54 @@
+{
+ "snippet": "color-filter-option",
+ "figma": "Atoms / Color filter option (83:391)",
+ "width": 160,
+ "matrix": {
+  "state": [
+   "default",
+   "hover",
+   "focus"
+  ]
+ },
+ "params": {
+  "label": "Beige",
+  "count": 8,
+  "color": "#e7d3b0",
+  "name": "c",
+  "id": "c-beige"
+ },
+ "extras": [
+  {
+   "label": "Beige",
+   "count": 8,
+   "color": "#e7d3b0",
+   "name": "c2",
+   "id": "c-2",
+   "checked": true
+  },
+  {
+   "label": "Black",
+   "count": 0,
+   "color": "#1c1917",
+   "name": "c3",
+   "id": "c-3",
+   "disabled": true
+  },
+  {
+   "label": "Olive",
+   "count": 4,
+   "color": "#6b7040",
+   "name": "c4",
+   "id": "c-4",
+   "show_label": false
+  },
+  {
+   "label": "Olive",
+   "count": 4,
+   "color": "#6b7040",
+   "name": "c5",
+   "id": "c-5",
+   "show_label": false,
+   "checked": true
+  }
+ ]
+}

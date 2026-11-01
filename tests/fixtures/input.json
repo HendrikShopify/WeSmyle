@@ -1,0 +1,40 @@
+{
+ "snippet": "input",
+ "figma": "Atoms / Input (72:343)",
+ "matrix": {
+  "size": [
+   "sm",
+   "md",
+   "lg"
+  ],
+  "state": [
+   "default",
+   "hover",
+   "focus",
+   "disabled"
+  ]
+ },
+ "params": {
+  "placeholder": "you@example.com"
+ },
+ "extras": [
+  {
+   "value": "hendrik@slashcheckout.com"
+  },
+  {
+   "value": "hendrik@slashcheckout",
+   "error": true
+  },
+  {
+   "placeholder": "you@example.com",
+   "icon_leading": "icon__search.svg",
+   "icon_trailing": "icon__close.svg"
+  },
+  {
+   "value": "49,00",
+   "prefix": "\u20ac",
+   "suffix": "EUR"
+  }
+ ],
+ "width": 320
+}

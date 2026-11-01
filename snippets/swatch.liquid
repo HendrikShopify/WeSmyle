@@ -1,0 +1,77 @@
+{%- comment -%}
+  Figma: Components Atoms / Swatch
+  swatch      Shopify swatch object (value.swatch): .color or .image decide Type Color/Image
+  color       fallback css colour when no swatch object
+  label       the value name, read by screen readers
+  size        xs | sm | md                                   (Figma: Size)
+  sold_out    boolean                                        (Figma: State=Sold out)
+  Modes: name + value render a radio (product form); href renders a link (card: hover previews the variant image, click opens the product with that variant); otherwise a plain span.
+  id, checked, form, class, attributes
+  States: Hover = :hover, Selected = :checked, Focus = :focus-visible
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  if swatch.image
+    assign type = 'image'
+  else
+    assign type = 'color'
+  endif
+  if type == 'image'
+    assign radius = 'rounded-sm'
+    case size
+      when 'xs'
+        assign inner = 'size-6'
+      when 'sm'
+        assign inner = 'size-10'
+      else
+        assign inner = 'size-14'
+    endcase
+  else
+    assign radius = 'rounded-swatch'
+    case size
+      when 'xs'
+        assign inner = 'size-4'
+      when 'sm'
+        assign inner = 'size-6'
+      else
+        assign inner = 'size-8'
+    endcase
+  endif
+  if swatch.color
+    assign bg = 'rgb(' | append: swatch.color.rgb | append: ')'
+  elsif color
+    assign bg = color
+  endif
+  assign box = 'swatch__box relative inline-flex p-1 ' | append: radius | append: ' ring-1 ring-inset ring-transparent transition-shadow hover:ring-border-strong'
+  if name
+    assign box = box | append: ' peer-checked:ring-2 peer-checked:ring-accent peer-focus-visible:outline-1 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus'
+  elsif checked
+    assign box = box | append: ' ring-2 ring-accent'
+  endif
+  assign tag = 'span'
+  if name
+    assign tag = 'label'
+  elsif href
+    assign tag = 'a'
+  endif
+-%}
+<{{ tag }} class="swatch inline-flex cursor-pointer {{ class }}" data-type="{{ type }}" data-size="{{ size }}"
+  {%- if tag == 'label' and id %} for="{{ id }}"{% endif %}
+  {%- if tag == 'a' %} href="{{ href }}"{% endif %}
+  {%- if label %} title="{{ label | escape }}"{% endif %}
+  {%- if attributes and tag != 'label' %} {{ attributes }}{% endif %}>
+  {%- if tag == 'label' -%}
+    <input type="radio" class="peer sr-only" id="{{ id }}" name="{{ name | escape }}" value="{{ value | escape }}"{% if form %} form="{{ form }}"{% endif %}{% if checked %} checked{% endif %}{% if attributes %} {{ attributes }}{% endif %}>
+  {%- endif -%}
+  <span class="{{ box }}">
+    <span class="{{ inner }} {{ radius }} border border-border bg-surface-alt overflow-hidden block{% if sold_out %} opacity-40{% endif %}"{% if bg %} style="background-color: {{ bg }}"{% endif %}>
+      {%- if type == 'image' -%}
+        {{ swatch.image | image_url: width: 112 | image_tag: class: 'size-full object-cover', alt: '', loading: 'lazy' }}
+      {%- endif -%}
+    </span>
+    {%- if sold_out -%}
+      <svg class="pointer-events-none absolute inset-1 size-auto text-text" viewBox="0 0 10 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="10" x2="10" y2="0" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>
+    {%- endif -%}
+  </span>
+  {%- if label %}<span class="sr-only">{{ label }}{% if sold_out %} {{ 'products.product.variant_sold_out_or_unavailable' | t }}{% endif %}</span>{% endif -%}
+</{{ tag }}>

@@ -1,0 +1,12 @@
+{%- comment -%}
+  Figma: Components Atoms / Payment icon (row)
+  class   e.g. 'justify-center' in the cart, none in the footer
+  The accepted payment types of the shop (shop.enabled_payment_types), 24px high, 8px apart. Renders nothing without any.
+{%- endcomment -%}
+{%- if shop.enabled_payment_types.size > 0 -%}
+  <ul class="payment-icons flex flex-wrap items-center gap-2 {{ class }}" role="list" aria-label="{{ 'sections.footer.payment' | t }}">
+    {%- for type in shop.enabled_payment_types -%}
+      <li class="inline-flex h-6 [&>svg]:h-6 [&>svg]:w-auto">{{ type | payment_type_svg_tag: class: 'h-6' }}</li>
+    {%- endfor -%}
+  </ul>
+{%- endif -%}

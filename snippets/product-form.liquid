@@ -1,0 +1,91 @@
+{%- comment -%}
+  Figma: Components Molecules / Product form (206:2430), the buy part
+  Options, purchase options, stock, quantity + Add to cart. Title block, Price block, Delivery and Details are their own snippets, main-product stacks them.
+  product            product object
+  section_id         used for unique ids (the Add to cart button must be ProductSubmitButton-{section_id}, product-info.js reads it)
+  product_form_id    id of the <form>; variant inputs and the selling plan write into it
+  show_stock, show_quantity   booleans, default true   (Figma: Show stock, Show quantity)
+  class
+  Type Standard / Subscription is derived: purchase-options renders only when the product has a selling plan.
+  Type=Add-ons is derived too: add-ons renders when the product has custom.add_ons, and the Add to cart button then shows the total (page product x quantity + checked add-ons) behind a shape dot.
+  Not built: Type=Volume tiers.
+  Replaced by product-info.js after a variant change: data-replace="stock". The Add to cart label is read from the fetched button.
+{%- endcomment -%}
+{%- liquid
+  if show_stock == nil
+    assign show_stock = true
+  endif
+  if show_quantity == nil
+    assign show_quantity = true
+  endif
+
+  assign variant = product.selected_or_first_available_variant
+  assign cart_qty = cart | item_count_for_variant: variant.id
+  assign qty_id = 'Quantity-' | append: section_id
+  assign add_id = 'ProductSubmitButton-' | append: section_id
+  assign error_id = 'ProductFormError-' | append: section_id
+
+  assign add_disabled = false
+  assign add_label = 'products.product.add_to_cart' | t
+  if variant == null
+    assign add_disabled = true
+    assign add_label = 'products.product.unavailable' | t
+  elsif variant.available == false
+    assign add_disabled = true
+    assign add_label = 'products.product.sold_out' | t
+  endif
+
+  assign add_ons_list = product.metafields.custom.add_ons.value
+  assign add_price_text = nil
+  assign add_price_amount = nil
+  if add_ons_list.size > 0 and variant
+    assign add_price_amount = variant.price
+    assign add_price_text = variant.price | money
+  endif
+
+  assign stock_text = ''
+  assign stock_icon = 'icon__circle-check.svg'
+  if variant.available
+    assign stock_text = 'products.product.stock.in_stock' | t
+    if variant.inventory_management and variant.inventory_quantity > 0 and variant.inventory_quantity <= 5
+      assign stock_text = 'products.product.stock.low_stock' | t: count: variant.inventory_quantity
+      assign stock_icon = 'icon__circle-alert.svg'
+    endif
+  endif
+-%}
+<div class="product-form-box flex flex-col gap-6 {{ class }}">
+  {% render 'product__variant-picker', product: product, product_form_id: product_form_id %}
+
+  {% render 'purchase-options', product: product, product_form_id: product_form_id %}
+
+  {% render 'add-ons', product: product, section_id: section_id %}
+
+  <div class="flex flex-col gap-3">
+    {%- if show_stock -%}
+      <div data-replace="stock"{% if stock_text == blank %} hidden{% endif %}>
+        {%- if stock_text != blank -%}
+          {% render 'icon-text', text: stock_text, icon: stock_icon, size: 'sm' %}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <product-form class="product-form flex flex-col gap-3">
+      {%- form 'product',
+        product,
+        id: product_form_id,
+        class: 'form flex flex-col gap-3',
+        novalidate: 'novalidate',
+        data-type: 'add-to-cart-form'
+      -%}
+        <input type="hidden" name="id" value="{{ variant.id }}"{% if add_disabled %} disabled{% endif %}>
+        <div class="flex gap-3">
+          {%- if show_quantity -%}
+            {% render 'quantity-selector', id: qty_id, size: 'lg', product_title: product.title, min: variant.quantity_rule.min, max: variant.quantity_rule.max, step: variant.quantity_rule.increment, cart_qty: cart_qty %}
+          {%- endif -%}
+          {% render 'button', label: add_label, style: 'primary', size: 'lg', type: 'submit', name: 'add', id: add_id, disabled: add_disabled, price: add_price_text, price_amount: add_price_amount, class: 'min-w-0 flex-1' %}
+        </div>
+      {%- endform -%}
+      {% render 'helper-text', text: '', type: 'error', id: error_id, attributes: 'hidden data-product-form-error' %}
+    </product-form>
+  </div>
+</div>

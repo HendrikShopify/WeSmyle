@@ -1,0 +1,4 @@
+{ "snippet": "variant-pill", "figma": "Atoms / Variant pill (69:163)",
+  "matrix": { "size": ["sm","md"], "state": ["default","hover","focus"] },
+  "params": { "label": "M", "name": "size" },
+  "extras": [ { "label": "M", "name": "s2", "checked": true }, { "label": "XL", "name": "s3", "sold_out": true }, { "label": "XS", "name": "s4", "sold_out": true, "checked": true }, { "label": "M" } ] }

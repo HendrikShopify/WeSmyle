@@ -1,0 +1,88 @@
+{%- comment -%}
+  Figma: Components Atoms / Predictive search panel (State: Results, No results)
+  Rendered by the Section Rendering API from search-form.js and injected into [data-predictive-search].
+  Groups: Suggestions (queries + collections), Pages (pages + articles), Products; then "Search for".
+{%- endcomment -%}
+{%- if predictive_search.performed -%}
+  {%- liquid
+    assign queries = predictive_search.resources.queries
+    assign collections = predictive_search.resources.collections
+    assign pages = predictive_search.resources.pages
+    assign articles = predictive_search.resources.articles
+    assign products = predictive_search.resources.products
+    assign suggestions_count = queries.size | plus: collections.size
+    assign pages_count = pages.size | plus: articles.size
+    assign total_results = suggestions_count | plus: pages_count | plus: products.size
+    assign search_for_label = 'templates.search.search_for' | t: terms: predictive_search.terms
+  -%}
+  <div id="predictive-search-results-groups-wrapper" class="predictive-search flex flex-col gap-6" role="listbox" aria-label="{{ 'general.search.search' | t | escape }}">
+    {%- if total_results == 0 -%}
+      <p class="text-body-base text-text-muted">{{ 'templates.search.no_results' | t: terms: predictive_search.terms }}</p>
+    {%- endif -%}
+
+    {%- if suggestions_count > 0 -%}
+      {%- capture items -%}
+        {%- for query in queries -%}
+          {%- assign option_id = 'predictive-search-option-query-' | append: forloop.index -%}
+          {% render 'search-suggestion', type: 'query', text: query.styled_text, label: query.text, href: query.url, id: option_id %}
+        {%- endfor -%}
+        {%- for collection in collections -%}
+          {%- assign option_id = 'predictive-search-option-collection-' | append: forloop.index -%}
+          {% render 'search-suggestion', type: 'title', text: collection.title, href: collection.url, id: option_id %}
+        {%- endfor -%}
+      {%- endcapture -%}
+      {%- assign group_title = 'templates.search.suggestions' | t -%}
+      {% render 'search-result-group', title: group_title, items: items, id: 'predictive-search-queries' %}
+    {%- endif -%}
+
+    {%- if pages_count > 0 -%}
+      {%- capture items -%}
+        {%- for page in pages -%}
+          {%- assign option_id = 'predictive-search-option-page-' | append: forloop.index -%}
+          {% render 'search-suggestion', type: 'title', text: page.title, href: page.url, id: option_id %}
+        {%- endfor -%}
+        {%- for article in articles -%}
+          {%- assign option_id = 'predictive-search-option-article-' | append: forloop.index -%}
+          {% render 'search-suggestion', type: 'title', text: article.title, href: article.url, id: option_id %}
+        {%- endfor -%}
+      {%- endcapture -%}
+      {%- assign group_title = 'templates.search.pages' | t -%}
+      {% render 'search-result-group', title: group_title, items: items, id: 'predictive-search-pages' %}
+    {%- endif -%}
+
+    {%- if products.size > 0 -%}
+      {%- capture items -%}
+        {%- for product in products -%}
+          {%- assign option_id = 'predictive-search-option-product-' | append: forloop.index -%}
+          {% render 'search-product-result', product: product, id: option_id, show_rating: true, show_quick_add: true, section_id: section.id %}
+        {%- endfor -%}
+      {%- endcapture -%}
+      {%- assign group_title = 'templates.search.products' | t -%}
+      {% render 'search-result-group', title: group_title, items: items, id: 'predictive-search-products' %}
+    {%- endif -%}
+
+    <div class="flex justify-end">
+      {% render 'button', label: search_for_label, style: 'primary', size: 'sm', type: 'submit', id: 'predictive-search-option-search-keywords', attributes: 'form="search-drawer-form" role="option" aria-selected="false" tabindex="-1" data-predictive-search-search-for-text' %}
+    </div>
+  </div>
+
+  <span class="sr-only" data-predictive-search-live-region-count-value>
+    {%- liquid
+      if total_results == 0
+        echo 'templates.search.no_results' | t: terms: predictive_search.terms
+      else
+        echo 'templates.results_with_count' | t: count: total_results | append: ': '
+        if suggestions_count > 0
+          echo 'templates.search.results_suggestions_with_count' | t: count: suggestions_count | append: ', '
+        endif
+        if pages_count > 0
+          echo 'templates.search.results_pages_with_count' | t: count: pages_count | append: ', '
+        endif
+        if products.size > 0
+          echo 'templates.search.results_products_with_count' | t: count: products.size
+        endif
+      endif
+    -%}
+  </span>
+{%- endif -%}
+

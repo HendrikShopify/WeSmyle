@@ -1,0 +1,22 @@
+<script src="{{ 'product-slider.js' | asset_url }}" defer="defer"></script>
+
+<div class="overflow-clip relative">
+  <div class="mx-auto w-full max-w-page px-page-margin" swiper="product-slider">
+    <div class="swiper">
+      <div class="swiper-wrapper flex">
+        {% for product in collections.all.products limit: 10 %}
+          <div class="swiper-slide w-[25%] flex-none">
+            {% render 'product-card', product: product, section_id: section.id, quick_add: 'button' %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      <div class="swiper-pagination"></div>
+
+      <!-- Navigation Buttons -->
+      <div swiper="prev" class="swiper-button-prev">prev</div>
+      <div swiper="next" class="swiper-button-next">next</div>
+    </div>
+  </div>
+</div>

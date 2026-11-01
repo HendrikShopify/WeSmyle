@@ -1,0 +1,6 @@
+{ "snippet": "newsletter-input", "figma": "Atoms / Newsletter input (105:1060)", "width": 400,
+  "matrix": { "style": ["inline","attached","underline"], "state": ["default","focus"] },
+  "params": { "id": "demo-nl", "value": "" },
+  "extras": [ { "style": "inline", "value": "hendrik@slashcheckout", "error": true }, { "style": "attached", "value": "hendrik@slashcheckout", "error": true }, { "style": "underline", "value": "hendrik@slashcheckout", "error": true },
+              { "style": "inline", "value": "hendrik@slashcheckout.com", "success": true }, { "style": "attached", "value": "hendrik@slashcheckout.com", "success": true }, { "style": "underline", "value": "hendrik@slashcheckout.com", "success": true },
+              { "style": "inline", "icon_leading": "icon__mail.svg" } ] }

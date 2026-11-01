@@ -1,0 +1,64 @@
+{
+ "snippet": "media-thumbnail",
+ "figma": "Components Atoms / Media thumbnail (157:5064)",
+ "width": 72,
+ "matrix": {
+  "selected": [
+   false,
+   true
+  ]
+ },
+ "params": {
+  "index": 1,
+  "media": {
+   "id": 100,
+   "media_type": "image",
+   "width": 800,
+   "height": 1000,
+   "alt": "Photo 1",
+   "src": "https://placehold.co/800x1000/e5e5e5/e5e5e5",
+   "preview_image": {
+    "src": "https://placehold.co/800x1000/e5e5e5/e5e5e5",
+    "width": 800,
+    "height": 1000,
+    "alt": "Photo 1"
+   }
+  }
+ },
+ "extras": [
+  {
+   "media": {
+    "id": 100,
+    "media_type": "video",
+    "width": 800,
+    "height": 1000,
+    "alt": "Photo 1",
+    "src": "https://placehold.co/800x1000/e5e5e5/e5e5e5",
+    "preview_image": {
+     "src": "https://placehold.co/800x1000/e5e5e5/e5e5e5",
+     "width": 800,
+     "height": 1000,
+     "alt": "Photo 1"
+    }
+   },
+   "selected": false
+  },
+  {
+   "media": {
+    "id": 100,
+    "media_type": "video",
+    "width": 800,
+    "height": 1000,
+    "alt": "Photo 1",
+    "src": "https://placehold.co/800x1000/e5e5e5/e5e5e5",
+    "preview_image": {
+     "src": "https://placehold.co/800x1000/e5e5e5/e5e5e5",
+     "width": 800,
+     "height": 1000,
+     "alt": "Photo 1"
+    }
+   },
+   "selected": true
+  }
+ ]
+}

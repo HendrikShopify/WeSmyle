@@ -1,0 +1,22 @@
+{%- comment -%}
+  Figma: Sections / UGC, Layout=Carousel
+  Placeholder: no videos yet, so the cards play lorem.video clips. Pass Shopify video media to snippets/ugc.liquid when the data source is decided.
+{%- endcomment -%}
+{% render 'ugc',
+  title: 'Seen on you',
+  layout: 'carousel',
+  link_label: 'Follow us',
+  link_url: '#',
+  section_id: section.id
+%}
+
+{% schema %}
+{
+  "name": "UGC carousel",
+  "presets": [
+    {
+      "name": "UGC carousel"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,43 @@
+<div class="">
+  <div class="">
+    <div class="">
+      {%- if card_collection.featured_image -%}
+        <div class="">
+          <div class="">
+            <img
+              srcset="
+                {%- if card_collection.featured_image.width >= 165 -%}{{ card_collection.featured_image | image_url: width: 165 }} 165w,{%- endif -%}
+                {%- if card_collection.featured_image.width >= 330 -%}{{ card_collection.featured_image | image_url: width: 330 }} 330w,{%- endif -%}
+                {%- if card_collection.featured_image.width >= 535 -%}{{ card_collection.featured_image | image_url: width: 535 }} 535w,{%- endif -%}
+                {%- if card_collection.featured_image.width >= 750 -%}{{ card_collection.featured_image | image_url: width: 750 }} 750w,{%- endif -%}
+                {%- if card_collection.featured_image.width >= 1000 -%}{{ card_collection.featured_image | image_url: width: 1000 }} 1000w,{%- endif -%}
+                {%- if card_collection.featured_image.width >= 1500 -%}{{ card_collection.featured_image | image_url: width: 1500 }} 1500w,{%- endif -%}
+                {%- if card_collection.featured_image.width >= 3000 -%}{{ card_collection.featured_image | image_url: width: 3000 }} 3000w,{%- endif -%}
+                {{ card_collection.featured_image | image_url }} {{ card_collection.featured_image.width }}w
+              "
+              src="{{ card_collection.featured_image | image_url: width: 1500 }}"
+              alt="{{ card_collection.featured_image.alt | escape }}"
+              height="{{ card_collection.featured_image.height }}"
+              width="{{ card_collection.featured_image.width }}"
+              loading="lazy"
+            >
+          </div>
+        </div>
+      {%- endif -%}
+      <div class="">
+        <div class="">
+          <h3 class="">
+            <a href="{{ card_collection.url }}">
+              {{- card_collection.title | escape -}}
+            </a>
+          </h3>
+          {%- if card_collection.description != blank -%}
+            <p class="">
+              {{- card_collection.description | strip_html | truncatewords: 12 -}}
+            </p>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

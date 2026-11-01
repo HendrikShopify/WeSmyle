@@ -1,0 +1,2 @@
+{ "snippet": "count-badge", "figma": "Components Atoms / Count badge (79:489)",
+  "matrix": { "style": ["accent","neutral"], "size": ["sm","md"] }, "params": { "count": 3 }, "extras": [ { "count": 12, "style": "accent" }, { "count": 120, "style": "neutral" } ] }

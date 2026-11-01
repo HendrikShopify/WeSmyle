@@ -1,0 +1,43 @@
+{%- comment -%}
+  Figma: Components Atoms / Checkbox
+  label       text                                  (Figma: Label, Show label)
+  count       number, shown as (n)                  (Figma: Count, Show count)
+  indicator   check | square                        (Figma: Indicator)
+  id, name, value, checked, disabled, required, class, attributes
+  States: Hover = :hover, Focus = :focus-visible, Checked = :checked, Disabled = [disabled]
+{%- endcomment -%}
+{%- liquid
+  assign indicator = indicator | default: 'check'
+  assign box = 'peer size-5 shrink-0 appearance-none rounded-sm border bg-background transition-colors cursor-pointer hover:border-text focus-visible:outline-none focus-visible:border-focus disabled:cursor-not-allowed disabled:bg-disabled disabled:border-disabled'
+  if indicator == 'square'
+    assign box = box | append: ' border-border-strong checked:border-accent'
+  else
+    assign box = box | append: ' border-border-strong checked:bg-accent checked:border-accent'
+  endif
+-%}
+<label class="checkbox inline-flex items-center gap-2 text-body-base text-text cursor-pointer has-[:disabled]:text-text-disabled has-[:disabled]:cursor-not-allowed {{ class }}" data-indicator="{{ indicator }}">
+  <span class="relative inline-flex size-5 shrink-0">
+    <input
+      type="checkbox"
+      class="{{ box }}"
+      {%- if id %} id="{{ id }}"{% endif -%}
+      {%- if name %} name="{{ name }}"{% endif -%}
+      {%- if value %} value="{{ value | escape }}"{% endif -%}
+      {%- if checked %} checked{% endif -%}
+      {%- if disabled %} disabled{% endif -%}
+      {%- if required %} required{% endif -%}
+      {%- if attributes %} {{ attributes }}{% endif -%}
+    >
+    {%- if indicator == 'square' -%}
+      <span class="pointer-events-none absolute inset-0 m-auto size-2.5 rounded-xs bg-accent opacity-0 peer-checked:opacity-100 peer-disabled:bg-text-disabled" aria-hidden="true"></span>
+    {%- else -%}
+      <span class="pointer-events-none absolute inset-0 m-auto size-4 text-accent-contrast opacity-0 peer-checked:opacity-100 peer-disabled:text-text-disabled [&>svg]:size-full" aria-hidden="true">{{ 'icon__check.svg' | inline_asset_content }}</span>
+    {%- endif -%}
+  </span>
+  {%- if label -%}
+    <span class="inline-flex items-center gap-1">
+      <span>{{ label }}</span>
+      {%- if count %}<span class="text-text-muted">({{ count }})</span>{% endif -%}
+    </span>
+  {%- endif -%}
+</label>

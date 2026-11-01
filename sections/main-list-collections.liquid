@@ -1,0 +1,17 @@
+<div class="mx-auto w-full max-w-page px-page-margin">
+  <h1 class="">Collections</h1>
+
+  {%- paginate collections by 5 -%}
+    <ul
+      class="product-grid"
+      role="list"
+    >
+      {%- for collection in collections -%}
+        <li class="">
+          {% render 'card-collection', card_collection: collection %}
+        </li>
+      {%- endfor -%}
+    </ul>
+    {% render 'pagination', paginate: paginate %}
+  {%- endpaginate -%}
+</div>

@@ -1,0 +1,110 @@
+{
+ "snippet": "media-gallery",
+ "figma": "Molecules / Media gallery (204:1554)",
+ "width": 784,
+ "matrix": {
+  "layout": [
+   "thumbnails-left",
+   "thumbnails-bottom",
+   "grid"
+  ]
+ },
+ "params": {
+  "product": {
+   "id": 1,
+   "title": "Blanc Everyday Tee",
+   "media": [
+    {
+     "id": 100,
+     "media_type": "image",
+     "width": 800,
+     "height": 1000,
+     "alt": "Photo 1",
+     "src": "https://placehold.co/800x1000/e5e5e5/e5e5e5",
+     "preview_image": {
+      "src": "https://placehold.co/800x1000/e5e5e5/e5e5e5",
+      "width": 800,
+      "height": 1000,
+      "alt": "Photo 1"
+     }
+    },
+    {
+     "id": 101,
+     "media_type": "image",
+     "width": 800,
+     "height": 1000,
+     "alt": "Photo 2",
+     "src": "https://placehold.co/800x1000/dcdcdc/dcdcdc",
+     "preview_image": {
+      "src": "https://placehold.co/800x1000/dcdcdc/dcdcdc",
+      "width": 800,
+      "height": 1000,
+      "alt": "Photo 2"
+     }
+    },
+    {
+     "id": 102,
+     "media_type": "image",
+     "width": 800,
+     "height": 1000,
+     "alt": "Photo 3",
+     "src": "https://placehold.co/800x1000/d2d2d2/d2d2d2",
+     "preview_image": {
+      "src": "https://placehold.co/800x1000/d2d2d2/d2d2d2",
+      "width": 800,
+      "height": 1000,
+      "alt": "Photo 3"
+     }
+    },
+    {
+     "id": 103,
+     "media_type": "video",
+     "width": 800,
+     "height": 1000,
+     "alt": "Photo 4",
+     "src": "https://placehold.co/800x1000/c8c8c8/c8c8c8",
+     "preview_image": {
+      "src": "https://placehold.co/800x1000/c8c8c8/c8c8c8",
+      "width": 800,
+      "height": 1000,
+      "alt": "Photo 4"
+     }
+    },
+    {
+     "id": 104,
+     "media_type": "image",
+     "width": 800,
+     "height": 1000,
+     "alt": "Photo 5",
+     "src": "https://placehold.co/800x1000/bebebe/bebebe",
+     "preview_image": {
+      "src": "https://placehold.co/800x1000/bebebe/bebebe",
+      "width": 800,
+      "height": 1000,
+      "alt": "Photo 5"
+     }
+    }
+   ],
+   "variants": [],
+   "selected_or_first_available_variant": {
+    "id": 11,
+    "price": 4900,
+    "compare_at_price": 5900,
+    "available": true,
+    "featured_media": {
+     "id": 100
+    }
+   }
+  },
+  "section_id": "demo",
+  "show_zoom": true,
+  "show_badge": true
+ },
+ "extras": [
+  {
+   "layout": "thumbnails-left",
+   "show_badge": false,
+   "show_zoom": false
+  }
+ ]
+}

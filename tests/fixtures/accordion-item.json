@@ -1,0 +1,26 @@
+{
+ "snippet": "accordion-item",
+ "figma": "Atoms / Accordion item (99:672)",
+ "width": 480,
+ "matrix": {
+  "icon": [
+   "chevron",
+   "plus"
+  ],
+  "open": [
+   false,
+   true
+  ]
+ },
+ "params": {
+  "title": "How long does shipping take?",
+  "content": "<p>Orders ship within 1 to 2 business days.</p>"
+ },
+ "extras": [
+  {
+   "title": "Color",
+   "count": 3,
+   "open": true
+  }
+ ]
+}

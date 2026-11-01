@@ -1,0 +1,34 @@
+{%- comment -%}
+  Figma: Components Atoms / Rating
+  value        0 to 5, drives the stars and the score text   (Figma: Score)
+  count        number of reviews                             (Figma: Count)
+  size         sm | md                                       (Figma: Size)
+  show_score   boolean, default true                         (Figma: Show score)
+  show_count   boolean, default true                         (Figma: Show count)
+  class        placement only
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  if show_score == nil
+    assign show_score = true
+  endif
+  if show_count == nil
+    assign show_count = true
+  endif
+  if size == 'sm'
+    assign score_text = 'text-label-sm'
+    assign count_text = 'text-body-xs'
+  else
+    assign score_text = 'text-label-base'
+    assign count_text = 'text-body-sm'
+  endif
+-%}
+<div class="rating inline-flex items-center gap-2 {{ class }}" data-size="{{ size }}">
+  {%- render 'rating-stars', value: value, size: size -%}
+  {%- if show_score or show_count -%}
+    <span class="inline-flex items-center gap-1">
+      {%- if show_score %}<span class="{{ score_text }} text-text">{{ value | times: 1.0 | round: 1 }}</span>{% endif -%}
+      {%- if show_count %}<span class="{{ count_text }} text-text-muted">({{ count | default: 0 }})</span>{% endif -%}
+    </span>
+  {%- endif -%}
+</div>

@@ -1,0 +1,32 @@
+{%- comment -%}
+  Figma: Components Atoms / Purchase option
+  One selectable choice in the buy box: one-time purchase or subscription.
+  type               one-time | subscription                   (Figma: Type)
+  label              title                                     (Figma: Title)
+  price              amount in cents                           (Figma: Price)
+  compare_at_price   amount in cents, shown struck through
+  badge              text of the saving badge, subscription only (Figma: Saving)
+  content            captured markup shown while selected: description, frequency, benefits   (Figma: Show details)
+  price_key          data-purchase-price value, so purchase-options.js can swap the price
+  name, value, id, checked, class
+  The radio carries data-purchase-type; the card reads it with :has(). Frequency=Dropdown|Buttons is decided by what the parent passes in content.
+  States: Hover = :hover, Selected = radio :checked, Focus = :focus-visible on the radio
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'one-time'
+  assign card = 'purchase-option group/option relative block rounded-input border border-border bg-background p-4 transition-colors hover:border-border-strong has-[[data-purchase-type]:checked]:border-accent has-[[data-purchase-type]:checked]:bg-surface has-[[data-purchase-type]:checked]:shadow-[inset_0_0_0_1px_var(--color-accent)] has-[[data-purchase-type]:focus-visible]:border-focus'
+  assign radio_attributes = 'data-purchase-type'
+-%}
+<div class="{{ card }} {{ class }}" data-type="{{ type }}">
+  <div class="flex items-center gap-3">
+    {% render 'radio', id: id, name: name, value: value, checked: checked, attributes: radio_attributes, class: 'shrink-0' %}
+    <label for="{{ id }}" class="flex flex-1 items-center gap-2 text-label-base text-text cursor-pointer after:absolute after:inset-0">
+      <span>{{ label }}</span>
+      {%- if badge != blank -%}{% render 'badge', label: badge, type: 'sale', style: 'subtle', size: 'sm' %}{%- endif -%}
+    </label>
+    <span class="relative" data-purchase-price="{{ price_key }}">{% render 'price', price: price, compare_at_price: compare_at_price, size: 'md' %}</span>
+  </div>
+  {%- if content != blank -%}
+    <div class="relative z-[1] mt-3 hidden flex-col gap-3 pl-8 group-has-[[data-purchase-type]:checked]/option:flex">{{ content }}</div>
+  {%- endif -%}
+</div>

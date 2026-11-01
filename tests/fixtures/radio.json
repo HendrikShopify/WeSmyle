@@ -1,0 +1,26 @@
+{
+ "snippet": "radio",
+ "figma": "Atoms / Radio (71:236)",
+ "matrix": {
+  "checked": [
+   false,
+   true
+  ],
+  "state": [
+   "default",
+   "hover",
+   "focus",
+   "disabled"
+  ]
+ },
+ "params": {
+  "label": "Standard shipping"
+ },
+ "extras": [
+  {
+   "label": "Express",
+   "count": 3,
+   "name": "x"
+  }
+ ]
+}

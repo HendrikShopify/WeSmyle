@@ -1,0 +1,40 @@
+{%- comment -%}
+  Figma: Components Atoms / Rating input
+  name         radio group name (default rating)
+  id           prefix for the radio ids (default: name)
+  value        0 to 5, the selected star                 (Figma: Value)
+  required     boolean
+  class        placement only
+  attributes   extra attributes on every radio
+  States: Hover = pointer preview (rating-input.js), Focus = :focus-visible on a radio, Filled = [data-filled] on the star
+  JS: rating-input.js
+{%- endcomment -%}
+{%- liquid
+  assign name = name | default: 'rating'
+  assign id = id | default: name
+  assign value = value | default: 0 | plus: 0
+-%}
+<rating-input class="rating-input flex items-center gap-1 rounded-xs has-[:focus-visible]:outline-1 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus {{ class }}">
+  {%- for i in (1..5) -%}
+    <label class="relative size-8 shrink-0 cursor-pointer text-rating-empty data-[filled]:text-rating" data-rating-star{% if i <= value %} data-filled{% endif %}>
+      <input
+        type="radio"
+        class="absolute inset-0 size-full cursor-pointer opacity-0"
+        id="{{ id }}-{{ i }}"
+        name="{{ name }}"
+        value="{{ i }}"
+        {%- if i == value %} checked{% endif -%}
+        {%- if required %} required{% endif -%}
+        {%- if attributes %} {{ attributes }}{% endif -%}
+      >
+      <span class="block size-full [&>svg]:size-full" aria-hidden="true">{{ 'icon__star.svg' | inline_asset_content }}</span>
+      <span class="sr-only">
+        {%- if i == 1 -%}
+          {{ 'reviews.form.star_one' | t: count: i }}
+        {%- else -%}
+          {{ 'reviews.form.star_other' | t: count: i }}
+        {%- endif -%}
+      </span>
+    </label>
+  {%- endfor -%}
+</rating-input>

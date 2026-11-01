@@ -1,0 +1,80 @@
+{%- comment -%}
+  Figma: Components Sections / UGC (Layout, Viewport)
+  title       heading text
+  layout      carousel | grid, default carousel                     (Figma: Layout)
+  videos      list of Shopify video media. Empty renders placeholder cards, `count` of them.
+  count       number of placeholder cards, default 8 for the carousel and 4 for the grid
+  link_label, link_url   optional link beside the heading, e.g. Follow us
+  section_id  unique ids
+  class
+  Grid: 2 columns, 4 from lg, Video 4:5. Carousel: Video 9:16 cards on a Swiper track (carousel-track.js, same as Featured collection), arrows from lg and a progress line.
+  Carousel cards are 55 wide (220px) on mobile (the next one peeks) and a fifth of the container from lg.
+{%- endcomment -%}
+{%- liquid
+  assign layout = layout | default: 'carousel'
+  assign placeholders = 'cat,bunny,corgi' | split: ','
+  assign card_count = videos.size | default: 0
+  if card_count == 0
+    if count == nil
+      if layout == 'grid'
+        assign count = 4
+      else
+        assign count = 8
+      endif
+    endif
+    assign card_count = count
+  endif
+  assign previous_label = 'sections.ugc.previous' | t
+  assign next_label = 'sections.ugc.next' | t
+  assign heading_id = 'UgcTitle-' | append: section_id
+-%}
+<section class="py-12 lg:py-20 {{ class }}" data-layout="{{ layout }}" aria-labelledby="{{ heading_id }}">
+  {%- if layout == 'carousel' -%}
+    <script src="{{ 'carousel-track.js' | asset_url }}" defer="defer"></script>
+    <carousel-track class="flex flex-col gap-6 lg:gap-10">
+  {%- else -%}
+    <div class="flex flex-col gap-6 lg:gap-10">
+  {%- endif -%}
+      <div data-page-edge class="mx-auto flex w-full max-w-page items-center justify-between gap-6 px-page-margin">
+        <h2 id="{{ heading_id }}" class="text-heading-4 text-text lg:text-heading-3">{{ title }}</h2>
+        <div class="flex shrink-0 items-center gap-6">
+          {%- if link_label != blank -%}
+            {% render 'link', label: link_label, href: link_url, size: 'md', icon_trailing: 'icon__arrow-right.svg' %}
+          {%- endif -%}
+          {%- if layout == 'carousel' -%}
+            <div class="flex items-center gap-2 max-lg:hidden">
+              {% render 'icon-button', icon: 'icon__arrow-left.svg', label: previous_label, style: 'secondary', size: 'md', disabled: true, attributes: 'data-carousel-prev' %}
+              {% render 'icon-button', icon: 'icon__arrow-right.svg', label: next_label, style: 'secondary', size: 'md', attributes: 'data-carousel-next' %}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- if layout == 'grid' -%}
+        <div class="mx-auto w-full max-w-page px-page-margin">
+          <ul class="grid grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-3">
+            {%- for i in (1..card_count) -%}
+{%- assign clip = forloop.index0 | modulo: 3 -%}
+              <li>{% render 'video', media: videos[forloop.index0], ratio: '4:5', placeholder: placeholders[clip] %}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- else -%}
+        <div class="swiper overflow-hidden" data-carousel-track>
+          <ul class="swiper-wrapper flex">
+            {%- for i in (1..card_count) -%}
+{%- assign clip = forloop.index0 | modulo: 3 -%}
+              <li class="swiper-slide w-55 shrink-0 lg:w-[calc((min(100%,var(--container-page))_-_2*var(--page-margin)_-_48px)/5)]" data-carousel-slide>{% render 'video', media: videos[forloop.index0], ratio: '9:16', placeholder: placeholders[clip] %}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+        <div class="mx-auto w-full max-w-page px-page-margin">
+          {% render 'carousel-indicators', count: card_count, active: 1, type: 'line' %}
+        </div>
+      {%- endif -%}
+  {%- if layout == 'carousel' -%}
+    </carousel-track>
+  {%- else -%}
+    </div>
+  {%- endif -%}
+</section>

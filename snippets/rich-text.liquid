@@ -1,0 +1,18 @@
+{%- comment -%}
+  Figma: Components Molecules / Rich text (built from Rich text block: Heading 1 to 4, Lead, Paragraph, Bulleted list, Numbered list, Quote, Image, Divider)
+  content   the HTML (article.content, page.content, product.description)
+  class     placement only; the parent sets the width (max-w-prose-width)
+  24px between blocks, 16px extra above h2 and h3. Lead has no HTML equivalent; the first paragraph stays body/base.
+{%- endcomment -%}
+<div class="rich-text flex flex-col gap-6 text-body-base text-text
+  [&_h1]:text-heading-1 [&_h2]:text-heading-2 [&_h2]:mt-4 [&_h3]:text-heading-3 [&_h3]:mt-4 [&_h4]:text-heading-4 [&_h5]:text-heading-5 [&_h6]:text-heading-6
+  [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-[0.15em] [&_a:hover]:no-underline [&_a:hover]:text-accent-hover
+  [&_strong]:font-semibold [&_b]:font-semibold
+  [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2 [&_ul]:list-disc [&_ul]:pl-7 [&_ol]:flex [&_ol]:flex-col [&_ol]:gap-2 [&_ol]:list-decimal [&_ol]:pl-7 [&_li]:pl-1
+  [&_blockquote]:border-l-2 [&_blockquote]:border-text [&_blockquote]:pl-6 [&_blockquote]:text-heading-5 [&_blockquote_cite]:mt-3 [&_blockquote_cite]:block [&_blockquote_cite]:text-body-sm [&_blockquote_cite]:not-italic [&_blockquote_cite]:text-text-muted
+  [&_img]:w-full [&_img]:h-auto [&_figcaption]:mt-3 [&_figcaption]:text-body-sm [&_figcaption]:text-text-muted
+  [&_hr]:my-4 [&_hr]:h-px [&_hr]:border-0 [&_hr]:bg-border
+  [&_iframe]:w-full [&_iframe]:aspect-video [&_table]:w-full [&_table]:text-body-sm [&_th]:py-2 [&_th]:text-left [&_th]:text-label-base [&_td]:py-2 [&_td]:border-t [&_td]:border-border
+  {{ class }}">
+  {{ content }}
+</div>

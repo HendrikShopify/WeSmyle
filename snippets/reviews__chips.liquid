@@ -1,0 +1,13 @@
+{%- comment -%}
+  Active filter chips (Chip type Active) under the toolbar with a Clear all link; hidden without filters.
+  JS: reviews__ui.js fills [data-reviews-chip-list] from the template and shows the row.
+{%- endcomment -%}
+{%- assign clear_label = 'reviews.clear_all' | t -%}
+<div class="flex flex-wrap items-center gap-2 pb-8" data-reviews-chips hidden>
+  <div class="contents" data-reviews-chip-list></div>
+  {% render 'link', label: clear_label, size: 'sm', attributes: 'data-reviews-clear' %}
+</div>
+
+<template data-reviews-chip>
+  {% render 'chip', type: 'active', label: '', attributes: 'data-reviews-chip', label_attributes: 'data-reviews-chip-label' %}
+</template>

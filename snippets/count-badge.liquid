@@ -1,0 +1,24 @@
+{%- comment -%}
+  Figma: Components Atoms / Count badge
+  count   number or text                 (Figma: Count)
+  style   accent | neutral               (Figma: Style)
+  size    sm | md                        (Figma: Size)
+  class   placement only (absolute positioning is set by the parent)
+  attributes  extra attributes for JS hooks, e.g. 'hidden'
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'accent'
+  assign size = size | default: 'md'
+  assign base = 'count-badge inline-flex items-center justify-center rounded-full px-1 text-label-sm tabular-nums leading-none'
+  if style == 'neutral'
+    assign look = 'bg-surface-alt text-text'
+  else
+    assign look = 'bg-accent text-accent-contrast'
+  endif
+  if size == 'sm'
+    assign dim = 'h-4 min-w-4'
+  else
+    assign dim = 'h-5 min-w-5'
+  endif
+-%}
+<span class="{{ base }} {{ look }} {{ dim }} {{ class }}" data-style="{{ style }}" data-size="{{ size }}"{% if attributes %} {{ attributes }}{% endif %}>{{ count | default: 0 }}</span>

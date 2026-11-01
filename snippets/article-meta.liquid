@@ -1,0 +1,59 @@
+{%- comment -%}
+  Figma: Components Molecules / Article meta
+  article            the article object
+  show_tag           boolean, first tag (default true)                 (Figma: Show tag + Tag)
+  show_date          boolean (default true)                            (Figma: Date)
+  show_author        boolean (default false)                           (Figma: Show author + Author)
+  show_reading_time  boolean, words / 200 (default true)               (Figma: Show reading time + Reading time)
+  tone               default | inverse, inverse for text over images   (Figma: Tone)
+  class              placement only
+  Items are separated by 3px dot shapes, never characters.
+{%- endcomment -%}
+{%- liquid
+  assign tone = tone | default: 'default'
+  if show_tag == nil
+    assign show_tag = true
+  endif
+  if show_date == nil
+    assign show_date = true
+  endif
+  if show_reading_time == nil
+    assign show_reading_time = true
+  endif
+  if tone == 'inverse'
+    assign strong = 'text-text-inverse'
+    assign muted = 'text-text-inverse/80'
+    assign dot = 'bg-text-inverse/80'
+  else
+    assign strong = 'text-text'
+    assign muted = 'text-text-muted'
+    assign dot = 'bg-text-muted'
+  endif
+  assign tag = article.tags.first
+  assign words = article.content | strip_html | split: ' ' | size
+  assign minutes = words | divided_by: 200 | at_least: 1
+  assign reading_time = 'blogs.article.reading_time' | t: minutes: minutes
+  assign list = ''
+  if show_date
+    assign date_text = article.published_at | date: '%-d %B %Y'
+    assign list = list | append: date_text | append: '||'
+  endif
+  if show_author and article.author != blank
+    assign list = list | append: article.author | append: '||'
+  endif
+  if show_reading_time
+    assign list = list | append: reading_time | append: '||'
+  endif
+  assign items = list | split: '||'
+-%}
+<div class="article-meta flex flex-wrap items-center gap-2 {{ class }}" data-tone="{{ tone }}">
+  {%- if show_tag and tag != blank -%}
+    <span class="text-label-caps {{ strong }}">{{ tag }}</span>
+  {%- endif -%}
+  {%- for item in items -%}
+    {%- if show_tag and tag != blank or forloop.index > 1 -%}
+      <span class="size-[3px] shrink-0 rounded-full {{ dot }}" aria-hidden="true"></span>
+    {%- endif -%}
+    <span class="text-body-xs {{ muted }}">{{ item }}</span>
+  {%- endfor -%}
+</div>

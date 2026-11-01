@@ -1,0 +1,34 @@
+{%- comment -%}
+  Figma: Components Atoms / Free shipping bar
+  threshold   amount in cents, default 5000 (no theme setting yet; settings come later)
+  State In progress / Reached is derived from cart.total_price.
+{%- endcomment -%}
+{%- liquid
+  assign threshold = threshold | default: 5000 | times: 1
+  if threshold <= 0
+    break
+  endif
+  assign remaining = threshold | minus: cart.total_price
+  assign progress = cart.total_price | times: 100 | divided_by: threshold
+  assign reached = false
+  if remaining <= 0
+    assign reached = true
+    assign progress = 100
+  endif
+  assign remaining_money = remaining | money
+-%}
+<div class="free-shipping-bar flex w-full flex-col gap-2 {{ class }}" data-state="{% if reached %}reached{% else %}in-progress{% endif %}" aria-live="polite">
+  <div class="flex items-center gap-2 text-body-sm text-text">
+    {%- if reached -%}
+      <span class="size-4 shrink-0 text-success [&>svg]:size-full" aria-hidden="true">{{ 'icon__success.svg' | inline_asset_content }}</span>
+      <span>{{ 'sections.cart.free_shipping_reached' | t }}</span>
+    {%- else -%}
+      <span>{{ 'sections.cart.free_shipping_remaining_html' | t: amount: remaining_money }}</span>
+    {%- endif -%}
+  </div>
+  {%- if reached -%}
+    {% render 'progress-bar', value: 100, style: 'success', size: 'sm' %}
+  {%- else -%}
+    {% render 'progress-bar', value: progress, style: 'accent', size: 'sm' %}
+  {%- endif -%}
+</div>

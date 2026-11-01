@@ -1,0 +1,48 @@
+/* Range slider thumbs: two native range inputs stacked on one track. Pseudo-elements cannot take utility classes. */
+.range-slider__input {
+    @apply pointer-events-none absolute inset-0 m-0 h-5 w-full appearance-none bg-transparent outline-none;
+}
+
+.range-slider__input::-webkit-slider-runnable-track {
+    @apply h-5 bg-transparent;
+}
+
+.range-slider__input::-moz-range-track {
+    @apply h-5 bg-transparent;
+}
+
+.range-slider__input::-webkit-slider-thumb {
+    @apply pointer-events-auto size-5 cursor-grab appearance-none rounded-full border-2 border-accent bg-background transition-colors;
+}
+
+.range-slider__input::-moz-range-thumb {
+    @apply pointer-events-auto size-5 cursor-grab rounded-full border-2 border-accent bg-background transition-colors;
+}
+
+.range-slider__input:hover::-webkit-slider-thumb {
+    @apply bg-accent-subtle;
+}
+
+.range-slider__input:hover::-moz-range-thumb {
+    @apply bg-accent-subtle;
+}
+
+.range-slider__input:focus-visible::-webkit-slider-thumb {
+    @apply border-focus;
+}
+
+.range-slider__input:focus-visible::-moz-range-thumb {
+    @apply border-focus;
+}
+
+.range-slider__input:active::-webkit-slider-thumb {
+    @apply cursor-grabbing;
+}
+
+.range-slider__input:disabled::-webkit-slider-thumb {
+    @apply cursor-not-allowed border-disabled bg-background;
+}
+
+.range-slider__input:disabled::-moz-range-thumb {
+    @apply cursor-not-allowed border-disabled bg-background;
+}

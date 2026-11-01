@@ -1,0 +1,29 @@
+{%- comment -%}
+  Figma: Components Atoms / Swatch overflow
+  count   number of swatches not shown (Style=Count) or the total (Style=Text)
+  style   count | text                                   (Figma: Style)
+  size    xs | sm, matches the swatches next to it       (Figma: Size)
+  href    link to the product; without it the overflow is a button that reveals the hidden swatches
+  attributes  extra attributes for JS hooks, e.g. 'data-swatch-more' (swatch-more.js shows the extra swatches on the product card)
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'count'
+  assign size = size | default: 'xs'
+  if size == 'sm'
+    assign dim = 'h-8'
+  else
+    assign dim = 'h-6'
+  endif
+  if style == 'text'
+    assign text = 'products.product.color_count' | t: count: count
+    assign type = 'text-body-xs'
+  else
+    assign text = '+' | append: count
+    assign type = 'text-label-sm'
+  endif
+-%}
+{%- if href -%}
+  <a class="swatch-overflow inline-flex items-center {{ dim }} {{ type }} text-text-muted hover:text-text {{ class }}" href="{{ href }}"{% if attributes %} {{ attributes }}{% endif %}>{{ text }}</a>
+{%- else -%}
+  <button type="button" class="swatch-overflow inline-flex cursor-pointer items-center rounded-xs {{ dim }} {{ type }} text-text-muted hover:text-text focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus {{ class }}"{% if attributes %} {{ attributes }}{% endif %}>{{ text }}</button>
+{%- endif -%}

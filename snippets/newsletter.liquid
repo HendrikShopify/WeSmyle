@@ -1,0 +1,30 @@
+{%- comment -%}
+  Figma: Components Sections / Newsletter (215:7077)
+  layout    centered | with-image                          (Figma: Layout)
+  image     image or media object, only for with-image; without one the section renders centered
+  id        unique id for the form, default newsletter
+  class     placement only
+  Viewport Desktop / Mobile is responsive: 80px padding from lg, 48px below. With image: image 50% on lg (4:3), signup beside it; stacked on mobile (image on top).
+  The signup is the Newsletter signup atom (stacked-center when centered, stacked-left with an image). Text comes from the newsletter.* locale strings.
+{%- endcomment -%}
+{%- liquid
+  assign layout = layout | default: 'centered'
+  assign id = id | default: 'newsletter'
+  if layout == 'with-image' and image == blank
+    assign layout = 'centered'
+  endif
+-%}
+{%- if layout == 'with-image' -%}
+  <div class="newsletter flex flex-col bg-surface lg:flex-row lg:items-center lg:gap-10 {{ class }}" data-layout="{{ layout }}">
+    <div class="w-full lg:w-1/2">
+      {% render 'media', media: image, ratio: '4:3', sizes: '(min-width: 1024px) 50vw, 100vw' %}
+    </div>
+    <div class="flex w-full px-page-margin py-12 lg:w-1/2 lg:py-0">
+      {% render 'newsletter-signup', id: id, layout: 'stacked-left', input_style: 'inline' %}
+    </div>
+  </div>
+{%- else -%}
+  <div class="newsletter flex justify-center bg-surface px-page-margin py-12 lg:py-20 {{ class }}" data-layout="{{ layout }}">
+    {% render 'newsletter-signup', id: id, layout: 'stacked-center', input_style: 'inline' %}
+  </div>
+{%- endif -%}

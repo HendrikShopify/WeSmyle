@@ -1,0 +1,38 @@
+{%- comment -%}
+  Figma: Components Atoms / Accordion item
+  title      header text                                           (Figma: Title)
+  content    captured markup for the panel                         (Figma: Content slot)
+  icon       chevron | plus                                        (Figma: Icon)
+  open       boolean                                               (Figma: Expanded)
+  divider    boolean, default true                                 (Figma: Show divider)
+  count      number of selected values shown as a neutral count badge; 0 or blank hides it   (Figma: Show selected count)
+  name       same name on sibling items makes them exclusive (native details name)
+  attributes extra attributes on <details> for JS hooks, e.g. 'data-filter-group'
+  id, class
+  Native <details>/<summary>: open state is [open], no JS. Opens with a height transition on ::details-content where supported.
+{%- endcomment -%}
+{%- liquid
+  assign icon = icon | default: 'chevron'
+  if divider == nil
+    assign divider = true
+  endif
+-%}
+<details class="accordion-item group {% if divider %}border-b border-border{% endif %} [&::details-content]:h-0 [&::details-content]:overflow-hidden motion-safe:[&::details-content]:transition-[height,content-visibility] motion-safe:[&::details-content]:duration-300 motion-safe:[&::details-content]:ease-out motion-safe:[&::details-content]:[transition-behavior:allow-discrete] open:[&::details-content]:h-auto {{ class }}"{% if id %} id="{{ id }}"{% endif %}{% if name %} name="{{ name }}"{% endif %}{% if open %} open{% endif %} data-icon="{{ icon }}"{% if attributes %} {{ attributes }}{% endif %}>
+  <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-sm py-5 text-label-lg text-text outline-none focus-visible:border focus-visible:border-focus [&::-webkit-details-marker]:hidden">
+    <span class="flex items-center gap-2">
+      <span>{{ title }}</span>
+      {%- if count and count != 0 -%}
+        {% render 'count-badge', count: count, style: 'neutral', size: 'md', attributes: 'data-accordion-count' %}
+      {%- endif -%}
+    </span>
+    {%- if icon == 'plus' -%}
+      <span class="relative size-5 shrink-0 text-text" aria-hidden="true">
+        <span class="absolute inset-0 [&>svg]:size-full group-open:hidden">{{ 'icon__plus.svg' | inline_asset_content }}</span>
+        <span class="absolute inset-0 hidden [&>svg]:size-full group-open:block">{{ 'icon__min.svg' | inline_asset_content }}</span>
+      </span>
+    {%- else -%}
+      <span class="size-5 shrink-0 text-text transition-transform group-open:rotate-180 [&>svg]:size-full" aria-hidden="true">{{ 'icon__chevron-down.svg' | inline_asset_content }}</span>
+    {%- endif -%}
+  </summary>
+  <div class="pb-5 text-body-base text-text">{{ content }}</div>
+</details>

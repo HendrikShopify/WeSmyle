@@ -1,0 +1,13 @@
+{
+ "snippet": "grid-density-switch",
+ "figma": "Molecules / Grid density switch (136:2977)",
+ "width": 240,
+ "matrix": {
+  "icon": ["matrix", "outline", "text"]
+ },
+ "params": {},
+ "extras": [
+  { "icon": "matrix", "show_label": true },
+  { "icon": "matrix", "current": "small" }
+ ]
+}

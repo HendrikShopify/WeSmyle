@@ -1,0 +1,30 @@
+{%- comment -%}
+  Figma: Sections / Comparison table
+  Placeholder data: static strings until the data source is decided (metaobjects or settings).
+  Swap the strings and keep the shape described in snippets/comparison-table.liquid.
+{%- endcomment -%}
+{%- liquid
+  assign columns = 'Blanc::text::true::Shop now::/collections/all##Others::text##Others::text' | split: '##'
+  assign rows = 'Real fruit juice::::Pressed from whole fruit, never from concentrate.::yes;;yes;;no##No added sugar::::::yes;;no;;no##Recyclable cans::::Aluminium cans that go straight into household recycling.::yes;;partial;;no##Small batches::::::yes;;none;;no##Free shipping over €35::::::yes;;yes;;partial' | split: '##'
+-%}
+{% render 'comparison-table',
+  title: 'Why Blanc',
+  description: 'Real fruit, honest packaging and free shipping. See how we compare.',
+  columns: columns,
+  rows: rows,
+  highlight: 'fill',
+  dividers: 'solid',
+  style: 'icon',
+  id: section.id
+%}
+
+{% schema %}
+{
+  "name": "Comparison table",
+  "presets": [
+    {
+      "name": "Comparison table"
+    }
+  ]
+}
+{% endschema %}

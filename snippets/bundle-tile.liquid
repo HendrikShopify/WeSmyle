@@ -1,0 +1,52 @@
+{%- comment -%}
+  Figma: Components Atoms / Bundle product tile
+  product      Product object; the first available variant is added
+  section_id   for unique ids
+  sizes        sizes attribute for the image
+  class        placement only
+  State (Default, Added, Max reached) is data-state on the root, written by bundle-builder.js:
+    default  Add to bundle button
+    added    selected ring, In bundle badge, quantity selector
+    full     dimmed, disabled Bundle full button
+  Hooks: data-bundle-tile (variant id, price in cents, title, image), data-bundle-add, data-bundle-qty (the quantity input, min 0)
+{%- endcomment -%}
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign sizes = sizes | default: '(min-width: 1024px) 20vw, 50vw'
+  assign thumb = product.featured_media.preview_image | image_url: width: 160
+  assign unavailable = false
+  unless variant.available
+    assign unavailable = true
+  endunless
+  assign add_label = 'sections.bundle_builder.add' | t
+  if unavailable
+    assign add_label = 'products.product.sold_out' | t
+  endif
+  assign in_bundle_label = 'sections.bundle_builder.in_bundle' | t
+  assign qty_id = 'BundleQty-' | append: section_id | append: '-' | append: variant.id
+-%}
+<article
+  class="bundle-tile group/tile flex flex-col gap-3 {{ class }}"
+  data-bundle-tile
+  data-state="default"
+  data-variant-id="{{ variant.id }}"
+  data-price="{{ variant.price }}"
+  data-title="{{ product.title | escape }}"
+  data-image="{{ thumb }}"
+  {%- if unavailable %} data-unavailable{% endif %}
+>
+  <div class="relative group-data-[state=full]/tile:opacity-50">
+    {% render 'media', media: product.featured_media, ratio: '4:5', sizes: sizes, class: 'ring-inset ring-accent transition-shadow group-data-[state=added]/tile:ring-2' %}
+    <div class="absolute top-3 left-3 hidden group-data-[state=added]/tile:block">
+      {% render 'badge', label: in_bundle_label, type: 'success', size: 'sm' %}
+    </div>
+  </div>
+  <div class="flex flex-col gap-1 group-data-[state=full]/tile:opacity-50">
+    <h3 class="text-label-base text-text">{{ product.title }}</h3>
+    {% render 'price', product: product, use_variant: true, size: 'sm' %}
+  </div>
+  {% render 'button', label: add_label, style: 'secondary', size: 'sm', type: 'button', disabled: unavailable, attributes: 'data-bundle-add', class: 'w-full group-data-[state=added]/tile:hidden' %}
+  <div class="hidden group-data-[state=added]/tile:block">
+    {% render 'quantity-selector', size: 'sm', min: 0, value: 0, id: qty_id, product_title: product.title, attributes: 'data-bundle-qty', class: 'w-full justify-between' %}
+  </div>
+</article>

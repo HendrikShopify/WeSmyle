@@ -1,0 +1,143 @@
+{%- comment -%}
+  Figma: Components Sections / Comparison table (Highlight, Dividers, Viewport)
+  title, description   heading above the table
+  columns   list of strings, one per column, fields split by "::" in this order:
+              name::type (text | logo | image | product)::highlighted (true)::cta_label::cta_url::product handle::image file
+  rows      list of strings, one per row, fields split by "::" in this order:
+              label::description::info::values
+            values are split by ";;" and line up with the columns. Each is
+            yes | no | partial | none, free text, or "yes | a short sentence" (see Comparison cell)
+  Strings keep the data source swappable: Liquid cannot build objects, so a metaobject adapter only has to emit the same strings.
+  highlight fill | card | tint | none                          (Figma: Highlight) styles every column marked highlighted
+  dividers  solid | dashed | dotted | none                     (Figma: Dividers, none is code only)
+  style     icon | filled | ball                               how yes, no and partial are drawn (Comparison cell Style)
+  id        unique id for tooltips, pass section.id
+  class     placement only
+  Real <table> markup: the first column holds row labels (th scope=row), the highlighted column is first in the data.
+  Up to three columns fit on mobile. With more, the table scrolls sideways with the label column pinned and a fade on the right edge.
+  The label column is two units wide next to one unit per column (Figma: 5-column grid, label spans 2).
+  The data source is the caller's: the section passes static placeholder data for now.
+{%- endcomment -%}
+{%- liquid
+  assign highlight = highlight | default: 'fill'
+  assign dividers = dividers | default: 'solid'
+  assign style = style | default: 'icon'
+  assign id = id | default: 'comparison-table'
+  assign column_count = columns.size
+  assign total_units = column_count | plus: 2
+  assign label_width = 200.0 | divided_by: total_units | round: 2
+  assign scrollable = false
+  if column_count > 3
+    assign scrollable = true
+  endif
+  assign min_width = column_count | times: 6 | plus: 9
+  assign has_cta = false
+  for column in columns
+    assign fields = column | split: '::'
+    if fields[3] != blank
+      assign has_cta = true
+    endif
+  endfor
+  assign sticky = ''
+  if scrollable
+    assign sticky = 'max-lg:sticky max-lg:left-0 max-lg:z-10 max-lg:bg-background max-lg:hover:z-20 max-lg:focus-within:z-20 max-lg:has-[[aria-expanded=true]]:z-20'
+  endif
+  assign feature_label = 'sections.comparison_table.feature' | t
+-%}
+<script src="{{ 'comparison-table.js' | asset_url }}" defer="defer"></script>
+<comparison-table class="comparison-table block {{ class }}" data-highlight="{{ highlight }}" data-dividers="{{ dividers }}" data-style="{{ style }}" data-scrollable="{{ scrollable }}">
+  <div class="mx-auto flex w-full max-w-page flex-col items-center gap-8 px-page-margin py-12 lg:gap-12 lg:py-20">
+    {%- if title != blank or description != blank -%}
+      <header class="flex w-full max-w-prose-width flex-col gap-4 text-center">
+        {%- if title != blank -%}<h2 class="text-heading-4 text-text lg:text-heading-3">{{ title }}</h2>{%- endif -%}
+        {%- if description != blank -%}<p class="text-body-base text-text-muted">{{ description }}</p>{%- endif -%}
+      </header>
+    {%- endif -%}
+    <div class="relative w-full max-w-prose-width">
+      <div class="relative {% if scrollable %}max-lg:-mx-page-margin max-lg:overflow-x-auto max-lg:px-page-margin max-lg:pb-20{% endif %}" data-comparison-scroll>
+        <table class="w-full table-fixed border-separate border-spacing-0 text-left{% if scrollable %} max-lg:min-w-(--comparison-min){% endif %}" style="--comparison-label: {{ label_width }}%;{% if scrollable %} --comparison-min: {{ min_width }}rem;{% endif %}">
+          {%- if title != blank -%}<caption class="sr-only">{{ title }}</caption>{%- endif -%}
+          <colgroup>
+            <col class="{% if scrollable %}w-36 lg:w-(--comparison-label){% else %}w-(--comparison-label){% endif %}">
+            {%- for column in columns -%}<col>{%- endfor -%}
+          </colgroup>
+          <thead>
+            <tr>
+              {% render 'comparison-row-label', label: feature_label, scope: 'col', hidden_label: true, divider: dividers, class: sticky %}
+              {%- for column in columns -%}
+                {%- liquid
+                  assign fields = column | split: '::'
+                  assign cell_highlight = ''
+                  if fields[2] == 'true' and highlight != 'none'
+                    assign cell_highlight = highlight
+                  endif
+                  assign column_product = nil
+                  if fields[5] != blank
+                    assign column_product = all_products[fields[5]]
+                  endif
+                  assign column_image = nil
+                  if fields[6] != blank
+                    assign column_image = images[fields[6]]
+                  endif
+                  assign head_edge = ''
+                  if cell_highlight != blank
+                    assign head_edge = 'top'
+                  endif
+                -%}
+                {% render 'comparison-column-header', type: fields[1], name: fields[0], image: column_image, product: column_product, highlight: cell_highlight, edge: head_edge, divider: dividers %}
+              {%- endfor -%}
+            </tr>
+          </thead>
+          <tbody>
+            {%- for row in rows -%}
+              {%- liquid
+                assign row_divider = dividers
+                assign row_edge = ''
+                if forloop.last and has_cta == false
+                  assign row_divider = 'none'
+                  assign row_edge = 'bottom'
+                endif
+                assign tip_id = 'ComparisonTip-' | append: id | append: '-' | append: forloop.index
+                assign row_fields = row | split: '::'
+                assign row_values = row_fields[3] | split: ';;'
+              -%}
+              <tr>
+                {% render 'comparison-row-label', label: row_fields[0], description: row_fields[1], info: row_fields[2], id: tip_id, divider: row_divider, class: sticky %}
+                {%- for column in columns -%}
+                  {%- liquid
+                    assign fields = column | split: '::'
+                    assign cell_highlight = ''
+                    assign cell_edge = ''
+                    if fields[2] == 'true' and highlight != 'none'
+                      assign cell_highlight = highlight
+                      assign cell_edge = row_edge
+                    endif
+                  -%}
+                  {% render 'comparison-cell', value: row_values[forloop.index0], style: style, highlight: cell_highlight, edge: cell_edge, divider: row_divider %}
+                {%- endfor -%}
+              </tr>
+            {%- endfor -%}
+            {%- if has_cta -%}
+              <tr>
+                <td class="{{ sticky }}"></td>
+                {%- for column in columns -%}
+                  {%- liquid
+                    assign fields = column | split: '::'
+                    assign cell_highlight = ''
+                    if fields[2] == 'true' and highlight != 'none'
+                      assign cell_highlight = highlight
+                    endif
+                  -%}
+                  {% render 'comparison-cell', cta_label: fields[3], cta_url: fields[4], highlight: cell_highlight, edge: 'bottom', divider: 'none' %}
+                {%- endfor -%}
+              </tr>
+            {%- endif -%}
+          </tbody>
+        </table>
+      </div>
+      {%- if scrollable -%}
+        <div class="pointer-events-none absolute inset-y-0 -right-page-margin w-10 bg-linear-to-l from-background to-transparent transition-opacity duration-150 data-[at-end=true]:opacity-0 lg:hidden" data-comparison-fade data-at-end="false" aria-hidden="true"></div>
+      {%- endif -%}
+    </div>
+  </div>
+</comparison-table>

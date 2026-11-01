@@ -1,0 +1,30 @@
+{%- comment -%}
+  Figma: Components Atoms / Wishlist toggle
+  product   Product object (handle + selected variant id feed wishlist.js)
+  style     plain | floating        floating has a background, for use over media   (Figma: Style)
+  size      sm | md                                                                 (Figma: Size)
+  class     placement only
+  Checked = [aria-pressed=true] (set by wishlist.js from localStorage), Hover = :hover, Focus = :focus-visible
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'plain'
+  assign size = size | default: 'sm'
+  assign variant_id = product.selected_or_first_available_variant.id
+  if size == 'md'
+    assign dim = 'size-11 [&_svg]:size-6'
+  else
+    assign dim = 'size-9 [&_svg]:size-5'
+  endif
+  assign base = 'wishlist-toggle inline-flex items-center justify-center rounded-full text-text transition-colors cursor-pointer outline-none hover:bg-surface focus-visible:border focus-visible:border-focus aria-pressed:text-accent aria-pressed:[&_svg]:fill-current'
+  if style == 'floating'
+    assign base = base | append: ' bg-background'
+  endif
+  assign label = 'products.product.add_to_wishlist' | t
+-%}
+{%- if variant_id != blank -%}
+  <wishlist-button class="inline-flex {{ class }}" data-product-handle="{{ product.handle }}" data-variant-id="{{ variant_id }}" data-replace="wishlist-button">
+    <button type="button" class="{{ base }} {{ dim }}" aria-pressed="false" aria-label="{{ label | escape }}" data-style="{{ style }}" data-size="{{ size }}">
+      {{ 'icon__heart.svg' | inline_asset_content }}
+    </button>
+  </wishlist-button>
+{%- endif -%}

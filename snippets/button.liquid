@@ -1,0 +1,72 @@
+{%- comment -%}
+  Figma: Components Atoms / Button
+  label          text                              (Figma: Label)
+  style          primary | secondary               (Figma: Style)
+  size           sm | md | lg                      (Figma: Size)
+  icon_leading   asset name, e.g. icon__arrow-left.svg   (Figma: Leading icon + swap)
+  icon_trailing  asset name                        (Figma: Trailing icon + swap)
+  price          formatted price shown after the label behind a shape dot, e.g. €48,90   (Figma: Show price + Price)
+  price_amount   price in cents, written to data-amount on the price so scripts can recalculate it
+  href           renders an <a> instead of <button>
+  type           button | submit (default submit for forms when name is given)
+  id             element id
+  name, value    form attributes
+  attributes     extra attributes, e.g. form="cart"
+  disabled       boolean                           (Figma: State=Disabled)
+  loading        boolean, sets aria-busy           (Figma: State=Loading)
+  class          placement only (w-full, mt-4), never restyling
+  States: Hover = :hover, Focus = :focus-visible, Disabled = [disabled] (the price hides), Loading = [aria-busy]
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'primary'
+  assign size = size | default: 'md'
+  assign base = 'button group relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-button border font-body transition-colors duration-150 cursor-pointer select-none focus-visible:outline-none focus-visible:border-focus disabled:cursor-not-allowed aria-busy:cursor-progress'
+  case style
+    when 'secondary'
+      assign look = 'bg-background text-accent border-accent hover:bg-accent-subtle disabled:border-disabled disabled:text-text-disabled disabled:bg-background'
+    else
+      assign look = 'bg-accent text-accent-contrast border-accent hover:bg-accent-hover hover:border-accent-hover disabled:bg-disabled disabled:border-disabled disabled:text-text-disabled'
+  endcase
+  case size
+    when 'sm'
+      assign dim = 'h-9 px-3 text-label-base'
+      assign icon_size = 'size-4'
+    when 'lg'
+      assign dim = 'h-13 px-6 text-label-lg'
+      assign icon_size = 'size-5'
+    else
+      assign dim = 'h-11 px-5 text-label-lg'
+      assign icon_size = 'size-5'
+  endcase
+  assign classes = base | append: ' ' | append: look | append: ' ' | append: dim
+  if class != blank
+    assign classes = classes | append: ' ' | append: class
+  endif
+  assign tag = 'button'
+  if href != blank
+    assign tag = 'a'
+  endif
+-%}
+<{{ tag }}
+  class="{{ classes }}"
+  data-style="{{ style }}"
+  data-size="{{ size }}"
+  {%- if id %} id="{{ id }}"{% endif -%}
+  {%- if attributes %} {{ attributes }}{% endif -%}
+  {%- if tag == 'a' %} href="{{ href }}"{% else %} type="{{ type | default: 'button' }}"{% endif -%}
+  {%- if name %} name="{{ name }}"{% endif -%}
+  {%- if value %} value="{{ value }}"{% endif -%}
+  {%- if disabled %} disabled{% endif -%}
+  {%- if loading %} aria-busy="true"{% endif -%}
+>
+  {%- if icon_leading %}<span class="{{ icon_size }} shrink-0 group-aria-busy:invisible [&>svg]:size-full" aria-hidden="true">{{ icon_leading | inline_asset_content }}</span>{% endif -%}
+  <span data-button-label class="group-aria-busy:invisible">{{ label }}</span>
+  {%- if price != blank %}
+    <span class="size-1 shrink-0 rounded-full bg-current group-disabled:hidden group-aria-busy:invisible" aria-hidden="true"></span>
+    <span data-button-price{% if price_amount != blank %} data-amount="{{ price_amount }}"{% endif %} class="group-disabled:hidden group-aria-busy:invisible">{{ price }}</span>
+  {%- endif %}
+  {%- if icon_trailing %}<span class="{{ icon_size }} shrink-0 group-aria-busy:invisible [&>svg]:size-full" aria-hidden="true">{{ icon_trailing | inline_asset_content }}</span>{% endif -%}
+  <span class="button__spinner pointer-events-none absolute inset-0 hidden items-center justify-center group-aria-busy:flex" aria-hidden="true">
+    <span class="{{ icon_size }} animate-spin rounded-full border-2 border-current border-r-transparent"></span>
+  </span>
+</{{ tag }}>

@@ -1,0 +1,15 @@
+{%- comment -%}
+  Figma: Sections / Product recommendations (Featured collection, carousel)
+  Shows a fixed collection under the product. The handle is set here; theme settings come later.
+{%- endcomment -%}
+{%- liquid
+  assign recommendations_handle = 'all'
+  assign recommendations_collection = collections[recommendations_handle]
+  assign recommendations_title = 'sections.product_recommendations.title' | t
+-%}
+{% render 'featured-collection',
+  collection: recommendations_collection,
+  title: recommendations_title,
+  layout: 'carousel',
+  section_id: section.id
+%}

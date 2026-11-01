@@ -1,0 +1,22 @@
+{%- comment -%}
+  Figma: Sections / Blog posts
+  Shows the latest articles of a fixed blog. The handle and layout are set here; theme settings come later.
+{%- endcomment -%}
+{%- liquid
+  assign blog_posts_handle = 'news'
+  assign blog_posts_blog = blogs[blog_posts_handle]
+  assign blog_posts_title = 'sections.blog_posts.title' | t
+-%}
+{% render 'blog-posts',
+  blog: blog_posts_blog,
+  title: blog_posts_title,
+  layout: 'grid',
+  section_id: section.id
+%}
+
+{% schema %}
+{
+  "name": "Blog posts",
+  "presets": [{ "name": "Blog posts" }]
+}
+{% endschema %}

@@ -1,0 +1,25 @@
+{%- comment -%}
+  Figma: Sections / Section breakout, Preset=Media band
+  Placeholder copy and no media until the section is composed for a client. Replace the strings; the layout stays in snippets/section-breakout.liquid.
+{%- endcomment -%}
+{%- assign items = 'Pressed within hours::A short sentence about this step, written to sit under the title.##Pressed within hours::A short sentence about this step, written to sit under the title.##Pressed within hours::A short sentence about this step, written to sit under the title.' | split: '##' -%}
+{% render 'section-breakout',
+  preset: 'media_band',
+  eyebrow: 'Our process',
+  heading: 'Made slowly, in small batches',
+  body: 'Every batch is pressed, tasted and signed off by hand before it leaves the kitchen. Nothing is rushed and nothing is wasted.',
+  button_label: 'Shop now',
+  button_url: '/collections/all',
+  items: items
+%}
+
+{% schema %}
+{
+  "name": "Breakout media band",
+  "presets": [
+    {
+      "name": "Breakout media band"
+    }
+  ]
+}
+{% endschema %}

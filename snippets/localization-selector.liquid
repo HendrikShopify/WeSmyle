@@ -1,0 +1,79 @@
+{%- comment -%}
+  Figma: Components Atoms / Localization selector
+  field      language | country                  (Figma: Field)
+  placement  bottom | top, opens below (default) or above the trigger (footer)
+  align      start | end, which edge of the trigger the menu lines up with (default end)
+  style      filled | ghost                       (Figma: Style)
+  languages  array of language objects; defaults to localization.available_languages
+  countries  array of country objects; defaults to localization.available_countries
+  current    iso code of the current language or country; defaults to localization.language.iso_code / localization.country.iso_code
+  items      captured localization-item markup instead of languages or countries (demos, tests)
+  trigger_label  country only: text on the trigger, e.g. "NL / EUR"; defaults to the current country's code and currency
+  open       boolean, renders the menu open       (Figma: State=Open)
+  id, class
+  Renders nothing when there is only one language (or one country).
+  Language or country switcher: button trigger + Localization menu inside Shopify's localization form. Picking an entry submits the form (hidden locale_code or country_code).
+  States: Hover = :hover, Focus = :focus-visible, Open = [aria-expanded=true]
+  Type=Flag exists in Figma only: the theme has no flag assets yet.
+{%- endcomment -%}
+{%- liquid
+  assign field = field | default: 'language'
+  assign languages = languages | default: localization.available_languages
+  assign countries = countries | default: localization.available_countries
+  assign choices = languages
+  assign input_name = 'locale_code'
+  assign label_key = 'localization.language_label'
+  assign current_default = localization.language.iso_code
+  assign shown = current | upcase
+  if field == 'country'
+    assign choices = countries
+    assign input_name = 'country_code'
+    assign label_key = 'localization.country_label'
+    assign current_default = localization.country.iso_code
+  endif
+  assign current = current | default: current_default
+  assign shown = current | upcase
+  if field == 'country'
+    if trigger_label != blank
+      assign shown = trigger_label
+    elsif localization.country.currency.iso_code != blank
+      assign shown = current | upcase | append: ' / ' | append: localization.country.currency.iso_code
+    endif
+  endif
+  assign style = style | default: 'filled'
+  assign id = id | default: 'localization'
+  assign listbox_id = id | append: '-listbox'
+  assign trigger_id = id | append: '-trigger'
+  assign expanded = 'false'
+  if open
+    assign expanded = 'true'
+  endif
+  if style == 'ghost'
+    assign look = 'bg-transparent px-2 hover:bg-surface aria-expanded:bg-surface'
+  else
+    assign look = 'bg-surface-alt px-3 hover:bg-disabled aria-expanded:bg-disabled'
+  endif
+  assign language_label = label_key | t
+-%}
+{%- if choices.size > 1 or items != blank -%}
+  <localization-form class="localization-selector inline-block {{ class }}">
+    {%- form 'localization', id: id -%}
+      <custom-select class="relative block">
+        <button
+          type="button"
+          class="inline-flex h-9 items-center gap-1 whitespace-nowrap rounded-button border border-transparent text-label-base text-text cursor-pointer outline-none transition-colors focus-visible:border-focus {{ look }}"
+          id="{{ trigger_id }}"
+          aria-haspopup="listbox"
+          aria-expanded="{{ expanded }}"
+          aria-controls="{{ listbox_id }}"
+        >
+          <span class="sr-only">{{ language_label }}</span>
+          <span data-selected-label>{{ shown }}</span>
+          <span class="select__chevron size-4 shrink-0 transition-transform [&>svg]:size-full {% if open %}rotate-180{% endif %}" aria-hidden="true">{{ 'icon__chevron-down.svg' | inline_asset_content }}</span>
+        </button>
+        {% render 'localization-menu', field: field, languages: languages, countries: countries, items: items, current: current, id: listbox_id, labelledby: trigger_id, open: open, align: align, placement: placement %}
+        <input type="hidden" name="{{ input_name }}" value="{{ current | escape }}">
+      </custom-select>
+    {%- endform -%}
+  </localization-form>
+{%- endif -%}

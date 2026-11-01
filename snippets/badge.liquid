@@ -1,0 +1,74 @@
+{%- comment -%}
+  Figma: Components Atoms / Badge
+  label     text; defaults per type from locale strings
+  type      sale | new | low-stock | sold-out | success | neutral   (Figma: Type)
+  style     solid | subtle                                        (Figma: Style)
+  size      sm | md                                               (Figma: Size)
+  icon      asset name, optional                                  (Figma: Icon + swap)
+  class     placement only
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'neutral'
+  assign style = style | default: 'solid'
+  assign size = size | default: 'md'
+  if label == blank
+    case type
+      when 'sale'
+        assign label = 'products.product.on_sale' | t
+      when 'new'
+        assign label = 'products.product.new' | t
+      when 'low-stock'
+        assign label = 'products.product.low_stock' | t
+      when 'sold-out'
+        assign label = 'products.product.sold_out' | t
+      when 'success'
+        assign label = 'products.product.in_stock' | t
+      else
+        assign label = type
+    endcase
+  endif
+  assign base = 'badge inline-flex items-center gap-1 rounded-badge whitespace-nowrap'
+  case style
+    when 'subtle'
+      case type
+        when 'sale'
+        assign look = 'bg-sale-subtle text-sale'
+        when 'new'
+        assign look = 'bg-accent-subtle text-accent'
+        when 'low-stock'
+        assign look = 'bg-warning-subtle text-warning'
+        when 'sold-out'
+        assign look = 'bg-surface-alt text-text-muted'
+        when 'success'
+        assign look = 'bg-success-subtle text-success'
+        else
+        assign look = 'bg-surface text-text'
+      endcase
+    else
+      case type
+        when 'sale'
+        assign look = 'bg-sale text-text-inverse'
+        when 'new'
+        assign look = 'bg-accent text-accent-contrast'
+        when 'low-stock'
+        assign look = 'bg-warning text-text-inverse'
+        when 'sold-out'
+        assign look = 'bg-text-muted text-text-inverse'
+        when 'success'
+        assign look = 'bg-success text-text-inverse'
+        else
+        assign look = 'bg-background text-text border border-border'
+      endcase
+  endcase
+  if size == 'sm'
+    assign dim = 'h-5 px-2 text-label-sm'
+    assign icon_size = 'size-3'
+  else
+    assign dim = 'h-6 px-2 text-label-base'
+    assign icon_size = 'size-3.5'
+  endif
+-%}
+<span class="{{ base }} {{ look }} {{ dim }} {{ class }}" data-type="{{ type }}" data-style="{{ style }}" data-size="{{ size }}">
+  {%- if icon %}<span class="{{ icon_size }} shrink-0 [&>svg]:size-full" aria-hidden="true">{{ icon | inline_asset_content }}</span>{% endif -%}
+  {{ label }}
+</span>

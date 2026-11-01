@@ -1,0 +1,23 @@
+{%- comment -%}
+  Figma: Components Atoms / Icon text
+  text        short line of text                                   (Figma: Text)
+  icon        asset name, e.g. icon__truck.svg, default icon__check.svg   (Figma: Icon swap)
+  size        sm | md                                              (Figma: Size)
+  class, attributes   placement and JS hooks (e.g. data-replace)
+  Used for stock status, USPs, delivery estimates and trust items.
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  assign icon = icon | default: 'icon__check.svg'
+  if size == 'sm'
+    assign icon_class = 'size-4'
+    assign text_class = 'text-body-sm'
+  else
+    assign icon_class = 'size-5'
+    assign text_class = 'text-body-base'
+  endif
+-%}
+<div class="icon-text flex items-center gap-2 text-text {{ text_class }} {{ class }}" data-size="{{ size }}"{% if attributes %} {{ attributes }}{% endif %}>
+  <span class="{{ icon_class }} shrink-0 [&>svg]:size-full" aria-hidden="true">{{ icon | inline_asset_content }}</span>
+  <span>{{ text }}</span>
+</div>

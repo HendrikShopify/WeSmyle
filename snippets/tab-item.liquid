@@ -1,0 +1,31 @@
+{%- comment -%}
+  Figma: Components Atoms / Tab item
+  label, count, id, panel (id of the panel it controls), selected, disabled
+  href    renders a link (aria-current) instead of a tab button, for tabs that navigate (search types)
+  style   underline | pill                                         (Figma: Style)
+  Renders role="tab" with data-tab for custom-tabs.js.
+  States: Hover = :hover, Selected = [aria-selected=true], Focus = :focus-visible, Disabled = [disabled]
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'underline'
+  if style == 'pill'
+    assign look = 'h-9 rounded-chip px-4 hover:bg-surface hover:text-text aria-selected:bg-accent aria-selected:text-accent-contrast aria-selected:[&>span]:text-accent-contrast focus-visible:border focus-visible:border-focus'
+  else
+    assign look = 'h-11 border-b-2 border-transparent px-1 hover:text-text aria-selected:border-accent aria-selected:text-text focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus'
+  endif
+-%}
+<button
+  type="button"
+  role="tab"
+  class="tab-item inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-label-base text-text-muted transition-colors cursor-pointer outline-none disabled:text-text-disabled disabled:cursor-not-allowed {{ look }} {{ class }}"
+  data-tab
+  data-style="{{ style }}"
+  {%- if id %} id="{{ id }}"{% endif %}
+  {%- if panel %} aria-controls="{{ panel }}"{% endif %}
+  aria-selected="{% if selected %}true{% else %}false{% endif %}"
+  tabindex="{% if selected %}0{% else %}-1{% endif %}"
+  {%- if disabled %} disabled{% endif %}
+>
+  <span>{{ label }}</span>
+  {%- if count %}<span class="text-text-muted">({{ count }})</span>{% endif -%}
+</button>

@@ -1,0 +1,24 @@
+{
+ "snippet": "filter-selection-summary",
+ "figma": "Atoms / Filter selection summary (93:584)",
+ "width": 280,
+ "matrix": {
+  "count": [
+   0,
+   2
+  ]
+ },
+ "params": {
+  "reset_href": "#"
+ },
+ "extras": [
+  {
+   "count": 1,
+   "summary": "€20–€80"
+  },
+  {
+   "count": 2,
+   "show_reset": false
+  }
+ ]
+}

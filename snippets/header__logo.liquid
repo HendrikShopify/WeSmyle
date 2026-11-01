@@ -1,0 +1,14 @@
+{%- comment -%}
+  Figma: Components Atoms / Logo (Type=Wordmark)
+  The store logo from assets/logo.svg (placeholder: "Blanc" in Inter Semi Bold, outlined). Height follows layout/logo-height: 24 on mobile, 32 from lg; the width follows the drawing.
+{%- endcomment -%}
+<a href="{{ shop.url }}" class="inline-flex items-center rounded-xs focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus" data-focus-fallback>
+  <img
+    loading="eager"
+    width="106"
+    height="32"
+    class="h-6 w-auto lg:h-8"
+    alt="{{ shop.name | escape }}"
+    src="{{ 'logo.svg' | asset_url }}"
+  >
+</a>

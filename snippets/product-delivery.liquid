@@ -1,0 +1,18 @@
+{%- comment -%}
+  Figma: Components Molecules / Product form / Delivery
+  free_shipping_threshold   cents for the "Free shipping over" line, default 5000 (no theme setting yet)
+  class
+  Three icon-text lines. The texts live in locales (products.product.delivery).
+{%- endcomment -%}
+{%- liquid
+  assign threshold = free_shipping_threshold | default: 5000
+  assign threshold_money = threshold | money_without_trailing_zeros
+  assign free_shipping_text = 'products.product.delivery.free_shipping' | t: amount: threshold_money
+  assign order_before_text = 'products.product.delivery.order_before' | t
+  assign returns_text = 'products.product.delivery.returns' | t
+-%}
+<div class="product-delivery flex flex-col gap-2 {{ class }}">
+  {% render 'icon-text', text: free_shipping_text, icon: 'icon__truck.svg', size: 'sm' %}
+  {% render 'icon-text', text: order_before_text, icon: 'icon__package.svg', size: 'sm' %}
+  {% render 'icon-text', text: returns_text, icon: 'icon__refresh-ccw.svg', size: 'sm' %}
+</div>

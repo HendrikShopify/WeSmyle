@@ -1,0 +1,91 @@
+{%- comment -%}
+  Figma: Components Atoms / Select
+  options      array of labels (e.g. product.options_with_values[0].values, or 'A,B' | split: ',')
+  items        captured menu-item markup instead of options (parent needs per-item attributes); pass selected_label too
+  form         form attribute for the hidden input
+  input_attributes  extra attributes on the hidden input (e.g. data-option-value-id)
+  values       array of values aligned with options; defaults to the labels
+  selected     the selected value
+  placeholder  trigger text when nothing is selected
+  width        fill | hug (Figma: Width). fill stretches to the parent, hug fits the value with the menu at 240px; to fill below a breakpoint pass e.g. class: 'max-md:w-full' (the menu follows the trigger)
+  placement    bottom | top, opens below (default) or above the trigger
+  align        start | end, which edge of the trigger the menu lines up with (default start)
+  name         hidden input name (form value)
+  id, size sm·md·lg, error, disabled, required, describedby, open, class, attributes
+  Accessible select-only combobox: button trigger + listbox + hidden input, driven by custom-select.js.
+  States: Hover = :hover, Focus = :focus-visible, Open = [aria-expanded=true], Disabled = [disabled], Error = [aria-invalid]
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  assign width = width | default: 'fill'
+  assign id = id | default: name | handleize
+  if width == 'hug'
+    assign root_width = 'w-max'
+    assign menu_width = 'w-60 min-w-full'
+  else
+    assign root_width = ''
+    assign menu_width = 'w-full'
+  endif
+  assign listbox_id = id | append: '-listbox'
+  case size
+    when 'sm'
+      assign dim = 'h-9 px-3'
+    when 'lg'
+      assign dim = 'h-13 px-4'
+    else
+      assign dim = 'h-11 px-4'
+  endcase
+  assign trigger = 'select__trigger flex w-full items-center justify-between gap-2 rounded-input border bg-background text-body-base text-text text-left outline-none transition-colors cursor-pointer hover:border-text focus-visible:border-focus aria-expanded:border-text aria-invalid:border-error disabled:bg-surface-alt disabled:border-disabled disabled:text-text-disabled disabled:cursor-not-allowed'
+  if error
+    assign trigger = trigger | append: ' border-error'
+  else
+    assign trigger = trigger | append: ' border-border-strong'
+  endif
+  assign current_label = placeholder
+  assign current_value = ''
+  assign expanded = 'false'
+  if open
+    assign expanded = 'true'
+  endif
+-%}
+{%- if items == blank -%}
+{%- capture items -%}
+  {%- for option in options -%}
+    {%- liquid
+      assign value = option
+      if values
+        assign value = values[forloop.index0]
+      endif
+      assign is_selected = false
+      if selected != blank and value == selected
+        assign is_selected = true
+        assign current_label = option
+        assign current_value = value
+      endif
+      assign option_id = id | append: '-option-' | append: forloop.index
+      render 'menu-item', label: option, value: value, selected: is_selected, id: option_id
+    -%}
+  {%- endfor -%}
+{%- endcapture -%}
+{%- elsif selected != blank -%}
+  {%- assign current_label = selected_label | default: selected -%}
+  {%- assign current_value = selected -%}
+{%- endif -%}
+<custom-select class="select relative block {{ root_width }} {{ class }}" data-size="{{ size }}" data-width="{{ width }}"{% if attributes %} {{ attributes }}{% endif %}>
+  <button
+    type="button"
+    class="{{ trigger }} {{ dim }}"
+    id="{{ id }}"
+    aria-haspopup="listbox"
+    aria-expanded="{{ expanded }}"
+    aria-controls="{{ listbox_id }}"
+    {%- if error %} aria-invalid="true"{% endif %}
+    {%- if describedby %} aria-describedby="{{ describedby }}"{% endif %}
+    {%- if disabled %} disabled{% endif %}
+  >
+    <span class="truncate{% if current_value == blank %} text-text-muted{% endif %}" data-selected-label>{{ current_label }}</span>
+    <span class="size-5 shrink-0 transition-transform [&>svg]:size-full {% if open %}rotate-180{% endif %} select__chevron" aria-hidden="true">{{ 'icon__chevron-down.svg' | inline_asset_content }}</span>
+  </button>
+  {% render 'dropdown-menu', items: items, id: listbox_id, labelledby: id, open: open, align: align, placement: placement, width: menu_width %}
+  <input type="hidden"{% if name %} name="{{ name }}"{% endif %} value="{{ current_value | escape }}"{% if form %} form="{{ form }}"{% endif %}{% if required %} required{% endif %}{% if input_attributes %} {{ input_attributes }}{% endif %}>
+</custom-select>

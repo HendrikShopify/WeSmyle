@@ -1,0 +1,48 @@
+{%- comment -%}
+  Figma: Components Atoms / Pagination
+  paginate   the paginate object
+  style      numbered | numbered-text | compact                    (Figma: Style; Load more is a section concern)
+  anchor     appended to every url, e.g. '#products'
+  class
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'numbered'
+  assign nav_label = 'general.pagination.label' | t
+  if style == 'numbered-text'
+    assign prev_type = 'previous-text'
+    assign next_type = 'next-text'
+  else
+    assign prev_type = 'previous'
+    assign next_type = 'next'
+  endif
+  assign prev_url = nil
+  assign next_url = nil
+  if paginate.previous
+    assign prev_url = paginate.previous.url | append: anchor
+  endif
+  if paginate.next
+    assign next_url = paginate.next.url | append: anchor
+  endif
+-%}
+{%- if paginate.pages > 1 -%}
+  <nav class="pagination flex items-center justify-center {% if style == 'compact' %}gap-3{% else %}gap-1{% endif %} {{ class }}" role="navigation" aria-label="{{ nav_label | escape }}" data-style="{{ style }}" data-pagination>
+    {% render 'pagination-item', type: prev_type, href: prev_url %}
+    {%- if style == 'compact' -%}
+      <span class="text-body-sm text-text-muted">{{ 'general.pagination.status' | t: current: paginate.current_page, total: paginate.pages }}</span>
+    {%- else -%}
+      {%- for part in paginate.parts -%}
+        {%- liquid
+          if part.is_link
+            assign part_url = part.url | append: anchor
+            render 'pagination-item', type: 'number', label: part.title, href: part_url
+          elsif part.title == paginate.current_page
+            render 'pagination-item', type: 'number', label: part.title, current: true
+          else
+            render 'pagination-item', type: 'ellipsis'
+          endif
+        -%}
+      {%- endfor -%}
+    {%- endif -%}
+    {% render 'pagination-item', type: next_type, href: next_url %}
+  </nav>
+{%- endif -%}

@@ -1,0 +1,28 @@
+{%- comment -%}
+  Figma: Components Atoms / Link
+  label          text                            (Figma: Label)
+  href           url; omit for a <button>
+  size           sm | md                         (Figma: Size)
+  icon_trailing  asset name, optional            (Figma: Trailing icon + swap)
+  disabled       boolean                         (Figma: State=Disabled)
+  class          placement only
+  attributes     extra attributes for JS hooks, e.g. 'data-filter-reset'
+  States: Hover = :hover (no underline, muted colour), Focus = :focus-visible ring, Disabled = aria-disabled
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  assign base = 'link inline-flex items-center gap-1 rounded-xs text-accent underline underline-offset-[0.15em] transition-colors hover:no-underline hover:text-accent-hover focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus aria-disabled:text-text-disabled aria-disabled:pointer-events-none cursor-pointer'
+  if size == 'sm'
+    assign dim = 'text-link-sm'
+  else
+    assign dim = 'text-link-base'
+  endif
+  assign tag = 'button'
+  if href != blank
+    assign tag = 'a'
+  endif
+-%}
+<{{ tag }} class="{{ base }} {{ dim }} {{ class }}" data-size="{{ size }}"{% if tag == 'a' %} href="{{ href }}"{% else %} type="button"{% endif %}{% if disabled %} aria-disabled="true"{% if tag == 'a' %} tabindex="-1"{% endif %}{% endif %}{% if attributes %} {{ attributes }}{% endif %}>
+  {{- label -}}
+  {%- if icon_trailing %}<span class="size-4 shrink-0 [&>svg]:size-full" aria-hidden="true">{{ icon_trailing | inline_asset_content }}</span>{% endif -%}
+</{{ tag }}>

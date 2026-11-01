@@ -1,0 +1,102 @@
+{%- comment -%}
+  Figma: Templates / Contact, Section grid / Contact (Desktop, Mobile)
+  Left cell (4 columns): eyebrow (page title), title, body, contact details (shop email, phone, address, opening hours), divider, social links.
+  Right cell (7 columns from column 6): the contact form. Name and Email on one row, Subject select, Message, Send message (lg), privacy note.
+  Mobile: the form comes first, then the details.
+  This is a Section grid preset in Figma; until section-grid and blocks exist (milestone 5) the layout is composed here from the atoms.
+{%- endcomment -%}
+{%- liquid
+  assign title = 'templates.contact.title' | t
+  assign body = 'templates.contact.body' | t
+  assign hours = 'templates.contact.hours' | t
+  assign follow_label = 'templates.contact.follow' | t
+  assign name_label = 'templates.contact.form.name' | t
+  assign email_label = 'templates.contact.form.email' | t
+  assign subject_label = 'templates.contact.form.subject' | t
+  assign subject_placeholder = 'templates.contact.form.subject_placeholder' | t
+  assign subjects = 'templates.contact.form.subjects' | t | split: ', '
+  assign message_label = 'templates.contact.form.message' | t
+  assign message_placeholder = 'templates.contact.form.message_placeholder' | t
+  assign name_placeholder = 'templates.contact.form.name_placeholder' | t
+  assign email_placeholder = 'templates.contact.form.email_placeholder' | t
+  assign send_label = 'templates.contact.form.send' | t
+  assign privacy_url = shop.privacy_policy.url | default: '#'
+  assign privacy_note = 'templates.contact.form.privacy_note_html' | t: url: privacy_url
+  assign name_field = 'contact[' | append: name_label | append: ']'
+  assign subject_field = 'contact[' | append: subject_label | append: ']'
+  assign message_field = 'contact[' | append: message_label | append: ']'
+  assign phone_href = 'tel:' | append: shop.phone | remove: ' '
+  assign mail_href = 'mailto:' | append: shop.email
+-%}
+<div class="mx-auto w-full max-w-page px-page-margin pt-8 pb-12 lg:pt-12 lg:pb-20">
+  <div class="grid gap-y-4 lg:grid-cols-12 lg:gap-x-4 lg:gap-y-6">
+    <div class="order-2 flex flex-col gap-6 lg:order-none lg:col-span-4">
+      <div class="flex flex-col gap-3">
+        <p class="text-label-caps text-text-muted">{{ page.title | escape }}</p>
+        <h1 class="text-heading-2 text-text">{{ title }}</h1>
+        <p class="text-body-base text-text-muted">{{ body }}</p>
+      </div>
+      <ul class="flex flex-col gap-4" role="list">
+        {%- if shop.email != blank -%}
+          <li><a class="rounded-xs focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus" href="{{ mail_href }}">{% render 'icon-text', text: shop.email, icon: 'icon__mail.svg' %}</a></li>
+        {%- endif -%}
+        {%- if shop.phone != blank -%}
+          <li><a class="rounded-xs focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus" href="{{ phone_href }}">{% render 'icon-text', text: shop.phone, icon: 'icon__phone.svg' %}</a></li>
+        {%- endif -%}
+        {%- if shop.address.summary != blank -%}
+          <li>{% render 'icon-text', text: shop.address.summary, icon: 'icon__map-pin.svg' %}</li>
+        {%- endif -%}
+        {%- if hours != blank -%}
+          <li>{% render 'icon-text', text: hours, icon: 'icon__clock.svg' %}</li>
+        {%- endif -%}
+      </ul>
+      {% render 'divider' %}
+      <div class="flex flex-col gap-3">
+        <p class="text-label-caps text-text-muted">{{ follow_label }}</p>
+        {% render 'social-links', size: 'md' %}
+      </div>
+    </div>
+
+    <div class="order-1 lg:order-none lg:col-span-7 lg:col-start-6">
+      {%- form 'contact', id: 'ContactForm', class: 'relative flex flex-col gap-5 [&>.h-captcha]:absolute' -%}
+        {%- if form.posted_successfully? -%}
+          {%- assign success_text = 'templates.contact.form.post_success' | t -%}
+          {% render 'helper-text', text: success_text, type: 'success', attributes: 'tabindex="-1" autofocus' %}
+        {%- elsif form.errors -%}
+          {%- capture error_text -%}{{ 'templates.contact.form.error_heading' | t }} {{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}{%- endcapture -%}
+          {% render 'helper-text', text: error_text, type: 'error', id: 'ContactForm-error' %}
+        {%- endif -%}
+        {%- liquid
+          assign name_value = form.name | default: customer.name
+          assign email_value = form.email | default: customer.email
+          assign email_error = false
+          if form.errors contains 'email'
+            assign email_error = true
+          endif
+        -%}
+        <div class="flex flex-col gap-5 md:flex-row md:gap-4">
+          <div class="flex flex-1 flex-col gap-2">
+            {% render 'field-label', label: name_label, for: 'ContactForm-name' %}
+            {% render 'input', id: 'ContactForm-name', name: name_field, type: 'text', value: name_value, placeholder: name_placeholder, autocomplete: 'name' %}
+          </div>
+          <div class="flex flex-1 flex-col gap-2">
+            {% render 'field-label', label: email_label, for: 'ContactForm-email', required: true %}
+            {% render 'input', id: 'ContactForm-email', name: 'contact[email]', type: 'email', value: email_value, placeholder: email_placeholder, autocomplete: 'email', required: true, error: email_error, describedby: 'ContactForm-error', attributes: 'spellcheck="false" autocapitalize="off"' %}
+          </div>
+        </div>
+        <div class="flex flex-col gap-2">
+          {% render 'field-label', label: subject_label, for: 'ContactForm-subject' %}
+          {% render 'select', id: 'ContactForm-subject', name: subject_field, options: subjects, placeholder: subject_placeholder, size: 'md' %}
+        </div>
+        <div class="flex flex-col gap-2">
+          {% render 'field-label', label: message_label, for: 'ContactForm-message' %}
+          {% render 'textarea', id: 'ContactForm-message', name: message_field, value: form.body, placeholder: message_placeholder, rows: 5 %}
+        </div>
+        <div class="flex flex-wrap gap-3">
+          {% render 'button', label: send_label, style: 'primary', size: 'lg', type: 'submit' %}
+        </div>
+        <p class="text-body-xs text-text-muted [&_a]:underline [&_a]:underline-offset-[0.15em] [&_a:hover]:no-underline">{{ privacy_note }}</p>
+      {%- endform -%}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,2 @@
+{ "snippet": "checkbox", "figma": "Atoms / Checkbox (71:207)", "matrix": { "indicator": ["check","square"], "checked": [false, true], "state": ["default","hover","focus","disabled"] }, "params": { "label": "Subscribe to our newsletter" },
+  "extras": [ { "label": "Black", "count": 12, "checked": true, "indicator": "square" }, { "checked": true } ] }

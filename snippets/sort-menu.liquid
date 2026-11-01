@@ -1,0 +1,46 @@
+{%- comment -%}
+  Figma: Components Atoms / Sort menu
+  The listbox for the sort control: one Menu item per sort option.
+  options     array of { name, value } (collection.sort_options or results.sort_options)
+  current     the selected value (collection.sort_by)
+  items       captured menu-item markup instead of options (demos, tests)
+  id          listbox id (the trigger points at it with aria-controls)
+  labelledby  id of the trigger
+  open        boolean, renders without the hidden attribute
+  placement   bottom | top    (Figma: Placement) opens below (default) or above the trigger
+  align       start | end      (Figma: Align) which edge of the trigger the menu lines up with; default start
+  class       placement only
+{%- endcomment -%}
+{%- liquid
+  assign align_class = 'left-0'
+  if align == 'end'
+    assign align_class = 'right-0'
+  endif
+  assign place_class = 'top-full mt-1'
+  if placement == 'top'
+    assign place_class = 'bottom-full mb-1'
+  endif
+-%}
+<ul
+  class="sort-menu absolute {{ align_class }} {{ place_class }} z-20 flex min-w-60 flex-col rounded-input border border-border bg-background p-1 {{ class }}"
+  role="listbox"
+  {%- if id %} id="{{ id }}"{% endif %}
+  {%- if labelledby %} aria-labelledby="{{ labelledby }}"{% endif %}
+  tabindex="-1"
+  {%- unless open %} hidden{% endunless %}
+>
+  {%- if items != blank -%}
+    {{ items }}
+  {%- else -%}
+    {%- for option in options -%}
+      {%- liquid
+        assign is_current = false
+        if option.value == current
+          assign is_current = true
+        endif
+        assign option_id = id | append: '-' | append: forloop.index
+        render 'menu-item', label: option.name, value: option.value, selected: is_current, id: option_id
+      -%}
+    {%- endfor -%}
+  {%- endif -%}
+</ul>

@@ -1,0 +1,29 @@
+{
+ "snippet": "range-slider",
+ "figma": "Atoms / Range slider (+ Slider handle)",
+ "width": 280,
+ "matrix": {
+  "state": [
+   "default",
+   "disabled"
+  ]
+ },
+ "params": {
+  "min": 0,
+  "max": 120,
+  "value_min": 20,
+  "value_max": 80,
+  "label_min": "From",
+  "label_max": "To"
+ },
+ "extras": [
+  {
+   "value_min": 0,
+   "value_max": 120
+  },
+  {
+   "value_min": 100,
+   "value_max": 120
+  }
+ ]
+}

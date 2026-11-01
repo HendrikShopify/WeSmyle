@@ -1,0 +1,78 @@
+{%- comment -%}
+  Figma: Components Atoms / Media
+  media       Shopify media object (image, video, external_video, model) or a plain image object
+  ratio       1:1 | 4:5 | 3:4 | 2:3 | 4:3 | 3:2 | 16:9 | 21:9 | natural      (Figma: Ratio)
+  sizes       the sizes attribute; the parent owns the layout so it passes this. Required for images.
+  loading     lazy (default) | eager                 eager only for the first media in the viewport
+  fit         cover (default) | contain
+  autoplay    boolean, video only: muted loop playsinline, no controls
+  alt         override for the image alt text
+  class       placement only
+  attributes  JS hooks on the wrapper
+  No media renders the placeholder (Figma: Placeholder icon).
+{%- endcomment -%}
+{%- liquid
+  assign ratio = ratio | default: 'natural'
+  assign loading = loading | default: 'lazy'
+  assign fit = fit | default: 'cover'
+  assign sizes = sizes | default: '100vw'
+  case ratio
+    when '1:1'
+      assign ratio_class = 'aspect-square'
+    when '4:5'
+      assign ratio_class = 'aspect-[4/5]'
+    when '3:4'
+      assign ratio_class = 'aspect-[3/4]'
+    when '2:3'
+      assign ratio_class = 'aspect-[2/3]'
+    when '4:3'
+      assign ratio_class = 'aspect-[4/3]'
+    when '3:2'
+      assign ratio_class = 'aspect-[3/2]'
+    when '16:9'
+      assign ratio_class = 'aspect-video'
+    when '21:9'
+      assign ratio_class = 'aspect-[21/9]'
+    else
+      assign ratio_class = ''
+  endcase
+  if fit == 'contain'
+    assign fit_class = 'object-contain'
+  else
+    assign fit_class = 'object-cover'
+  endif
+  assign inner = 'block size-full ' | append: fit_class
+  if ratio == 'natural'
+    assign inner = 'block w-full h-auto ' | append: fit_class
+  endif
+  assign type = media.media_type | default: 'image'
+  if media == blank
+    assign type = 'placeholder'
+  endif
+-%}
+<div class="media relative overflow-hidden rounded-media bg-surface-alt {{ ratio_class }} {{ class }}" data-ratio="{{ ratio }}" data-type="{{ type }}"{% if attributes %} {{ attributes }}{% endif %}>
+  {%- case type -%}
+    {%- when 'image' -%}
+      {%- liquid
+        assign image = media.preview_image | default: media
+        assign image_alt = alt | default: image.alt | escape
+      -%}
+      {%- if loading == 'eager' -%}
+        {{ image | image_url: width: 2048 | image_tag: widths: '360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048', sizes: sizes, alt: image_alt, width: image.width, height: image.height, class: inner, loading: 'eager', fetchpriority: 'high', decoding: 'async' }}
+      {%- else -%}
+        {{ image | image_url: width: 2048 | image_tag: widths: '360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048', sizes: sizes, alt: image_alt, width: image.width, height: image.height, class: inner, loading: 'lazy', decoding: 'async' }}
+      {%- endif -%}
+    {%- when 'video' -%}
+      {%- if autoplay -%}
+        {{ media | video_tag: image_size: '1080x', autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'metadata', class: inner }}
+      {%- else -%}
+        {{ media | video_tag: image_size: '1080x', controls: true, preload: 'metadata', class: inner }}
+      {%- endif -%}
+    {%- when 'external_video' -%}
+      {{ media | external_video_url: autoplay: autoplay, loop: autoplay, muted: autoplay, playsinline: true | external_video_tag: class: inner, loading: 'lazy', title: media.alt | default: 'Video' }}
+    {%- when 'model' -%}
+      {{ media | model_viewer_tag: image_size: '1080x', class: inner, loading: 'lazy' }}
+    {%- else -%}
+      <span class="media__placeholder absolute inset-0 flex items-center justify-center text-text-muted"><span class="size-6 [&>svg]:size-full">{{ 'icon__image.svg' | inline_asset_content }}</span></span>
+  {%- endcase -%}
+</div>

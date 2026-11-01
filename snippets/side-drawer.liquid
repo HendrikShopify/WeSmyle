@@ -1,0 +1,80 @@
+{%- comment -%}
+  Figma: Components Atoms / Side drawer (overlay + panel; header / body / footer)
+  The shell for every slide-in panel: cart, search, filters, menu, review form.
+
+  id         required, unique. Triggers use data-drawer-trigger="id"
+  title      heading in the drawer-header
+  subtitle   caps label next to the title
+  body       captured markup for the scrolling area
+  footer     captured markup pinned below the body (optional)
+  content    captured markup that replaces header, body and footer entirely
+             (use when a section-rendering target has to wrap all three, see cart-drawer)
+  position   right | left                       (Figma: Drawer Position)
+  size       xs | sm | md | lg  (440 / 600 / 700 / 800px; cart uses sm, filters use xs)   (Figma: Drawer Width)
+  class      extra classes on the panel
+  attributes extra attributes on <side-drawer>
+
+  JS: side-drawer.js. Opens from any [data-drawer-trigger="id"], closes on [data-drawer-close],
+  overlay click or Escape. Fires drawer:open and drawer:close. open(trigger) / close() for scripts.
+{%- endcomment -%}
+{%- liquid
+  assign position = position | default: 'right'
+  assign size = size | default: 'md'
+
+  case size
+    when 'xs'
+      assign width = 'max-w-110'
+    when 'sm'
+      assign width = 'max-w-150'
+    when 'lg'
+      assign width = 'max-w-200'
+    else
+      assign width = 'max-w-175'
+  endcase
+
+  if position == 'left'
+    assign align = 'justify-start'
+  else
+    assign align = 'justify-end'
+  endif
+
+  if title != blank
+    assign labelled = 'aria-labelledby="' | append: id | append: '-title"'
+  else
+    assign fallback_label = 'accessibility.side_drawer' | t
+    assign labelled = 'aria-label="' | append: fallback_label | append: '"'
+  endif
+-%}
+<side-drawer
+  hidden
+  class="fixed inset-0 z-[500] flex {{ align }}"
+  data-modal="{{ id }}"
+  data-position="{{ position }}"
+  data-scroll-lock="false"
+  {%- if attributes %} {{ attributes }}{% endif %}
+>
+  <div class="absolute inset-0 bg-overlay opacity-30" data-modal="bg" aria-hidden="true"></div>
+  <div
+    id="{{ id }}"
+    class="relative flex h-full w-full {{ width }} flex-col bg-background {{ class }}"
+    data-modal="content"
+    role="dialog"
+    aria-modal="true"
+    {{ labelled }}
+    tabindex="-1"
+  >
+    {%- if content != blank -%}
+      {{ content }}
+    {%- else -%}
+      {% render 'drawer-header', title: title, subtitle: subtitle, id: id %}
+      <div class="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-6" data-drawer-body>
+        {{ body }}
+      </div>
+      {%- if footer != blank -%}
+        <div class="border-t border-border bg-background p-6" data-drawer-footer>
+          {{ footer }}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</side-drawer>

@@ -1,0 +1,23 @@
+{%- comment -%}
+  Figma: Components Atoms / Pagination status
+  paginate   the paginate object
+  size       sm | md                              (Figma: Size)
+  class
+  Range label "Showing 1–24 of 64", rendered above or beside Pagination. Renders nothing without items.
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  assign from = paginate.current_offset | plus: 1
+  assign to = paginate.current_offset | plus: paginate.page_size
+  if to > paginate.items
+    assign to = paginate.items
+  endif
+  assign status_text_class = 'text-body-base'
+  if size == 'sm'
+    assign status_text_class = 'text-body-sm'
+  endif
+  assign status_text = 'general.pagination.range' | t: from: from, to: to, total: paginate.items
+-%}
+{%- if paginate.items > 0 -%}
+  <p class="pagination-status {{ status_text_class }} text-text {{ class }}" data-pagination-status>{{ status_text }}</p>
+{%- endif -%}

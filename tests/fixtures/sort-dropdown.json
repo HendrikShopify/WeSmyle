@@ -1,0 +1,69 @@
+{
+ "snippet": "sort-dropdown",
+ "figma": "Atoms / Sort dropdown (139:3429)",
+ "width": 300,
+ "matrix": {
+  "style": [
+   "chip",
+   "select",
+   "text"
+  ],
+  "state": [
+   "default",
+   "hover",
+   "focus"
+  ]
+ },
+ "params": {
+  "options": [
+   {
+    "name": "Featured",
+    "value": "manual"
+   },
+   {
+    "name": "Best selling",
+    "value": "best-selling"
+   },
+   {
+    "name": "Alphabetically, A–Z",
+    "value": "title-ascending"
+   },
+   {
+    "name": "Alphabetically, Z–A",
+    "value": "title-descending"
+   },
+   {
+    "name": "Price, low to high",
+    "value": "price-ascending"
+   },
+   {
+    "name": "Price, high to low",
+    "value": "price-descending"
+   },
+   {
+    "name": "Date, old to new",
+    "value": "created-ascending"
+   },
+   {
+    "name": "Date, new to old",
+    "value": "created-descending"
+   }
+  ],
+  "current": "manual",
+  "id": "sd"
+ },
+ "extras": [
+  {
+   "style": "chip",
+   "open": true,
+   "id": "sd-open",
+   "height": 380
+  },
+  {
+   "style": "chip",
+   "show_label": false,
+   "id": "sd-nolabel",
+   "current": "price-ascending"
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{%- comment -%}
+  Figma: Components Atoms / Progress bar
+  value   0 to 100
+  style   accent | success                    (Figma: Style)
+  size    sm | md                             (Figma: Size)
+  label   accessible name
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'accent'
+  assign size = size | default: 'sm'
+  assign value = value | default: 0 | at_least: 0 | at_most: 100
+  if size == 'md'
+    assign height = 'h-2'
+  else
+    assign height = 'h-1'
+  endif
+  if style == 'success'
+    assign fill = 'bg-success'
+  else
+    assign fill = 'bg-accent'
+  endif
+-%}
+<div class="progress-bar w-full {{ height }} overflow-hidden rounded-full bg-surface-alt {{ class }}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ value }}"{% if label %} aria-label="{{ label | escape }}"{% endif %} data-style="{{ style }}">
+  <div class="h-full rounded-full {{ fill }} transition-[width] duration-300" style="width: {{ value }}%"></div>
+</div>

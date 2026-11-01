@@ -1,0 +1,26 @@
+{%- comment -%}
+  Figma: Components Atoms / Textarea
+  id, name, value, placeholder, rows (4), required, disabled, describedby, error, class, attributes
+  States: Hover = :hover, Focus = :focus-visible, Disabled = [disabled], Error = [aria-invalid]
+{%- endcomment -%}
+{%- liquid
+  assign rows = rows | default: 4
+  assign base = 'textarea block w-full min-h-30 rounded-input border bg-background px-4 py-3 text-body-base text-text placeholder:text-text-muted outline-none transition-colors resize-y hover:border-text focus-visible:border-focus aria-invalid:border-error disabled:bg-surface-alt disabled:border-disabled disabled:text-text-disabled disabled:cursor-not-allowed'
+  if error
+    assign base = base | append: ' border-error'
+  else
+    assign base = base | append: ' border-border-strong'
+  endif
+-%}
+<textarea
+  class="{{ base }} {{ class }}"
+  rows="{{ rows }}"
+  {%- if id %} id="{{ id }}"{% endif -%}
+  {%- if name %} name="{{ name }}"{% endif -%}
+  {%- if placeholder %} placeholder="{{ placeholder | escape }}"{% endif -%}
+  {%- if required %} required{% endif -%}
+  {%- if disabled %} disabled{% endif -%}
+  {%- if error %} aria-invalid="true"{% endif -%}
+  {%- if describedby %} aria-describedby="{{ describedby }}"{% endif -%}
+  {%- if attributes %} {{ attributes }}{% endif -%}
+>{{ value }}</textarea>

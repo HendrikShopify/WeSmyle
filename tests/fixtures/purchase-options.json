@@ -1,0 +1,98 @@
+{
+ "snippet": "purchase-options",
+ "figma": "Molecules / Purchase options (152:5319)",
+ "width": 480,
+ "matrix": {
+  "layout": [
+   "stacked",
+   "checkbox"
+  ]
+ },
+ "params": {
+  "product": {
+   "selling_plan_groups": [
+    {
+     "selling_plans": [
+      {
+       "id": 101,
+       "name": "Delivery every 2 weeks",
+       "options": [
+        {
+         "value": "2 weeks"
+        }
+       ]
+      },
+      {
+       "id": 102,
+       "name": "Delivery every 30 days",
+       "options": [
+        {
+         "value": "30 days"
+        }
+       ]
+      },
+      {
+       "id": 103,
+       "name": "Delivery every 60 days",
+       "options": [
+        {
+         "value": "60 days"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "selected_or_first_available_variant": {
+    "price": 4900,
+    "compare_at_price": null,
+    "selling_plan_allocations": [
+     {
+      "selling_plan": {
+       "id": 101
+      },
+      "price": 4410
+     },
+     {
+      "selling_plan": {
+       "id": 102
+      },
+      "price": 4410
+     },
+     {
+      "selling_plan": {
+       "id": 103
+      },
+      "price": 4410
+     }
+    ]
+   }
+  },
+  "product_form_id": "form-demo",
+  "frequency": "dropdown"
+ },
+ "extras": [
+  {
+   "layout": "stacked",
+   "selected": "subscription",
+   "id": "po-a"
+  },
+  {
+   "layout": "checkbox",
+   "selected": "subscription",
+   "id": "po-b"
+  },
+  {
+   "layout": "stacked",
+   "frequency": "buttons",
+   "selected": "subscription",
+   "id": "po-c"
+  },
+  {
+   "layout": "checkbox",
+   "frequency": "buttons",
+   "selected": "subscription",
+   "id": "po-d"
+  }
+ ]
+}

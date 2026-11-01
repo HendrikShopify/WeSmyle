@@ -1,0 +1,3 @@
+{ "snippet": "rating", "figma": "Components Atoms / Rating (115:2011)",
+  "matrix": { "size": ["sm","md"] }, "params": { "value": 4.8, "count": 120 },
+  "extras": [ { "value": 4.5, "count": 12, "show_count": false }, { "value": 3, "count": 7, "show_score": false, "size": "sm" } ] }

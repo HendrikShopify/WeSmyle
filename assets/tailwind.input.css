@@ -1,0 +1,152 @@
+@import "tailwindcss";
+@import "../tailwind/tokens.css";
+
+/* Legacy aliases until milestone 4 replaces the component CSS. */
+@theme {
+    --font-primary: var(--font-body);
+    --font-secondary: var(--font-heading);
+}
+
+
+@import "../tailwind/components/mobile-menu.css";
+@import "../tailwind/components/range-slider.css";
+
+
+
+
+
+
+
+
+@import "../tailwind/components/cookie-consent.css";
+
+@import "../tailwind/components/shopify-policy.css";
+
+
+cart-items[loading] {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+
+
+/* Lets height animate to auto (accordion, details). Browsers without it snap, which is fine. */
+@layer base {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+}
+
+/* Buttons */
+
+.btn {
+    @apply bg-black text-white rounded-xs px-4 py-2 cursor-pointer h-10 inline-flex justify-center gap-2 items-center text-sm min-h-10 border border-black
+}
+
+.btn[disabled] {
+    @apply opacity-30 cursor-not-allowed
+}
+
+/* Forms */
+
+
+textarea {
+    @apply resize-none;
+}
+
+/* Buttons */
+
+
+
+
+
+/* Checkboxes */
+
+.checkbox__custom {
+    @apply relative flex-none w-5 h-5 p-0.5 border-1 border-black rounded-xs flex items-center justify-center transition-all duration-50 peer-checked:bg-black peer-checked:border-black text-transparent peer-checked:text-white
+}
+
+.checkbox__icon {
+    @apply w-4 h-4
+}
+
+/* Grids */
+
+.product-grid {
+    @apply grid gap-x-2 gap-y-5 grid-rows-[auto_auto] grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] auto-cols-fr
+}
+
+/* Grid density switch: Large = 4 columns (1 on mobile), Small = 6 (2 on mobile). Cards drop rating and swatches in 6. */
+[data-density="large"] .product-grid {
+    @apply lg:grid-cols-4
+}
+
+[data-density="small"] .product-grid {
+    @apply lg:grid-cols-6
+}
+
+[data-density-mobile="large"] .product-grid {
+    @apply max-lg:grid-cols-1
+}
+
+[data-density-mobile="small"] .product-grid {
+    @apply max-lg:grid-cols-2
+}
+
+@media (min-width: 64rem) {
+    [data-density="small"] .product-card :is(.rating, .card-swatches) {
+        display: none;
+    }
+}
+
+.article-grid {
+    @apply grid gap-x-2 gap-y-5 grid-rows-[auto_auto] grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] auto-cols-fr
+}
+
+/* Wishlist */
+
+.wishlist__icon {
+    @apply h-5 w-5 transition-colors duration-300 stroke-black fill-transparent;
+  }
+  
+.wishlist__active .wishlist__icon {
+    @apply fill-black;
+}
+
+
+details summary {
+    @apply list-none;
+}
+
+details summary::-webkit-details-marker {
+    display: none;
+}
+
+
+/* Inputs */
+
+
+input[type="number"] {
+    @apply appearance-none;
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    & {
+      -moz-appearance: textfield;
+    }
+}
+
+input[type="number"]:focus {
+    @apply outline-none border-none ring-0;
+}
+
+
+*:focus-visible {
+    @apply outline-2 outline-offset-2 outline-[currentColor];
+}
+
+/* *:focus {
+    @apply outline-2 outline-offset-2 outline-[currentColor];
+} */

@@ -1,0 +1,18 @@
+{%- comment -%}
+  Figma: Components Atoms / Discount tag
+  label    e.g. "WELCOME10 (-€5,00)"               (Figma: Label)
+  style    subtle | solid                           (Figma: Style)
+  class, attributes
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'subtle'
+  if style == 'solid'
+    assign look = 'bg-accent text-accent-contrast'
+  else
+    assign look = 'bg-surface-alt text-text'
+  endif
+-%}
+<span class="discount-tag inline-flex h-6 items-center gap-1 rounded-badge px-2 text-label-sm whitespace-nowrap {{ look }} {{ class }}" data-style="{{ style }}"{% if attributes %} {{ attributes }}{% endif %}>
+  <span class="size-3.5 shrink-0 [&>svg]:size-full" aria-hidden="true">{{ 'icon__discount.svg' | inline_asset_content }}</span>
+  {{ label }}
+</span>

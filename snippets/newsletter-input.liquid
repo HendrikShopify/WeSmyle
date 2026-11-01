@@ -1,0 +1,76 @@
+{%- comment -%}
+  Figma: Components Atoms / Newsletter input
+  style         inline | attached | underline        (Figma: Style)
+  id, name      input id; name defaults to contact[email]
+  value, placeholder, label (sr-only), autocomplete
+  button_label  submit text; accessible name for the arrow in underline   (Figma: Button label)
+  icon_leading  asset name, e.g. icon__mail.svg       (Figma: Leading icon)
+  error         boolean, sets aria-invalid + error border   (Figma: State=Error)
+  success       boolean, success border                      (Figma: State=Success)
+  describedby   id of the message under the field
+  class         placement only
+  Inline: button inside the field. Attached: field and button joined. Underline: bottom border and an arrow button.
+  States: Focus = :focus-within, Error = [error], Success = [success]
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'inline'
+  assign name = name | default: 'contact[email]'
+  assign label_text = label
+  if label_text == blank
+    assign label_text = 'newsletter.label' | t
+  endif
+  assign placeholder_text = placeholder
+  if placeholder_text == blank
+    assign placeholder_text = 'newsletter.placeholder' | t
+  endif
+  assign button_text = button_label
+  if button_text == blank
+    assign button_text = 'newsletter.button_label' | t
+  endif
+  if error
+    assign tone = 'border-error'
+  elsif success
+    assign tone = 'border-success'
+  else
+    assign tone = 'border-border-strong focus-within:border-focus'
+  endif
+  case style
+    when 'attached'
+      assign wrap = 'newsletter-input flex h-13 w-full items-stretch [&_.button]:rounded-l-none'
+      assign field = 'flex min-w-0 flex-1 items-center gap-2 rounded-l-input border bg-background px-4 transition-colors ' | append: tone
+    when 'underline'
+      assign wrap = 'newsletter-input flex h-13 w-full items-center gap-2 border-b transition-colors focus-within:border-b-2 ' | append: tone
+      assign field = 'flex min-w-0 flex-1 items-center gap-2'
+    else
+      assign wrap = 'newsletter-input flex h-13 w-full items-center gap-2 rounded-input border bg-background pl-4 pr-1 transition-colors ' | append: tone
+      assign field = 'flex min-w-0 flex-1 items-center gap-2'
+  endcase
+-%}
+<div class="{{ wrap }} {{ class }}" data-style="{{ style }}">
+  <div class="{{ field }}">
+    {%- if icon_leading %}<span class="size-5 shrink-0 text-text-muted [&>svg]:size-full" aria-hidden="true">{{ icon_leading | inline_asset_content }}</span>{% endif -%}
+    <label class="sr-only" for="{{ id }}">{{ label_text }}</label>
+    <input
+      class="min-w-0 flex-1 bg-transparent text-body-base text-text placeholder:text-text-muted outline-none"
+      type="email"
+      id="{{ id }}"
+      name="{{ name }}"
+      {%- if value %} value="{{ value | escape }}"{% endif %}
+      placeholder="{{ placeholder_text | escape }}"
+      autocomplete="{{ autocomplete | default: 'email' }}"
+      autocorrect="off"
+      autocapitalize="off"
+      required
+      {%- if error %} aria-invalid="true"{% endif %}
+      {%- if describedby %} aria-describedby="{{ describedby }}"{% endif %}
+    >
+  </div>
+  {%- case style -%}
+    {%- when 'attached' -%}
+      {% render 'button', label: button_text, size: 'lg', type: 'submit' %}
+    {%- when 'underline' -%}
+      {% render 'icon-button', icon: 'icon__arrow-right.svg', label: button_text, style: 'ghost', size: 'md', submit: true %}
+    {%- else -%}
+      {% render 'button', label: button_text, size: 'md', type: 'submit' %}
+  {%- endcase -%}
+</div>

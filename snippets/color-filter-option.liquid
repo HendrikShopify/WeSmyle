@@ -1,0 +1,46 @@
+{%- comment -%}
+  Figma: Components Atoms / Color filter option
+  A colour in a colour filter: swatch, label and result count. Multi-select checkbox. Separate from the variant Swatch.
+  label       the colour name                                   (Figma: Label)
+  count       result count, shown as (n); blank hides it        (Figma: Show count)
+  show_label  boolean, default true; false leaves the swatch alone   (Figma: Show label)
+  swatch      Shopify swatch object (value.swatch), or color for a plain css colour
+  color       fallback css colour
+  id, name, value, checked, disabled (0 results), form, class, attributes
+  States: Hover = :hover, Selected = :checked, Focus = :focus-visible, Disabled = [disabled]
+{%- endcomment -%}
+{%- liquid
+  if show_label == nil
+    assign show_label = true
+  endif
+  if swatch.color
+    assign bg = 'rgb(' | append: swatch.color.rgb | append: ')'
+  elsif color
+    assign bg = color
+  endif
+-%}
+<label class="color-filter-option group/color inline-flex cursor-pointer items-center gap-2 has-[:disabled]:cursor-not-allowed {{ class }}"{% if id %} for="{{ id }}"{% endif %}{% if label and show_label == false %} title="{{ label | escape }}"{% endif %}>
+  <input type="checkbox" class="peer sr-only"
+    {%- if id %} id="{{ id }}"{% endif -%}
+    {%- if name %} name="{{ name | escape }}"{% endif -%}
+    {%- if value %} value="{{ value | escape }}"{% endif -%}
+    {%- if form %} form="{{ form }}"{% endif -%}
+    {%- if checked %} checked{% endif -%}
+    {%- if disabled %} disabled{% endif -%}
+    {%- if attributes %} {{ attributes }}{% endif -%}>
+  <span class="color-filter-option__ring relative inline-flex shrink-0 rounded-swatch p-1 ring-1 ring-inset ring-transparent transition-shadow hover:ring-border-strong peer-checked:ring-2 peer-checked:ring-accent peer-focus-visible:ring-1 peer-focus-visible:ring-focus peer-disabled:hover:ring-transparent">
+    <span class="block size-6 overflow-hidden rounded-swatch border border-border bg-surface-alt group-has-[:disabled]/color:opacity-40"{% if bg %} style="background-color: {{ bg }}"{% endif %}>
+      {%- if swatch.image -%}
+        {{ swatch.image | image_url: width: 48 | image_tag: class: 'size-full object-cover', alt: '', loading: 'lazy' }}
+      {%- endif -%}
+    </span>
+  </span>
+  {%- if show_label -%}
+    <span class="inline-flex items-center gap-1 text-body-base text-text group-has-[:disabled]/color:text-text-disabled">
+      <span>{{ label }}</span>
+      {%- if count != blank %}<span class="text-text-muted group-has-[:disabled]/color:text-text-disabled">({{ count }})</span>{% endif -%}
+    </span>
+  {%- else -%}
+    <span class="sr-only">{{ label }}{% if count != blank %} ({{ count }}){% endif %}</span>
+  {%- endif -%}
+</label>

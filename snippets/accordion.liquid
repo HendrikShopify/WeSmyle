@@ -1,0 +1,9 @@
+{%- comment -%}
+  Figma: Components Atoms / Accordion
+  items         captured accordion-item markup
+  top_divider   boolean                                            (Figma: Top divider)
+  class
+{%- endcomment -%}
+<div class="accordion flex w-full flex-col {% if top_divider %}border-t border-border{% endif %} {{ class }}">
+  {{ items }}
+</div>

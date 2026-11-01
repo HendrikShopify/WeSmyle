@@ -1,0 +1,71 @@
+{%- comment -%}
+  Figma: Components Molecules / Variant option group
+  option          Shopify option_with_values object
+  type            pills | swatches | dropdown; swatches is picked automatically when the values carry a swatch  (Figma: Type)
+  product_form_id form the radios belong to
+  section_id      used for unique ids
+  show_value      boolean, selected value next to the name (default true)          (Figma: Show value)
+  size_guide_url  renders the Size guide link when set                            (Figma: Show size guide)
+  class
+  Keeps the hooks product-info.js and variant-selects.js rely on: <fieldset>, data-option-value-id, data-selected-value.
+{%- endcomment -%}
+{%- liquid
+  assign swatch_count = option.values | map: 'swatch' | compact | size
+  if type == blank
+    assign type = 'pills'
+  endif
+  if swatch_count > 0 and type != 'dropdown'
+    assign type = 'swatches'
+  endif
+  if show_value == nil
+    assign show_value = true
+  endif
+  assign group_id = section_id | append: '-' | append: option.position
+  assign input_name = option.name | append: '-' | append: option.position
+  assign size_guide_label = 'products.product.size_guide' | t
+-%}
+<fieldset class="variant-option-group flex flex-col gap-3 border-0 p-0 m-0 min-w-0 {{ class }}" data-type="{{ type }}">
+  <div class="flex items-center justify-between gap-2">
+    <legend class="float-left flex items-center gap-2 p-0">
+      <span class="text-label-base text-text">{{ option.name }}:</span>
+      <span class="text-body-sm text-text-muted{% unless show_value %} sr-only{% endunless %}" data-selected-value>{{ option.selected_value }}</span>
+    </legend>
+    {%- if size_guide_url %}{% render 'link', label: size_guide_label, href: size_guide_url, size: 'sm' %}{% endif -%}
+  </div>
+
+  {%- if type == 'dropdown' -%}
+    {%- capture items -%}
+      {%- for value in option.values -%}
+        {%- liquid
+          assign option_id = group_id | append: '-option-' | append: forloop.index
+          assign value_attrs = 'data-option-value-id="' | append: value.id | append: '"'
+          assign sold_out = false
+          unless value.available
+            assign sold_out = true
+          endunless
+          render 'menu-item', label: value, value: value, selected: value.selected, id: option_id, attributes: value_attrs
+        -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+    {%- assign selected_attrs = 'data-option-value-id="' | append: option.selected_value.id | append: '"' -%}
+    {% render 'select', id: group_id, name: input_name, items: items, selected: option.selected_value, selected_label: option.selected_value, form: product_form_id, input_attributes: selected_attrs %}
+  {%- else -%}
+    <div class="flex flex-wrap gap-2">
+      {%- for value in option.values -%}
+        {%- liquid
+          assign input_id = group_id | append: '-' | append: forloop.index0
+          assign value_attrs = 'data-option-value-id="' | append: value.id | append: '"'
+          assign sold_out = false
+          unless value.available
+            assign sold_out = true
+          endunless
+          if type == 'swatches'
+            render 'swatch', swatch: value.swatch, label: value, id: input_id, name: input_name, value: value, checked: value.selected, form: product_form_id, sold_out: sold_out, attributes: value_attrs
+          else
+            render 'variant-pill', label: value, id: input_id, name: input_name, value: value, checked: value.selected, form: product_form_id, sold_out: sold_out, attributes: value_attrs
+          endif
+        -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</fieldset>

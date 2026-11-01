@@ -1,0 +1,48 @@
+{
+ "snippet": "active-filters-bar",
+ "figma": "Atoms / Active filters bar (123:2121)",
+ "width": 640,
+ "params": {
+  "clear_href": "#",
+  "filters": [
+   {
+    "label": "Size",
+    "type": "list",
+    "active_values": [
+     {
+      "label": "M",
+      "url_to_remove": "#"
+     },
+     {
+      "label": "L",
+      "url_to_remove": "#"
+     }
+    ]
+   },
+   {
+    "label": "Color",
+    "type": "list",
+    "active_values": [
+     {
+      "label": "Beige",
+      "url_to_remove": "#"
+     }
+    ]
+   },
+   {
+    "label": "Price",
+    "type": "price_range",
+    "active_values": [],
+    "min_value": {
+     "value": 2000
+    },
+    "max_value": {
+     "value": 8000
+    },
+    "range_max": 12000,
+    "url_to_remove": "#"
+   }
+  ]
+ },
+ "matrix": {}
+}

@@ -1,0 +1,42 @@
+{
+ "snippet": "localization-item",
+ "figma": "Atoms / Localization item (133:2570)",
+ "width": 220,
+ "matrix": {
+  "state": [
+   "default",
+   "hover",
+   "focus"
+  ]
+ },
+ "params": {
+  "code": "nl",
+  "name": "Nederlands"
+ },
+ "extras": [
+  {
+   "code": "en",
+   "name": "English",
+   "current": true
+  },
+  {
+   "field": "country",
+   "code": "NL",
+   "name": "Netherlands",
+   "currency": {
+    "iso_code": "EUR",
+    "symbol": "\u20ac"
+   },
+   "current": true
+  },
+  {
+   "field": "country",
+   "code": "GB",
+   "name": "United Kingdom",
+   "currency": {
+    "iso_code": "GBP",
+    "symbol": "\u00a3"
+   }
+  }
+ ]
+}

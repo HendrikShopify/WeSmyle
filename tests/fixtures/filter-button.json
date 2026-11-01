@@ -1,0 +1,39 @@
+{
+ "snippet": "filter-button",
+ "figma": "Atoms / Filter button (138:3234)",
+ "width": 200,
+ "matrix": {
+  "style": [
+   "outline",
+   "text"
+  ],
+  "size": [
+   "sm",
+   "md"
+  ],
+  "state": [
+   "default",
+   "hover",
+   "focus"
+  ]
+ },
+ "params": {
+  "count": 3
+ },
+ "extras": [
+  {
+   "style": "outline",
+   "size": "sm"
+  },
+  {
+   "style": "outline",
+   "icon": "none",
+   "count": 0
+  },
+  {
+   "style": "outline",
+   "label": "Filters",
+   "count": 12
+  }
+ ]
+}

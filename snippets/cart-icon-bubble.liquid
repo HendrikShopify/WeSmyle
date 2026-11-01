@@ -1,0 +1,7 @@
+{%- liquid
+  assign cart_label = 'templates.cart.cart' | t
+  if cart.item_count > 0
+    assign cart_label = 'sections.header.cart_count' | t: count: cart.item_count
+  endif
+-%}
+{% render 'icon-button', href: routes.cart_url, icon: 'icon__cart.svg', label: cart_label, count: cart.item_count, style: 'ghost', size: 'md', attributes: 'data-drawer-trigger="cart-drawer" aria-controls="cart-drawer" aria-haspopup="dialog" aria-expanded="false"' %}

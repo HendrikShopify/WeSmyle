@@ -1,0 +1,38 @@
+{%- comment -%}
+  Figma: Components Atoms / Carousel indicators
+  count, active (1-based)
+  type    dots | line | counter                                    (Figma: Type)
+  tone    default | inverse                                        (Figma: Tone)
+  Buttons for dots and line so a carousel script can wire them (data-carousel-to="n"); the active one is [aria-selected=true], a script only flips that attribute.
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'dots'
+  assign tone = tone | default: 'default'
+  assign active = active | default: 1
+  if tone == 'inverse'
+    assign idle = 'bg-background/50'
+    assign on = 'aria-selected:bg-background'
+    assign text = 'text-text-inverse'
+  else
+    assign idle = 'bg-disabled'
+    assign on = 'aria-selected:bg-accent'
+    assign text = 'text-text'
+  endif
+  assign slide_label = 'general.slider.go_to' | t
+-%}
+{%- case type -%}
+  {%- when 'counter' -%}
+    <span class="carousel-indicators text-label-sm {{ text }} {{ class }}" data-type="counter" aria-live="polite"><span data-carousel-current>{{ active }}</span> / <span data-carousel-total>{{ count }}</span></span>
+  {%- when 'line' -%}
+    <div class="carousel-indicators flex w-full {{ class }}" role="tablist" data-type="line">
+      {%- for i in (1..count) -%}
+        <button type="button" role="tab" class="h-0.5 flex-1 cursor-pointer transition-colors {{ idle }} {{ on }}" aria-selected="{% if i == active %}true{% else %}false{% endif %}" aria-label="{{ slide_label }} {{ i }}" data-carousel-to="{{ i }}"></button>
+      {%- endfor -%}
+    </div>
+  {%- else -%}
+    <div class="carousel-indicators flex items-center gap-2 {{ class }}" role="tablist" data-type="dots">
+      {%- for i in (1..count) -%}
+        <button type="button" role="tab" class="h-2 w-2 cursor-pointer rounded-full transition-all aria-selected:w-5 {{ idle }} {{ on }}" aria-selected="{% if i == active %}true{% else %}false{% endif %}" aria-label="{{ slide_label }} {{ i }}" data-carousel-to="{{ i }}"></button>
+      {%- endfor -%}
+    </div>
+{%- endcase -%}

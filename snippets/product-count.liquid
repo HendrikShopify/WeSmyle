@@ -1,0 +1,36 @@
+{%- comment -%}
+  Figma: Components Atoms / Product count
+  Result count for collection and search pages.
+  count     products matching the current filters
+  total     products before filtering (collection.all_products_count); when it is larger than count the text is "13 of 64 products" (Figma: Product count)
+  shown     products on screen so far; with style progress and shown < count the text is "Showing 20 of 50 products"
+  text      text override                                       (Figma: Text)
+  style     text | progress                                     (Figma: Style)
+  id, class
+  JS: data-product-count carries the live region; facets update its text.
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'text'
+  assign count = count | default: 0
+  assign total = total | default: 0
+  assign label_filtered = 'products.facets.product_count_filtered' | t: count: '__count__', total: '__total__'
+  if text == blank
+    if total > count
+      assign text = 'products.facets.product_count_filtered' | t: count: count, total: total
+    elsif shown and shown < count
+      assign text = 'products.facets.product_count' | t: product_count: shown, count: count
+    else
+      assign text = 'products.facets.product_count_simple' | t: count: count
+    endif
+  endif
+  assign percent = 0
+  if count > 0 and shown
+    assign percent = shown | times: 100.0 | divided_by: count
+  endif
+-%}
+<div class="product-count flex flex-col gap-3 {{ class }}" data-style="{{ style }}"{% if id %} id="{{ id }}"{% endif %}>
+  <p class="text-body-sm text-text-muted" data-product-count data-count="{{ count }}"{% if total > 0 %} data-total="{{ total }}"{% endif %} data-label-filtered="{{ label_filtered | escape }}" aria-live="polite">{{ text }}</p>
+  {%- if style == 'progress' -%}
+    {% render 'progress-bar', value: percent, style: 'accent', size: 'sm', label: text %}
+  {%- endif -%}
+</div>

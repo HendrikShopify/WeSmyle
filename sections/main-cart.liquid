@@ -1,0 +1,50 @@
+{%- comment -%} Figma: Sections / Main cart. Header, items column (free shipping bar + line items), summary column; empty state. {%- endcomment -%}
+{%- liquid
+  assign title = 'sections.cart.title' | t
+  assign count_label = 'sections.cart.item_count' | t: count: cart.item_count
+  assign continue_label = 'general.continue_shopping' | t
+-%}
+<div id="main-cart" class="mx-auto w-full max-w-page px-page-margin pt-section-sm pb-section-md">
+  <div class="flex flex-col gap-6 lg:gap-10">
+    <div class="flex items-end justify-between gap-4">
+      <div class="flex items-baseline gap-3">
+        <h1 class="text-heading-3 lg:text-heading-2 text-text">{{ title }}</h1>
+        {%- if cart != empty %}<span class="text-body-base text-text-muted">{{ count_label }}</span>{% endif -%}
+      </div>
+      {% render 'link', label: continue_label, href: routes.all_products_collection_url, size: 'md', class: 'hidden lg:inline-flex' %}
+    </div>
+
+    {%- if cart == empty -%}
+      <div class="py-8 lg:py-12">
+        {% render 'cart-empty-state' %}
+      </div>
+    {%- else -%}
+      <div class="grid grid-cols-4 gap-x-grid-gap-x gap-y-8 lg:grid-cols-12">
+        <div class="col-span-4 flex flex-col gap-6 lg:col-span-7">
+          {% render 'free-shipping-bar' %}
+          <cart-items>
+            <form action="{{ routes.cart_url }}" id="cart" method="post">
+              <ul class="flex flex-col gap-6" role="list">
+                {%- for item in cart.items -%}
+                  {% render 'line-item', item: item, layout: 'page', id_prefix: 'CartItem' %}
+                {%- endfor -%}
+              </ul>
+              <p class="sr-only" id="cart-live-region-text" aria-live="polite" role="status"></p>
+            </form>
+          </cart-items>
+          {% render 'helper-text', text: '', type: 'error', id: 'cart-page-error', attributes: 'hidden' %}
+        </div>
+        <div class="col-span-4 lg:col-span-4 lg:col-start-9">
+          {% render 'cart-summary', form_id: 'cart', id: 'CartPage' %}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Cart",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,25 @@
+{
+  "name": "clean-dawn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"shopify theme dev -e development\" \"npx @tailwindcss/cli -i ./assets/tailwind.input.css -o ./assets/tailwind.output.css --watch\"",
+    "tokens": "node scripts/build-tokens.js",
+    "brand": "node scripts/brand-tokens.js",
+    "gallery": "for n in button badge count-badge link icon-button price rating-stars rating media field-label helper-text input textarea select menu-item checkbox radio swatch variant-pill quantity-selector wishlist-toggle swatch-overflow attribute discount-tag progress-bar divider summary-row toggle-switch chip accordion-item tab-item pagination-item carousel-indicators side-drawer menu-heading search-field search-suggestion localization-item localization-menu localization-selector newsletter-input newsletter-signup range-slider sort-menu sort-dropdown active-filters-bar filter-group filter-selection-summary color-filter-option product-count filter-button grid-density-switch mobile-menu-item mobile-menu-header mobile-menu purchase-option purchase-options empty-state pagination-status media-thumbnail media-gallery; do node tests/render.js $n; done && npx @tailwindcss/cli -i ./tests/gallery.input.css -o ./tests/gallery/gallery.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "concurrently": "^9.1.2",
+    "gsap": "^3.12.7",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "liquidjs": "^10.30.1"
+  }
+}

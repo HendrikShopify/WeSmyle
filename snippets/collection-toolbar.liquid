@@ -1,0 +1,50 @@
+{%- comment -%}
+  Figma: Sections / Collection grid toolbar (Filter button + Product count + Grid density switch + Sort dropdown, Active filters bar, Filter drawer)
+  Wrap the section in <collection-filters data-section-id="{{ section.id }}"> and render this inside it; the product grid container needs id="ProductGridContainer".
+  results    collection or search object
+  clear_href url that removes every filter (collection.url, or the search url with only q)
+  count      product count override
+  Total before filtering: collection.all_products_count; search has no such value, so filters.js keeps the total it saw on an unfiltered load.
+  JS: filters.js (+ range-slider.js for the price group, custom-select.js for the sort dropdown, side-drawer.js)
+{%- endcomment -%}
+{%- liquid
+  assign sort_by = results.sort_by | default: results.default_sort_by
+  assign total = count | default: results.products_count | default: results.results_count | default: 0
+  assign all_total = results.all_products_count
+  assign active_count = 0
+  for filter in results.filters
+    if filter.type == 'price_range'
+      if filter.min_value.value != blank or filter.max_value.value != blank
+        assign active_count = active_count | plus: 1
+      endif
+    else
+      assign active_count = active_count | plus: filter.active_values.size
+    endif
+  endfor
+  if all_total == blank and active_count == 0
+    assign all_total = total
+  endif
+  if clear_href == blank
+    assign clear_href = results.url
+  endif
+-%}
+<script src="{{ 'range-slider.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'filters.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'grid-density.js' | asset_url }}" defer="defer"></script>
+
+<div class="collection-toolbar flex flex-col gap-4 scroll-mt-6" data-collection-toolbar>
+  <div class="flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      {% render 'filter-button', count: active_count, attributes: 'data-drawer-trigger="filter-drawer" aria-haspopup="dialog"' %}
+      <div class="hidden md:block">
+        {% render 'product-count', count: total, total: all_total %}
+      </div>
+    </div>
+    <div class="flex min-w-0 flex-1 items-center justify-end gap-4">
+      {% render 'grid-density-switch' %}
+      {% render 'sort-dropdown', options: results.sort_options, current: sort_by, form: 'filters-form', id: 'collection-sort', align: 'end', class: 'flex-1 md:flex-none' %}
+    </div>
+  </div>
+  {% render 'active-filters-bar', filters: results.filters, clear_href: clear_href %}
+</div>
+{% render 'filter-drawer', results: results, count: total, clear_href: clear_href %}

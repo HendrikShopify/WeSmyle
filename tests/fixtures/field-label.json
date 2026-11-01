@@ -1,0 +1,2 @@
+{ "snippet": "field-label", "figma": "Atoms / Field label (73:210)", "matrix": {}, "params": { "label": "Email" },
+  "extras": [ { "label": "Email", "required": true }, { "label": "Company", "optional": true }, { "label": "Email", "required": true, "disabled": true } ] }

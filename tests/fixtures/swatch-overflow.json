@@ -1,0 +1,1 @@
+{ "snippet": "swatch-overflow", "figma": "Atoms / Swatch overflow", "matrix": { "style": ["count","text"], "size": ["xs","sm"] }, "params": { "count": 3, "href": "#" } }

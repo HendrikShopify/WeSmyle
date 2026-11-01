@@ -1,0 +1,209 @@
+{%- comment -%}
+  Figma: Components Molecules / Filter group (Type = List | Color | Size | Price | Availability | Sort)
+  One accordion per Shopify filter: header + selection summary + the values.
+  filter       Shopify filter object (results.filters[n]); not needed for type sort
+  type         list | color | size | price | availability | sort; detected from the filter when blank   (Figma: Type)
+  title        header text, defaults to filter.label
+  open         boolean                                                      (Figma: Expanded)
+  show_summary boolean, default true                                        (Figma: Show selection summary)
+  limit        values shown before "Show more" (list only), default 6
+  id           unique prefix for input ids (drawer and sidebar can both render the same filters), default the filter's param
+  currency     symbol for the price inputs, default cart.currency.symbol
+  options, current   sort options [{ name, value }] and the selected value, for type sort
+  class
+  Inputs are plain form controls named like Shopify's filter params; the filters script submits the surrounding form.
+  A Selected count badge in the header shows how many values are active.
+{%- endcomment -%}
+{%- liquid
+  assign limit = limit | default: 6
+  if show_summary == nil
+    assign show_summary = true
+  endif
+  assign title = title | default: filter.label
+  assign base_id = id | default: filter.param_name | default: 'sort'
+  assign base_id = base_id | handleize
+
+  if type == blank
+    if filter.type == 'price_range'
+      assign type = 'price'
+    elsif filter.type == 'boolean' or filter.param_name == 'filter.v.availability'
+      assign type = 'availability'
+    else
+      assign has_swatch = false
+      for value in filter.values
+        if value.swatch
+          assign has_swatch = true
+        endif
+      endfor
+      if has_swatch
+        assign type = 'color'
+      elsif filter.param_name contains 'size'
+        assign type = 'size'
+      else
+        assign type = 'list'
+      endif
+    endif
+  endif
+
+  assign selected = filter.active_values.size | default: 0
+  assign summary_text = ''
+  if type == 'price'
+    assign selected = 0
+    if filter.min_value.value != blank or filter.max_value.value != blank
+      assign selected = 1
+      assign from_text = filter.min_value.value | default: 0 | money
+      assign to_text = filter.max_value.value | default: filter.range_max | money
+      assign summary_text = from_text | append: '–' | append: to_text
+    endif
+  endif
+  if type == 'sort'
+    assign selected = 0
+    assign show_summary = false
+  endif
+  assign currency = currency | default: cart.currency.symbol
+  assign hidden_count = 0
+-%}
+{%- assign group_attributes = 'data-filter-group data-filter-id="' | append: filter.param_name | append: '" data-type="' | append: type | append: '"' -%}
+{%- if filter.param_name == blank -%}
+  {%- assign group_attributes = 'data-filter-group data-filter-id="' | append: type | append: '" data-type="' | append: type | append: '"' -%}
+{%- endif -%}
+{%- capture group_content -%}
+  <div class="flex flex-col gap-3">
+    {%- if show_summary -%}
+      {% render 'filter-selection-summary', count: selected, summary: summary_text %}
+    {%- endif -%}
+
+    {%- case type -%}
+      {%- when 'color' -%}
+        <div class="flex flex-wrap gap-x-4 gap-y-2">
+          {%- for value in filter.values -%}
+            {%- liquid
+              assign is_disabled = false
+              if value.count == 0 and value.active == false
+                assign is_disabled = true
+              endif
+              assign option_id = base_id | append: '-' | append: forloop.index
+              render 'color-filter-option', label: value.label, count: value.count, swatch: value.swatch, color: value.color, name: value.param_name, value: value.value, checked: value.active, disabled: is_disabled, id: option_id
+            -%}
+          {%- endfor -%}
+        </div>
+
+      {%- when 'size' -%}
+        <div class="flex flex-wrap gap-2">
+          {%- for value in filter.values -%}
+            {%- liquid
+              assign is_disabled = false
+              if value.count == 0 and value.active == false
+                assign is_disabled = true
+              endif
+              assign option_id = base_id | append: '-' | append: forloop.index
+              render 'chip', type: 'filter', label: value.label, name: value.param_name, value: value.value, checked: value.active, disabled: is_disabled, id: option_id
+            -%}
+          {%- endfor -%}
+        </div>
+
+      {%- when 'price' -%}
+        {%- liquid
+          assign max_units = filter.range_max | divided_by: 100.0
+          assign max_floor = max_units | floor
+          if max_units == max_floor
+            assign max_units = max_floor
+          endif
+          assign min_units = ''
+          assign top_units = ''
+          if filter.min_value.value != blank
+            assign min_units = filter.min_value.value | divided_by: 100.0
+            assign min_floor = min_units | floor
+            if min_units == min_floor
+              assign min_units = min_floor
+            endif
+          endif
+          if filter.max_value.value != blank
+            assign top_units = filter.max_value.value | divided_by: 100.0
+            assign top_floor = top_units | floor
+            if top_units == top_floor
+              assign top_units = top_floor
+            endif
+          endif
+          assign max_price_text = filter.range_max | money
+          assign max_price_label = 'products.facets.max_price' | t: price: max_price_text
+          assign from_label = 'products.facets.from' | t
+          assign to_label = 'products.facets.to' | t
+          assign from_id = base_id | append: '-gte'
+          assign to_id = base_id | append: '-lte'
+          assign slider_min = min_units | default: 0
+          assign slider_max = top_units | default: max_units
+        -%}
+        <div class="flex flex-col gap-3" data-range-group>
+          {% render 'range-slider', min: 0, max: max_units, value_min: slider_min, value_max: slider_max, label_min: from_label, label_max: to_label, class: 'my-1' %}
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex flex-col gap-2">
+              {% render 'field-label', label: from_label, for: from_id %}
+              {% render 'input', id: from_id, name: filter.min_value.param_name, value: min_units, placeholder: '0', prefix: currency, size: 'sm', attributes: 'inputmode="decimal" data-range-input="min"' %}
+            </div>
+            <div class="flex flex-col gap-2">
+              {% render 'field-label', label: to_label, for: to_id %}
+              {% render 'input', id: to_id, name: filter.max_value.param_name, value: top_units, placeholder: max_units, prefix: currency, size: 'sm', attributes: 'inputmode="decimal" data-range-input="max"' %}
+            </div>
+          </div>
+          <p class="text-body-sm text-text-muted">{{ max_price_label }}</p>
+        </div>
+
+      {%- when 'availability' -%}
+        <div class="flex flex-col gap-3">
+          {%- for value in filter.values -%}
+            {%- liquid
+              assign option_id = base_id | append: '-' | append: forloop.index
+              assign is_disabled = false
+              if value.count == 0 and value.active == false
+                assign is_disabled = true
+              endif
+              if forloop.first
+                render 'toggle-switch', label: value.label, name: value.param_name, value: value.value, checked: value.active, disabled: is_disabled, id: option_id
+              else
+                render 'checkbox', label: value.label, count: value.count, name: value.param_name, value: value.value, checked: value.active, disabled: is_disabled, id: option_id
+              endif
+            -%}
+          {%- endfor -%}
+        </div>
+
+      {%- when 'sort' -%}
+        <div class="flex flex-col gap-3" role="radiogroup" aria-label="{{ title | escape }}">
+          {%- for option in options -%}
+            {%- liquid
+              assign is_current = false
+              if option.value == current
+                assign is_current = true
+              endif
+              assign option_id = base_id | append: '-' | append: forloop.index
+              render 'radio', label: option.name, name: 'sort_by', value: option.value, checked: is_current, id: option_id
+            -%}
+          {%- endfor -%}
+        </div>
+
+      {%- else -%}
+        <div class="flex flex-col gap-3" data-show-more-list>
+          {%- for value in filter.values -%}
+            {%- liquid
+              assign is_disabled = false
+              if value.count == 0 and value.active == false
+                assign is_disabled = true
+              endif
+              assign extra = ''
+              if forloop.index > limit
+                assign extra = 'hidden'
+                assign hidden_count = hidden_count | plus: 1
+              endif
+              assign option_id = base_id | append: '-' | append: forloop.index
+            -%}
+            <div class="{{ extra }}"{% if extra != blank %} data-show-more-extra{% endif %}>{% render 'checkbox', label: value.label, count: value.count, name: value.param_name, value: value.value, checked: value.active, disabled: is_disabled, id: option_id %}</div>
+          {%- endfor -%}
+          {%- if hidden_count > 0 -%}
+            {% assign more_label = 'products.facets.show_more' | t %}
+            {% render 'link', label: more_label, size: 'sm', class: 'self-start', attributes: 'data-show-more' %}
+          {%- endif -%}
+        </div>
+    {%- endcase -%}
+  </div>
+{%- endcapture -%}
+{% render 'accordion-item', title: title, count: selected, content: group_content, open: open, class: class, attributes: group_attributes %}

@@ -1,0 +1,4 @@
+{ "snippet": "newsletter-signup", "figma": "Atoms / Newsletter signup (105:1115)",
+  "matrix": { "layout": ["stacked-left","stacked-center","side-by-side"] },
+  "params": { "id": "demo-signup", "input_style": "inline" },
+  "extras": [ { "layout": "stacked-left", "status": "success", "id": "demo-s2" }, { "layout": "stacked-left", "status": "error", "message": "Email is invalid", "id": "demo-s3", "input_style": "attached" }, { "layout": "stacked-center", "input_style": "underline", "show_description": false, "id": "demo-s4" }, { "layout": "stacked-left", "show_fine_print": false, "id": "demo-s5" } ] }

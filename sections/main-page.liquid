@@ -1,0 +1,17 @@
+{%- comment -%}
+  Figma: Sections / Main page (Desktop, Mobile)
+  Title and optional subtitle in the prose column, then the page body as Rich text. No breadcrumbs in the design.
+  Subtitle: page.metafields.custom.subtitle when set (Figma: Show subtitle), for example "Last updated 12 October 2026".
+{%- endcomment -%}
+{%- liquid
+  assign subtitle = page.metafields.custom.subtitle
+-%}
+<div class="mx-auto w-full max-w-page px-page-margin pt-8 pb-12 lg:pt-12 lg:pb-20 flex flex-col items-center gap-8 lg:gap-12">
+  <header class="flex w-full max-w-prose-width flex-col gap-4">
+    <h1 class="text-heading-2 lg:text-heading-1 text-text">{{ page.title | escape }}</h1>
+    {%- if subtitle != blank -%}
+      <p class="text-body-sm text-text-muted">{{ subtitle }}</p>
+    {%- endif -%}
+  </header>
+  {% render 'rich-text', content: page.content, class: 'w-full max-w-prose-width' %}
+</div>

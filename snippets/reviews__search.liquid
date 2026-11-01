@@ -1,0 +1,9 @@
+{%- comment -%}
+  Figma: Components Atoms / Reviews toolbar, Search (Input sm with the search icon, 280px from md, full width below)
+  JS: reviews__ui.js reads [data-reviews-search] on input (debounced).
+{%- endcomment -%}
+{%- liquid
+  assign search_label = 'reviews.search' | t
+  assign search_attributes = 'data-reviews-search autocomplete="off" aria-label="' | append: search_label | append: '"'
+-%}
+{% render 'input', type: 'search', size: 'sm', icon_leading: 'icon__search.svg', placeholder: search_label, class: 'w-full md:w-70', attributes: search_attributes %}

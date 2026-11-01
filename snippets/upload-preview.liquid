@@ -1,0 +1,14 @@
+{%- comment -%}
+  Figma: Components Atoms / Upload preview
+  src, alt            the selected image
+  remove_label        aria-label of the remove button
+  remove_attributes   JS hook on the remove button
+  class               placement only
+  The Uploading and Error states exist in Figma only; the reviews form sends every photo in one submit.
+{%- endcomment -%}
+<div class="upload-preview relative size-36 shrink-0 bg-surface-alt {{ class }}">
+  <img class="size-full object-cover" alt="{{ alt | escape }}" width="144" height="144"{% if src %} src="{{ src }}"{% endif %}>
+  <button type="button" class="absolute right-1 top-1 flex size-6 items-center justify-center rounded-sm bg-background text-text cursor-pointer outline-none hover:bg-surface-alt focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus" aria-label="{{ remove_label | escape }}"{% if remove_attributes %} {{ remove_attributes }}{% endif %}>
+    <span class="size-3.5 [&>svg]:size-full" aria-hidden="true">{{ 'icon__x.svg' | inline_asset_content }}</span>
+  </button>
+</div>

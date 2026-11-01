@@ -1,0 +1,34 @@
+{%- comment -%}
+  Figma: Components Atoms / Dropdown menu
+  items       captured menu-item markup
+  id          listbox id (the trigger points at it with aria-controls)
+  labelledby  id of the trigger or label
+  open        boolean, renders without the hidden attribute
+  placement   bottom | top    (Figma: Placement) opens below (default) or above the trigger
+  align       start | end      (Figma: Align) which edge of the trigger the menu lines up with; default start
+  width       Tailwind width class, default w-full (stretched to the trigger, as under Select); chips use w-60 (Figma: 240px menu)
+  attributes  extra attributes for JS hooks
+  class       placement only (position is the parent's call)
+{%- endcomment -%}
+{%- liquid
+  assign width = width | default: 'w-full'
+  assign align_class = 'left-0'
+  if align == 'end'
+    assign align_class = 'right-0'
+  endif
+  assign place_class = 'top-full mt-1'
+  if placement == 'top'
+    assign place_class = 'bottom-full mb-1'
+  endif
+-%}
+<ul
+  class="dropdown-menu absolute {{ align_class }} {{ place_class }} z-20 {{ width }} max-h-72 overflow-y-auto rounded-input border border-border bg-background p-1 {{ class }}"
+  role="listbox"
+  {%- if id %} id="{{ id }}"{% endif %}
+  {%- if labelledby %} aria-labelledby="{{ labelledby }}"{% endif %}
+  tabindex="-1"
+  {%- unless open %} hidden{% endunless %}
+  {%- if attributes %} {{ attributes }}{% endif %}
+>
+  {{ items }}
+</ul>

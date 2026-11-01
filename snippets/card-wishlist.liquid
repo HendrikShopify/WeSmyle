@@ -1,0 +1,52 @@
+<product-card class="relative flex flex-col gap-3 border border-gray-300 p-1">
+  <input
+    data-wishlist-checkbox
+    type="checkbox"
+    value="{{ product.selected_or_first_available_variant.id }}"
+    class="z-20"
+  >
+
+  {% render 'wishlist-toggle', product: product, style: 'floating', size: 'sm', class: 'absolute top-2 right-2 z-[1]' %}
+  <a
+    href="{{ product.url }}"
+    class="absolute inset-0 z-10"
+    aria-label="{{ product.title }}"
+  ></a>
+  <div class="!aspect-square">
+    <img
+      class="!aspect-square object-contain"
+      srcset="
+        {%- if product.featured_media.width >= 165 -%}{{ product.featured_media | image_url: width: 165 }} 165w,{%- endif -%}
+        {%- if product.featured_media.width >= 360 -%}{{ product.featured_media | image_url: width: 360 }} 360w,{%- endif -%}
+        {%- if product.featured_media.width >= 533 -%}{{ product.featured_media | image_url: width: 533 }} 533w,{%- endif -%}
+        {%- if product.featured_media.width >= 720 -%}{{ product.featured_media | image_url: width: 720 }} 720w,{%- endif -%}
+        {%- if product.featured_media.width >= 940 -%}{{ product.featured_media | image_url: width: 940 }} 940w,{%- endif -%}
+        {%- if product.featured_media.width >= 1066 -%}{{ product.featured_media | image_url: width: 1066 }} 1066w,{%- endif -%}
+        {{ product.featured_media | image_url }} {{ product.featured_media.width }}w
+      "
+      src="{{ product.featured_media | image_url: width: 533 }}"
+      alt="{{ product.featured_media.alt | escape }}"
+      width="{{ product.featured_media.width }}"
+      height="{{ product.featured_media.height }}"
+    >
+  </div>
+  <h2>{{ product.title }}</h2>
+
+  {% unless product.has_only_default_variant %}
+    <ul>
+      {%- for option in product.options_with_values -%}
+        <li>
+          <strong>{{ option.name }}:</strong> <span data-option-value{{ forloop.index }}></span>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {% endunless %}
+
+  {% render 'price', product: product, size: 'sm' %}
+
+  <script type="application/json" data-product-json>
+    {{ product | json }}
+  </script>
+
+  <product-form> </product-form>
+</product-card>

@@ -1,0 +1,398 @@
+{
+ "snippet": "filter-group",
+ "figma": "Molecules / Filter group (84:579)",
+ "width": 280,
+ "matrix": {
+  "open": [
+   false,
+   true
+  ]
+ },
+ "params": {
+  "filter": {
+   "label": "Product type",
+   "type": "list",
+   "param_name": "filter.p.product_type",
+   "values": [
+    {
+     "label": "Face oil",
+     "value": "face oil",
+     "param_name": "filter.p.product_type",
+     "count": 12,
+     "active": false
+    },
+    {
+     "label": "Body oil",
+     "value": "body oil",
+     "param_name": "filter.p.product_type",
+     "count": 8,
+     "active": true
+    },
+    {
+     "label": "Hair oil",
+     "value": "hair oil",
+     "param_name": "filter.p.product_type",
+     "count": 5,
+     "active": false
+    },
+    {
+     "label": "Gift sets",
+     "value": "gift sets",
+     "param_name": "filter.p.product_type",
+     "count": 0,
+     "active": false
+    },
+    {
+     "label": "Candles",
+     "value": "candles",
+     "param_name": "filter.p.product_type",
+     "count": 4,
+     "active": false
+    },
+    {
+     "label": "Soap",
+     "value": "soap",
+     "param_name": "filter.p.product_type",
+     "count": 6,
+     "active": false
+    },
+    {
+     "label": "Balm",
+     "value": "balm",
+     "param_name": "filter.p.product_type",
+     "count": 3,
+     "active": false
+    },
+    {
+     "label": "Serum",
+     "value": "serum",
+     "param_name": "filter.p.product_type",
+     "count": 9,
+     "active": false
+    }
+   ],
+   "active_values": [
+    {
+     "label": "Body oil",
+     "value": "body oil",
+     "param_name": "filter.p.product_type",
+     "count": 8,
+     "active": true
+    }
+   ]
+  },
+  "currency": "€"
+ },
+ "extras": [
+  {
+   "open": true,
+   "filter": {
+    "label": "Product type",
+    "type": "list",
+    "param_name": "filter.p.product_type",
+    "values": [
+     {
+      "label": "Face oil",
+      "value": "face oil",
+      "param_name": "filter.p.product_type",
+      "count": 12,
+      "active": false
+     },
+     {
+      "label": "Body oil",
+      "value": "body oil",
+      "param_name": "filter.p.product_type",
+      "count": 8,
+      "active": true
+     },
+     {
+      "label": "Hair oil",
+      "value": "hair oil",
+      "param_name": "filter.p.product_type",
+      "count": 5,
+      "active": false
+     },
+     {
+      "label": "Gift sets",
+      "value": "gift sets",
+      "param_name": "filter.p.product_type",
+      "count": 0,
+      "active": false
+     },
+     {
+      "label": "Candles",
+      "value": "candles",
+      "param_name": "filter.p.product_type",
+      "count": 4,
+      "active": false
+     },
+     {
+      "label": "Soap",
+      "value": "soap",
+      "param_name": "filter.p.product_type",
+      "count": 6,
+      "active": false
+     },
+     {
+      "label": "Balm",
+      "value": "balm",
+      "param_name": "filter.p.product_type",
+      "count": 3,
+      "active": false
+     },
+     {
+      "label": "Serum",
+      "value": "serum",
+      "param_name": "filter.p.product_type",
+      "count": 9,
+      "active": false
+     }
+    ],
+    "active_values": [
+     {
+      "label": "Body oil",
+      "value": "body oil",
+      "param_name": "filter.p.product_type",
+      "count": 8,
+      "active": true
+     }
+    ]
+   },
+   "id": "g-list"
+  },
+  {
+   "open": true,
+   "filter": {
+    "label": "Color",
+    "type": "list",
+    "param_name": "filter.v.t.shopify.color-pattern",
+    "values": [
+     {
+      "label": "Beige",
+      "value": "beige",
+      "param_name": "filter.v.t.shopify.color-pattern",
+      "count": 8,
+      "active": false,
+      "swatch": {
+       "color": {
+        "rgb": "231,211,176"
+       }
+      }
+     },
+     {
+      "label": "Black",
+      "value": "black",
+      "param_name": "filter.v.t.shopify.color-pattern",
+      "count": 14,
+      "active": true,
+      "swatch": {
+       "color": {
+        "rgb": "28,25,23"
+       }
+      }
+     },
+     {
+      "label": "Olive",
+      "value": "olive",
+      "param_name": "filter.v.t.shopify.color-pattern",
+      "count": 4,
+      "active": false,
+      "swatch": {
+       "color": {
+        "rgb": "107,112,64"
+       }
+      }
+     },
+     {
+      "label": "Navy",
+      "value": "navy",
+      "param_name": "filter.v.t.shopify.color-pattern",
+      "count": 6,
+      "active": false,
+      "swatch": {
+       "color": {
+        "rgb": "30,41,80"
+       }
+      }
+     },
+     {
+      "label": "Rust",
+      "value": "rust",
+      "param_name": "filter.v.t.shopify.color-pattern",
+      "count": 0,
+      "active": false,
+      "swatch": {
+       "color": {
+        "rgb": "164,72,40"
+       }
+      }
+     }
+    ],
+    "active_values": [
+     {
+      "label": "Black",
+      "value": "black",
+      "param_name": "filter.v.t.shopify.color-pattern",
+      "count": 14,
+      "active": true,
+      "swatch": {
+       "color": {
+        "rgb": "28,25,23"
+       }
+      }
+     }
+    ]
+   },
+   "id": "g-color"
+  },
+  {
+   "open": true,
+   "filter": {
+    "label": "Size",
+    "type": "list",
+    "param_name": "filter.v.option.size",
+    "values": [
+     {
+      "label": "XS",
+      "value": "xs",
+      "param_name": "filter.v.option.size",
+      "count": 3,
+      "active": false
+     },
+     {
+      "label": "S",
+      "value": "s",
+      "param_name": "filter.v.option.size",
+      "count": 5,
+      "active": false
+     },
+     {
+      "label": "M",
+      "value": "m",
+      "param_name": "filter.v.option.size",
+      "count": 7,
+      "active": true
+     },
+     {
+      "label": "L",
+      "value": "l",
+      "param_name": "filter.v.option.size",
+      "count": 4,
+      "active": false
+     },
+     {
+      "label": "XL",
+      "value": "xl",
+      "param_name": "filter.v.option.size",
+      "count": 2,
+      "active": false
+     },
+     {
+      "label": "XXL",
+      "value": "xxl",
+      "param_name": "filter.v.option.size",
+      "count": 0,
+      "active": false
+     }
+    ],
+    "active_values": [
+     {
+      "label": "M",
+      "value": "m",
+      "param_name": "filter.v.option.size",
+      "count": 7,
+      "active": true
+     }
+    ]
+   },
+   "id": "g-size"
+  },
+  {
+   "open": true,
+   "filter": {
+    "label": "Price",
+    "type": "price_range",
+    "param_name": "filter.v.price",
+    "range_max": 12000,
+    "min_value": {
+     "param_name": "filter.v.price.gte",
+     "value": 2000
+    },
+    "max_value": {
+     "param_name": "filter.v.price.lte",
+     "value": 8000
+    },
+    "active_values": []
+   },
+   "id": "g-price"
+  },
+  {
+   "open": true,
+   "filter": {
+    "label": "Availability",
+    "type": "boolean",
+    "param_name": "filter.v.availability",
+    "values": [
+     {
+      "label": "In stock only",
+      "value": "1",
+      "param_name": "filter.v.availability",
+      "count": 120,
+      "active": false
+     },
+     {
+      "label": "Out of stock",
+      "value": "0",
+      "param_name": "filter.v.availability",
+      "count": 27,
+      "active": false
+     }
+    ],
+    "active_values": []
+   },
+   "id": "g-av"
+  },
+  {
+   "open": true,
+   "type": "sort",
+   "title": "Sort by",
+   "options": [
+    {
+     "name": "Featured",
+     "value": "manual"
+    },
+    {
+     "name": "Best selling",
+     "value": "best-selling"
+    },
+    {
+     "name": "Alphabetically, A–Z",
+     "value": "title-ascending"
+    },
+    {
+     "name": "Alphabetically, Z–A",
+     "value": "title-descending"
+    },
+    {
+     "name": "Price, low to high",
+     "value": "price-ascending"
+    },
+    {
+     "name": "Price, high to low",
+     "value": "price-descending"
+    },
+    {
+     "name": "Date, old to new",
+     "value": "created-ascending"
+    },
+    {
+     "name": "Date, new to old",
+     "value": "created-descending"
+    }
+   ],
+   "current": "manual",
+   "filter": null,
+   "id": "g-sort"
+  }
+ ]
+}

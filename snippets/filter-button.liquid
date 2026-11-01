@@ -1,0 +1,49 @@
+{%- comment -%}
+  Figma: Components Atoms / Filter button
+  Opens the filter drawer or toggles the filter sidebar.
+  label     text, default "Filter"                               (Figma: Label)
+  count     number of active filters; 0 renders the badge hidden so JS can fill it; blank omits it   (Figma: Show count + Count)
+  icon      asset name, default icon__sliders-horizontal.svg; 'none' hides it   (Figma: Show icon + Icon swap)
+  style     outline | text                                       (Figma: Style)
+  size      sm | md                                              (Figma: Size)
+  id, class, disabled
+  attributes  JS hooks, e.g. 'data-drawer-trigger="filter-drawer" aria-haspopup="dialog"'
+  States: Hover = :hover, Focus = :focus-visible
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'outline'
+  assign size = size | default: 'sm'
+  assign icon = icon | default: 'icon__sliders-horizontal.svg'
+  if label == blank
+    assign label = 'products.facets.filter_button' | t
+  endif
+  if size == 'md'
+    assign dim = 'h-11 text-label-lg'
+    assign pad = 'px-4'
+  else
+    assign dim = 'h-9 text-label-base'
+    assign pad = 'px-3'
+  endif
+  if style == 'text'
+    assign pad = 'px-0'
+    assign look = 'border border-transparent rounded-xs hover:text-text-muted focus-visible:border-focus'
+  else
+    assign look = 'border border-border-strong rounded-button bg-background hover:border-text focus-visible:border-focus'
+  endif
+  assign count_hooks = 'data-filter-count'
+  if count == 0
+    assign count_hooks = 'data-filter-count hidden'
+  endif
+-%}
+<button type="button" class="filter-button inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap text-text outline-none transition-colors disabled:cursor-not-allowed disabled:text-text-disabled {{ dim }} {{ pad }} {{ look }} {{ class }}" data-style="{{ style }}" data-size="{{ size }}"
+  {%- if id %} id="{{ id }}"{% endif -%}
+  {%- if disabled %} disabled{% endif -%}
+  {%- if attributes %} {{ attributes }}{% endif -%}>
+  {%- unless icon == 'none' -%}
+    <span class="size-4 shrink-0 [&>svg]:size-full" aria-hidden="true">{{ icon | inline_asset_content }}</span>
+  {%- endunless -%}
+  <span>{{ label }}</span>
+  {%- if count != blank -%}
+    {% render 'count-badge', count: count, style: 'accent', size: 'sm', attributes: count_hooks %}
+  {%- endif -%}
+</button>

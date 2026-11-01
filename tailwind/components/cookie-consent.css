@@ -1,0 +1,142 @@
+.cookie-consent {
+    @apply block text-[1rem] leading-[normal] text-[#111111];
+}
+
+.cc-banner-screen {
+    @apply flex fixed inset-0 justify-center items-center z-[200];
+}
+
+.cc-banner-backdrop {
+    @apply absolute inset-0 bg-[#00000033];
+}
+
+.cc-banner {
+    @apply flex relative flex-col flex-nowrap gap-6 mt-auto md:mt-0 pt-3 sm:pt-6 md:pt-8 pr-3 sm:pr-6 md:pr-8 pb-3 sm:pb-6 md:pb-8 pl-3 sm:pl-6 md:pl-8 w-full md:w-auto max-w-150 bg-[#ffffff];
+}
+
+.cc-copy {
+    @apply flex flex-col flex-nowrap gap-1;
+}
+
+.cc-heading {
+    @apply mx-0 mt-0 mb-3 text-lg;
+}
+
+.cc-body {
+    @apply text-sm leading-[1.5] text-balance opacity-60;
+}
+
+.cc-policy {
+    @apply inline-block mt-1 text-xs text-inherit underline;
+}
+
+.cc-actions {
+    @apply flex flex-row sm:flex-row flex-wrap sm:flex-nowrap gap-x-1 sm:gap-x-1 gap-y-1 sm:gap-y-[0.5rem] text-sm;
+}
+
+.cc-manage {
+    @apply basis-[0%] grow shrink pt-[0.625rem] pr-[1rem] pb-[0.625rem] pl-[1rem] border border-[black] border-solid w-auto min-w-[8.5rem] h-10 text-[#000000] bg-transparent cursor-pointer;
+}
+
+.cc-reject {
+    @apply basis-[0%] grow shrink pt-[0.625rem] pr-[1rem] pb-[0.625rem] pl-[1rem] border border-[black] border-solid w-auto min-w-[8.5rem] h-10 text-[#000000] bg-transparent cursor-pointer;
+}
+
+.cc-accept {
+    @apply basis-[0%] grow shrink pt-[0.625rem] pr-[1rem] pb-[0.625rem] pl-[1rem] border border-[#111111] border-solid w-auto min-w-[8.5rem] h-10 text-[#ffffff] bg-[#111111] cursor-pointer;
+}
+
+.cc-overlay {
+    @apply flex fixed inset-0 justify-center justify-items-center items-center z-[600];
+}
+
+.cc-panel {
+    @apply flex relative flex-col border border-[black] border-none w-full max-w-none md:max-w-150 z-[1] text-inherit bg-[#ffffff];
+}
+
+.cc-panel-body {
+    @apply basis-[0%] grow shrink pt-[2rem] pr-[2rem] pl-[2rem] min-h-0 overflow-x-auto overflow-y-auto;
+}
+
+.cc-header {
+    @apply flex gap-[1rem] justify-between items-center mb-3;
+}
+
+.cc-title {
+    @apply mx-0 my-0 text-[1.125rem] font-semibold leading-[1.375];
+}
+
+.cc-close {
+    @apply flex shrink-0 justify-center items-center mb-0 ml-0 p-0 border-[0] size-[2rem] text-inherit bg-transparent cursor-pointer;
+}
+
+.cc-close-icon {
+    @apply block size-[1rem];
+}
+
+.cc-intro {
+    @apply mx-0 mt-[0.5rem] mb-0 text-[0.875rem];
+}
+
+.cc-choices {
+    @apply flex flex-col gap-[1.25rem] mt-[1.5rem];
+}
+
+.cc-choice {
+    @apply flex gap-x-[10px] gap-y-[0.75rem] items-start;
+}
+
+.cc-check {
+    @apply flex relative shrink-0 justify-center items-center border border-[#000000] border-solid size-[1.25rem] text-transparent bg-[#ffffff];
+}
+
+.cc-check-icon {
+    @apply size-[0.75rem];
+}
+
+.cc-choice-copy {
+    @apply min-w-0;
+}
+
+.cc-name {
+    @apply flex justify-start items-center h-[1.25rem] font-semibold leading-[1.25rem];
+}
+
+.cc-desc {
+    @apply block mt-[0.25rem] text-[0.875rem] font-normal opacity-60;
+}
+
+.cc-panel-actions {
+    @apply flex flex-wrap gap-x-1 gap-y-[0.75rem] justify-end pt-6 pr-8 pb-8 pl-8 text-sm bg-[#ffffff];
+}
+
+.cc-panel-reject {
+    @apply basis-[0%] grow shrink pr-[1rem] pl-[1rem] border border-[black] border-solid w-auto min-w-[8.5rem] h-10 text-[#000000] bg-transparent cursor-pointer;
+}
+
+.cc-panel-save {
+    @apply basis-[0%] grow shrink pr-[1rem] pl-[1rem] border border-[black] border-solid w-auto min-w-[8.5rem] h-10 text-[#000000] bg-transparent cursor-pointer;
+}
+
+.cc-panel-accept {
+    @apply basis-[0%] grow shrink pr-[1rem] pl-[1rem] border border-[#111111] border-solid w-auto min-h-[2.5rem] text-[0.875rem] text-[#ffffff] bg-[#111111] cursor-pointer;
+}
+
+.cc-backdrop {
+    @apply absolute inset-0 mx-0 my-0 p-0 border-[0] outline-2 outline-[#ffffff] outline-solid outline-offset-[3px] z-0 cursor-pointer;
+}
+
+.cc-panel-button {
+    @apply shrink-0 pt-[0.5rem] pr-[1rem] pb-[0.5rem] pl-[1rem] border border-[#111111] border-solid w-auto min-h-[2.5rem] text-[0.875rem] text-[#ffffff] bg-[#111111];
+}
+
+/* checked states */
+
+.cc-check {
+    @apply peer-checked:border-black peer-checked:bg-black peer-checked:text-white peer-focus-visible:outline-2 peer-focus-visible:outline-offset-[3px] peer-focus-visible:outline-black;
+}
+
+
+[data-cc-hidden] {
+    @apply hidden;
+}

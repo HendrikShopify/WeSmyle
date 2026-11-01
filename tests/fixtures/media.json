@@ -1,0 +1,5 @@
+{ "snippet": "media", "figma": "Components Atoms / Media (68:165)",
+  "matrix": { "ratio": ["1:1","4:5","3:4","2:3","4:3","3:2","16:9","21:9"] },
+  "params": {},
+  "extras": [ { "ratio": "4:5", "media": { "media_type": "image", "width": 1200, "height": 1500, "alt": "Shirt", "src": "https://picsum.photos/seed/blanc/1200/1500" }, "sizes": "25vw" },
+              { "ratio": "natural", "media": { "media_type": "image", "width": 1200, "height": 800, "alt": "Wide", "src": "https://picsum.photos/seed/wide/1200/800" }, "sizes": "50vw" } ] }

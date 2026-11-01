@@ -1,0 +1,150 @@
+{%- comment -%}
+  Figma: Components Atoms / Comparison cell
+  value       yes | no | partial | none, free text, or "yes | a short sentence" (icon + text)   (Figma: Type)
+  style       icon | filled | ball, how yes, no and partial are drawn                          (Figma: Style)
+  highlight   fill | card | tint, only on cells of the highlighted column; fill is Tone=Inverse  (Figma: Tone)
+  edge        top | bottom, rounds the first or last cell of a Card or Tint column
+  divider     solid | dashed | dotted | none, the line under the row, default solid
+  cta_label, cta_url   renders a button instead of a value                                       (Figma: Type=Action)
+  class       placement only
+  Renders a <td>; use it inside the Comparison table. Icons are decorative; the value is read out through sr-only text.
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'icon'
+  assign divider = divider | default: 'solid'
+  assign inverse = false
+  assign tone = 'default'
+  if highlight == 'fill'
+    assign inverse = true
+    assign tone = 'inverse'
+  endif
+
+  assign raw = value | strip
+  assign parts = raw | split: '|'
+  assign key = raw | downcase
+  assign sentence = ''
+  assign kind = 'text'
+  if cta_label != blank
+    assign kind = 'action'
+  elsif raw == blank
+    assign kind = 'empty'
+  elsif parts.size > 1
+    assign key = parts.first | strip | downcase
+    assign sentence = parts[1] | strip
+    assign kind = 'icon-text'
+  elsif key == 'yes' or key == 'no' or key == 'partial' or key == 'none'
+    assign kind = key
+  endif
+
+  case highlight
+    when 'fill'
+      assign surface = 'bg-accent text-accent-contrast'
+    when 'card'
+      assign surface = 'bg-surface-alt text-text'
+      if edge == 'top'
+        assign surface = surface | append: ' rounded-t-xl'
+      elsif edge == 'bottom'
+        assign surface = surface | append: ' rounded-b-xl'
+      endif
+    when 'tint'
+      assign surface = 'bg-surface text-text'
+      if edge == 'top'
+        assign surface = surface | append: ' rounded-t-lg'
+      elsif edge == 'bottom'
+        assign surface = surface | append: ' rounded-b-lg'
+      endif
+    else
+      assign surface = 'text-text'
+  endcase
+
+  case divider
+    when 'none'
+      assign line = ''
+    when 'dashed'
+      assign line = 'border-b border-dashed border-border'
+    when 'dotted'
+      assign line = 'border-b border-dotted border-border'
+    else
+      assign line = 'border-b border-border'
+  endcase
+
+  if kind == 'icon-text'
+    assign align = 'text-left'
+  else
+    assign align = 'text-center'
+  endif
+
+  if inverse
+    assign muted = 'opacity-70'
+  else
+    assign muted = 'text-text-muted'
+  endif
+
+  case key
+    when 'yes'
+      assign glyph = 'icon__check.svg'
+    when 'no'
+      assign glyph = 'icon__x.svg'
+    else
+      assign glyph = 'icon__minus.svg'
+  endcase
+
+  if key == 'yes'
+    if inverse
+      assign filled = 'bg-accent-contrast text-accent'
+    else
+      assign filled = 'bg-accent text-accent-contrast'
+    endif
+  elsif key == 'no'
+    if inverse
+      assign filled = 'bg-accent-contrast text-error'
+    else
+      assign filled = 'bg-error text-text-inverse'
+    endif
+  else
+    if inverse
+      assign filled = 'bg-accent-contrast text-text-muted'
+    else
+      assign filled = 'bg-border text-text'
+    endif
+  endif
+
+  assign sr_key = 'sections.comparison_table.' | append: key
+  assign button_style = 'primary'
+  if inverse
+    assign button_style = 'secondary'
+  endif
+-%}
+<td class="comparison-cell {% if kind == 'action' %}px-1 lg:px-2{% else %}px-2{% endif %} py-4 align-middle {{ align }} {{ surface }} {{ line }} {{ class }}" data-type="{{ kind }}" data-style="{{ style }}" data-tone="{{ tone }}">
+  {%- case kind -%}
+    {%- when 'yes', 'no', 'partial' -%}
+      {%- case style -%}
+        {%- when 'filled' -%}
+          <span class="inline-flex size-6 items-center justify-center rounded-full {{ filled }}" aria-hidden="true"><span class="size-3.5 [&>svg]:size-full">{{ glyph | inline_asset_content }}</span></span>
+        {%- when 'ball' -%}
+          {%- if kind == 'yes' -%}
+            <span class="inline-block size-5 rounded-full border-2 border-current bg-current align-middle" aria-hidden="true"></span>
+          {%- elsif kind == 'partial' -%}
+            <span class="inline-block size-5 rounded-full border-2 border-current bg-[linear-gradient(90deg,transparent_50%,currentColor_50%)] align-middle" aria-hidden="true"></span>
+          {%- else -%}
+            <span class="inline-block size-5 rounded-full border-2 border-current align-middle" aria-hidden="true"></span>
+          {%- endif -%}
+        {%- else -%}
+          <span class="inline-block size-6 align-middle [&>svg]:size-full {% unless kind == 'yes' %}{{ muted }}{% endunless %}" aria-hidden="true">{{ glyph | inline_asset_content }}</span>
+      {%- endcase -%}
+      <span class="sr-only">{{ sr_key | t }}</span>
+    {%- when 'none' -%}
+      <span class="inline-block size-1 rounded-full align-middle {% if inverse %}bg-accent-contrast opacity-60{% else %}bg-text-muted{% endif %}" aria-hidden="true"></span>
+      <span class="sr-only">{{ sr_key | t }}</span>
+    {%- when 'icon-text' -%}
+      <span class="inline-flex items-start gap-2">
+        <span class="mt-0.5 size-4 shrink-0 [&>svg]:size-full {% if inverse %}text-accent-contrast{% elsif key == 'yes' %}text-accent{% else %}{{ muted }}{% endif %}" aria-hidden="true">{{ glyph | inline_asset_content }}</span>
+        {%- if key == 'yes' or key == 'no' or key == 'partial' -%}<span class="sr-only">{{ sr_key | t }}: </span>{%- endif -%}
+        <span class="text-body-sm">{{ sentence }}</span>
+      </span>
+    {%- when 'text' -%}
+      <span class="text-body-sm">{{ raw }}</span>
+    {%- when 'action' -%}
+      {% render 'button', label: cta_label, href: cta_url, style: button_style, size: 'sm', class: 'w-full' %}
+  {%- endcase -%}
+</td>

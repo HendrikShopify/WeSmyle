@@ -1,0 +1,209 @@
+{%- liquid
+  assign shop_domain = section.settings.dev_shop_domain | default: shop.permanent_domain
+  assign product_id = section.settings.dev_product_id | default: product.id
+  assign aggregates = product.metafields.reviews.aggregates.value
+  assign recommend_label = section.settings.recommend_label | default: 'Would recommend this product.'
+  assign heading = section.settings.heading | default: 'Customer reviews'
+  assign name_format = section.settings.name_format | default: 'customer'
+  assign form_success = section.settings.form_success_message
+  if form_success == blank
+    assign form_success = 'reviews.form.success' | t
+  endif
+  assign form_remove_photo = 'reviews.form.remove_photo' | t: name: '__NAME__'
+  assign form_photo_count = 'reviews.form.error_photo_count' | t: count: '__COUNT__'
+  assign form_photo_size = 'reviews.form.error_photo_size' | t: name: '__NAME__'
+  assign form_photo_upload = 'reviews.form.error_photo_upload' | t: name: '__NAME__'
+  assign form_uploading = 'reviews.form.uploading' | t: current: '__CURRENT__', total: '__TOTAL__'
+  assign histogram_label = 'reviews.histogram' | t: rating: '__RATING__', count: '__COUNT__'
+  assign remove_filter_label = 'reviews.remove_filter' | t: label: '__LABEL__'
+  assign page_label = 'reviews.page' | t: number: '__NUMBER__'
+  assign dummy_average = 0
+  assign dummy_count = 0
+  assign dummy_histogram = '0,0,0,0,0'
+  assign form_drawer_id = 'ReviewsForm-' | append: section.id
+  assign form_drawer_title = 'reviews.form.title' | t
+  assign write_label = 'reviews.write_review' | t
+  assign clear_all_label = 'reviews.clear_all' | t
+  assign retry_label = 'reviews.retry' | t
+  assign write_attributes = 'data-reviews-write data-drawer-trigger="' | append: form_drawer_id | append: '" aria-controls="' | append: form_drawer_id | append: '" aria-expanded="false"'
+-%}
+
+<product-reviews class="block bg-background py-section-md">
+  {% render 'reviews__templates' %}
+  <div class="mx-auto w-full max-w-page px-page-margin">
+    {%- comment -%} Figma: Components Atoms / Rating summary (12-column grid from lg: heading in columns 1 to 8, average + stars lg + Based on + histogram in columns 10 to 12, bottom border; stacked below lg) {%- endcomment -%}
+    <div class="flex flex-col gap-8 border-b border-border pb-12 lg:grid lg:grid-cols-12 lg:items-end lg:gap-x-gutter" data-reviews-summary>
+      <h2 class="min-w-0 text-heading-1 text-text lg:col-span-8">{{ heading }}</h2>
+      <div class="flex w-full flex-col items-start gap-3 lg:col-span-3 lg:col-start-10">
+        <p class="flex items-start gap-1">
+          <span class="text-heading-1 text-text" data-reviews-average>{{ dummy_average }}</span>
+          <span class="text-body-sm text-text-muted">/ 5</span>
+        </p>
+        <div class="inline-flex gap-1" data-reviews-summary-stars role="img" aria-label="{{ 'reviews.stars' | t: rating: dummy_average }}">
+          {%- for i in (1..5) -%}
+            <span class="relative size-6 shrink-0 text-rating-empty [&_svg]:size-full" data-reviews-summary-star>
+              {{- 'icon__star.svg' | inline_asset_content -}}
+              <span class="absolute inset-y-0 left-0 overflow-hidden text-rating" data-reviews-summary-fill style="width: 0%"><span class="block size-6">{{ 'icon__star.svg' | inline_asset_content }}</span></span>
+            </span>
+          {%- endfor -%}
+        </div>
+        <p class="text-body-sm text-text-muted" data-reviews-based>{{ 'reviews.based_on_other' | t: count: dummy_count }}</p>
+        <div class="mt-4 w-full">{% render 'reviews__histogram', total: dummy_count, counts: dummy_histogram %}</div>
+      </div>
+    </div>
+    {%- comment -%} Figma: Components Atoms / Reviews toolbar (search, filter chips, sort, Write a review; wraps) {%- endcomment -%}
+    <div class="flex flex-wrap items-center gap-3 py-8" data-reviews-toolbar>
+      {% render 'reviews__search' %}
+      {% render 'reviews__filters' %}
+      <div class="contents" data-reviews-sort></div>
+      {% render 'link', label: write_label, size: 'sm', attributes: write_attributes %}
+    </div>
+    {% render 'reviews__chips' %}
+    {%- comment -%} Figma: Components Atoms / Reviews empty state (No reviews, No results, Error) {%- endcomment -%}
+    <div class="flex flex-col items-start gap-3 py-10" data-reviews-empty hidden>
+      <p class="text-body-sm text-text-muted" data-reviews-empty-message></p>
+      {%- assign empty_write_attributes = 'data-reviews-empty-action="empty" data-drawer-trigger="' | append: form_drawer_id | append: '" aria-controls="' | append: form_drawer_id | append: '" aria-expanded="false" hidden' -%}
+      {% render 'link', label: write_label, size: 'sm', attributes: empty_write_attributes %}
+      {% render 'link', label: clear_all_label, size: 'sm', attributes: 'data-reviews-empty-action="filters" data-reviews-clear hidden' %}
+      {% render 'link', label: retry_label, size: 'sm', attributes: 'data-reviews-empty-action="error" data-reviews-retry hidden' %}
+    </div>
+    {% render 'reviews__block' %}
+    {% render 'reviews__pagination' %}
+  </div>
+  {%- assign lightbox_label = 'reviews.photo' | t -%}
+  {% render 'media-lightbox', dynamic: true, label: lightbox_label %}
+  {% render 'side-drawer', id: form_drawer_id, title: form_drawer_title %}
+  <div data-reviews-form-root hidden></div>
+  <script type="application/json" data-reviews-config>
+    {
+      "shopDomain": {{ shop_domain | json }},
+      "productId": {{ product_id | json }},
+      "perPage": 6,
+      "locale": {{ request.locale.iso_code | json }},
+      "aggregates": {% if aggregates %}{{ aggregates | json }}{% else %}null{% endif %},
+      "recommendLabel": {{ recommend_label | json }},
+      "nameFormat": {{ name_format | json }},
+      "requiredQuestions": {{ section.settings.required_questions | default: '' | json }},
+      "formSuccessMessage": {{ form_success | json }},
+      "labels": {
+        "anonymous": {{ 'reviews.anonymous' | t | json }},
+        "stars": {{ 'reviews.stars' | t: rating: '__RATING__' | json }},
+        "basedOnOne": {{ 'reviews.based_on_one' | t: count: '__COUNT__' | json }},
+        "basedOnOther": {{ 'reviews.based_on_other' | t: count: '__COUNT__' | json }},
+        "histogram": {{ histogram_label | json }},
+        "removeFilter": {{ remove_filter_label | json }},
+        "emptyFilters": {{ 'reviews.empty_filters' | t | json }},
+        "empty": {{ 'reviews.empty' | t | json }},
+        "error": {{ 'reviews.error' | t | json }},
+        "previous": {{ 'reviews.previous' | t | json }},
+        "next": {{ 'reviews.next' | t | json }},
+        "photo": {{ 'reviews.photo' | t | json }},
+        "video": {{ 'reviews.video' | t | json }},
+        "page": {{ page_label | json }},
+        "form": {
+          "ratingRequired": {{ 'reviews.form.error_rating' | t | json }},
+          "bodyRequired": {{ 'reviews.form.error_body' | t | json }},
+          "nameRequired": {{ 'reviews.form.error_name' | t | json }},
+          "emailInvalid": {{ 'reviews.form.error_email' | t | json }},
+          "questionRequired": {{ 'reviews.form.error_question' | t | json }},
+          "removePhoto": {{ form_remove_photo | json }},
+          "photoCount": {{ form_photo_count | json }},
+          "photoSize": {{ form_photo_size | json }},
+          "photoUpload": {{ form_photo_upload | json }},
+          "uploading": {{ form_uploading | json }},
+          "sending": {{ 'reviews.form.sending' | t | json }},
+          "error": {{ 'reviews.form.error_generic' | t | json }}
+        },
+        "sorts": {
+          "newest": {{ 'reviews.sorts.newest' | t | json }},
+          "highest": {{ 'reviews.sorts.highest' | t | json }},
+          "lowest": {{ 'reviews.sorts.lowest' | t | json }},
+          "helpful": {{ 'reviews.sorts.helpful' | t | json }},
+          "photos_first": {{ 'reviews.sorts.photos_first' | t | json }},
+          "videos_first": {{ 'reviews.sorts.videos_first' | t | json }}
+        }
+      }
+    }
+  </script>
+</product-reviews>
+
+{% comment %} {{ product.metafields.reviews.rating_count }} {% endcomment %}
+
+<script src="{{ 'media-gallery.js' | asset_url }}" defer></script>
+<script src="{{ 'reviews__judgeme.js' | asset_url }}" defer></script>
+<script src="{{ 'reviews__core.js' | asset_url }}" defer></script>
+<script src="{{ 'reviews__ui.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Reviews",
+  "settings": [
+    {
+      "type": "text",
+      "id": "dev_shop_domain",
+      "label": "Shop domain",
+      "info": "Development only. Leave empty on client stores."
+    },
+    {
+      "type": "text",
+      "id": "dev_product_id",
+      "label": "Product ID",
+      "info": "Development only. Leave empty on client stores."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Customer reviews"
+    },
+    {
+      "type": "text",
+      "id": "recommend_label",
+      "label": "Recommend label",
+      "default": "Would recommend this product."
+    },
+    {
+      "type": "select",
+      "id": "name_format",
+      "label": "Name format",
+      "default": "customer",
+      "options": [
+        { "value": "customer", "label": "Let customer choose" },
+        { "value": "full", "label": "Full name" },
+        { "value": "last_initial", "label": "First name and last initial" },
+        { "value": "anonymous", "label": "Anonymous" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "required_questions",
+      "label": "Required questions",
+      "info": "Question keys are the question titles in lowercase with underscores."
+    },
+    {
+      "type": "text",
+      "id": "form_success_message",
+      "label": "Form success message",
+      "default": "Thanks for your review. It will appear once it's approved."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_voting",
+      "label": "Show helpful votes",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_downvote",
+      "label": "Show downvote",
+      "info": "When off, only the Yes button is shown.",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews"
+    }
+  ]
+}
+{% endschema %}

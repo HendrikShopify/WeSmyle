@@ -1,0 +1,66 @@
+{%- comment -%}
+  Figma: Components Atoms / Chip
+  label, count
+  type        active | filter | dropdown                      (Figma: Type)
+  active:     removable, href removes the filter (a link) or renders a button with data-chip-remove
+  filter:     checkbox in a label (name/value/checked) or a link when href is set; input_type radio makes it a single choice
+  dropdown:   button with a chevron, aria-expanded driven by the parent
+  selected, disabled, id, name, value, checked, href, class, attributes
+  input_type  checkbox | radio, the input of a filter chip that is not a link
+  label_attributes   extra attributes on the label span (JS hooks that swap the text, e.g. data-reviews-chip-label)
+  States: Hover = :hover, Focus = :focus-visible, Selected = :checked / [aria-pressed], Disabled = [disabled]
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'filter'
+  assign base = 'chip inline-flex h-8 shrink-0 items-center gap-1 whitespace-nowrap rounded-chip text-label-base transition-colors cursor-pointer outline-none'
+-%}
+{%- case type -%}
+  {%- when 'active' -%}
+    {%- assign look = base | append: ' bg-surface-alt pl-3 pr-2 text-text hover:bg-surface focus-visible:border focus-visible:border-focus' -%}
+    {%- if href -%}
+      <a class="{{ look }} {{ class }}" href="{{ href }}" data-type="active"{% if attributes %} {{ attributes }}{% endif %}>
+        <span>{{ label }}</span>
+        <span class="size-4 [&>svg]:size-full" aria-hidden="true">{{ 'icon__close.svg' | inline_asset_content }}</span>
+        <span class="sr-only">{{ 'products.facets.clear_filter' | t }}</span>
+      </a>
+    {%- else -%}
+      <button type="button" class="{{ look }} {{ class }}" data-type="active" data-chip-remove{% if attributes %} {{ attributes }}{% endif %}>
+        <span{% if label_attributes %} {{ label_attributes }}{% endif %}>{{ label }}</span>
+        <span class="size-4 [&>svg]:size-full" aria-hidden="true">{{ 'icon__close.svg' | inline_asset_content }}</span>
+        <span class="sr-only">{{ 'products.facets.clear_filter' | t }}</span>
+      </button>
+    {%- endif -%}
+  {%- when 'dropdown' -%}
+    {%- liquid
+      assign look = base | append: ' border bg-background pl-3 pr-2 hover:border-text focus-visible:border-focus disabled:border-disabled disabled:text-text-disabled disabled:cursor-not-allowed aria-selected:border-accent aria-selected:bg-accent-subtle aria-selected:text-accent'
+      if selected
+        assign look = look | append: ' border-accent bg-accent-subtle text-accent'
+      else
+        assign look = look | append: ' border-border-strong text-text'
+      endif
+    -%}
+    <button type="button" class="group/chip {{ look }} {{ class }}" data-type="dropdown" aria-haspopup="true" aria-expanded="false"{% if id %} id="{{ id }}"{% endif %}{% if disabled %} disabled{% endif %}{% if attributes %} {{ attributes }}{% endif %}>
+      <span{% if label_attributes %} {{ label_attributes }}{% endif %}>{{ label }}</span>
+      {%- if count %}<span class="{% if selected %}text-accent{% else %}text-text-muted{% endif %}">({{ count }})</span>{% endif -%}
+      <span class="size-4 transition-transform group-aria-expanded/chip:rotate-180 [&>svg]:size-full" aria-hidden="true">{{ 'icon__chevron-down.svg' | inline_asset_content }}</span>
+    </button>
+  {%- else -%}
+    {%- assign look = base | append: ' border px-3 border-border-strong bg-background text-text hover:border-text' -%}
+    {%- if href -%}
+      {%- if selected -%}
+        {%- assign look = base | append: ' border px-3 border-accent bg-accent text-accent-contrast' -%}
+      {%- endif -%}
+      <a class="{{ look }} focus-visible:border-focus {{ class }}" href="{{ href }}" data-type="filter"{% if selected %} aria-current="true"{% endif %}{% if attributes %} {{ attributes }}{% endif %}>
+        <span>{{ label }}</span>
+        {%- if count %}<span class="{% if selected %}text-accent-contrast{% else %}text-text-muted{% endif %}">({{ count }})</span>{% endif -%}
+      </a>
+    {%- else -%}
+      <label class="inline-flex {{ class }}" data-type="filter">
+        <input type="{{ input_type | default: 'checkbox' }}" class="peer sr-only"{% if id %} id="{{ id }}"{% endif %}{% if name %} name="{{ name }}"{% endif %}{% if value %} value="{{ value | escape }}"{% endif %}{% if checked or selected %} checked{% endif %}{% if disabled %} disabled{% endif %}{% if attributes %} {{ attributes }}{% endif %}>
+        <span class="{{ look }} peer-checked:border-accent peer-checked:bg-accent peer-checked:text-accent-contrast peer-checked:[&>span]:text-accent-contrast peer-focus-visible:border-focus peer-disabled:border-disabled peer-disabled:text-text-disabled peer-disabled:cursor-not-allowed">
+          <span{% if label_attributes %} {{ label_attributes }}{% endif %}>{{ label }}</span>
+          {%- if count %}<span class="text-text-muted">({{ count }})</span>{% endif -%}
+        </span>
+      </label>
+    {%- endif -%}
+{%- endcase -%}

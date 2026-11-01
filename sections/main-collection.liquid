@@ -1,0 +1,41 @@
+<div class="mx-auto w-full max-w-page px-page-margin py-4">{% render 'breadcrumbs' %}</div>
+{% paginate collection.products by 24 %}
+  <collection-filters data-section-id="{{ section.id }}">
+    <div class="mx-auto w-full max-w-page px-page-margin section-padding-md">
+      <div class="flex flex-col gap-6 lg:grid lg:grid-cols-12 lg:gap-x-gutter">
+        <h1 class="h1 col-span-6">
+          {{ collection.title }}
+        </h1>
+        <div class="col-span-6">
+          <div class="max-w-xl">
+            {{ collection.description | truncatewords: 50 }}
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-8 py-20">
+        {% render 'collection-toolbar', results: collection, clear_href: collection.url %}
+
+        <div id="ProductGridContainer" class="group/grid flex flex-col gap-section-sm" data-density="large" data-density-mobile="small">
+          {%- if paginate.items == 0 -%}
+            {%- liquid
+              assign empty_type = 'empty-collection'
+              if collection.all_products_count > 0
+                assign empty_type = 'no-results'
+              endif
+            -%}
+            <div class="py-16">{% render 'empty-state', type: empty_type %}</div>
+          {%- else -%}
+            {% render 'product-grid', products: collection.products, section_id: section.id %}
+            {%- if paginate.pages > 1 -%}
+              <div class="flex flex-col items-center gap-3">
+                {% render 'pagination-status', paginate: paginate, size: 'sm' %}
+                {% render 'pagination', paginate: paginate %}
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </collection-filters>
+{% endpaginate %}

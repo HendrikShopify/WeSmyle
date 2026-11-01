@@ -1,0 +1,22 @@
+{
+ "snippet": "textarea",
+ "figma": "Atoms / Textarea (72:362)",
+ "matrix": {
+  "state": [
+   "default",
+   "hover",
+   "focus",
+   "disabled"
+  ]
+ },
+ "params": {
+  "placeholder": "Write your message"
+ },
+ "extras": [
+  {
+   "value": "Hi, I would like to know if the 250 ml bottle will be back in stock soon.",
+   "error": true
+  }
+ ],
+ "width": 320
+}

@@ -1,0 +1,27 @@
+{%- comment -%}
+  Figma: Components Atoms / Attribute
+  label, value         e.g. "Size", "M"                  (Figma: Label, Value)
+  href                 renders the value as a link        (Figma: Type=Link)
+  size                 xs | sm                            (Figma: Size)
+  class
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'sm'
+  if size == 'xs'
+    assign text = 'text-body-xs'
+    assign link_text = 'text-link-sm'
+  else
+    assign text = 'text-body-sm'
+    assign link_text = 'text-link-base'
+  endif
+-%}
+<div class="attribute {{ text }} {{ class }}">
+  <dt class="inline text-text-muted">{{ label }}</dt>
+  <dd class="inline m-0 {% if href %}ml-2{% else %}ml-1{% endif %}">
+    {%- if href -%}
+      <a href="{{ href }}" class="{{ link_text }} text-text underline hover:no-underline" target="_blank" rel="noopener">{{ value }}</a>
+    {%- else -%}
+      <span class="text-text">{{ value }}</span>
+    {%- endif -%}
+  </dd>
+</div>

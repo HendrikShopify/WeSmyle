@@ -1,0 +1,42 @@
+{%- comment -%}
+  Figma: Components Atoms / Bundle tier progress
+  tier_items     array of item counts per tier, e.g. 2, 4, 6
+  tier_percents  array of discount percents per tier, e.g. 10, 15, 20
+  class          placement only
+  Tier (0 to 3) is how many tiers are unlocked; bundle-builder.js fills the segments (data-filled) and writes the message.
+  Message templates sit on the root as data attributes with [number] and [percent] placeholders.
+  Static copy: the discount itself lives in the Shopify admin, this only communicates it.
+{%- endcomment -%}
+{%- liquid
+  assign message_start = 'sections.bundle_builder.message_start' | t: number: '[number]', percent: '[percent]'
+  assign message_next = 'sections.bundle_builder.message_next' | t: number: '[number]', percent: '[percent]'
+  assign message_done = 'sections.bundle_builder.message_done' | t: percent: '[percent]'
+-%}
+<div
+  class="bundle-tier-progress group/progress flex flex-col gap-3 {{ class }}"
+  data-bundle-progress
+  data-complete="false"
+  data-message-start="{{ message_start | escape }}"
+  data-message-next="{{ message_next | escape }}"
+  data-message-done="{{ message_done | escape }}"
+>
+  <p class="flex items-center gap-2 text-label-base text-text" aria-live="polite">
+    <span class="size-4 shrink-0 [&>svg]:size-full group-data-[complete=true]/progress:hidden" aria-hidden="true">{{ 'icon__gift.svg' | inline_asset_content }}</span>
+    <span class="hidden size-4 shrink-0 text-success group-data-[complete=true]/progress:block [&>svg]:size-full" aria-hidden="true">{{ 'icon__circle-check.svg' | inline_asset_content }}</span>
+    <span data-bundle-message></span>
+  </p>
+  <div class="flex gap-1" aria-hidden="true">
+    {%- for items in tier_items %}
+      <span class="h-1 flex-1 rounded-full bg-surface-alt transition-colors data-[filled=true]:bg-accent group-data-[complete=true]/progress:data-[filled=true]:bg-success" data-bundle-segment data-filled="false"></span>
+    {%- endfor %}
+  </div>
+  <ul class="grid gap-1" style="grid-template-columns: repeat({{ tier_items.size }}, minmax(0, 1fr))" role="list">
+    {%- for items in tier_items %}
+      {%- assign percent = tier_percents[forloop.index0] %}
+      <li class="flex flex-col gap-1">
+        <span class="text-label-sm text-text-muted">{{ 'sections.bundle_builder.tier_items' | t: number: items }}</span>
+        <span class="text-label-base text-text">{{ 'sections.bundle_builder.tier_discount' | t: percent: percent }}</span>
+      </li>
+    {%- endfor %}
+  </ul>
+</div>

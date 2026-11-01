@@ -1,0 +1,10 @@
+{
+  "sections": {
+    "main": {
+      "type": "comparison-table"
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

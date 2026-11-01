@@ -1,0 +1,56 @@
+{%- comment -%}
+  Figma: Components Molecules / Empty state
+  type            404 | empty-collection | no-results | generic      (Figma: Type)
+  heading, body   override the default copy of the type
+  primary_label, primary_href   primary action; defaults per type. no-results renders a button with data-filter-clear instead of a link
+  secondary_label, secondary_href   optional second action (Figma: Show secondary action)
+  class           placement only; the parent owns the vertical padding
+  Centered state: optional code (404), heading, text and up to two actions.
+  no-results sits inside the product grid container, so filters.js swaps it in and out with the grid; its button clears every filter live.
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'generic'
+  assign code = ''
+  assign primary_attributes = ''
+  case type
+    when '404'
+      assign code = 'templates.404.subtext' | t
+      assign default_heading = 'templates.404.title' | t
+      assign default_body = 'general.empty_state.not_found_body' | t
+      assign default_label = 'general.continue_shopping' | t
+      assign default_href = routes.all_products_collection_url
+    when 'empty-collection'
+      assign default_heading = 'general.empty_state.empty_collection_title' | t
+      assign default_body = 'general.empty_state.empty_collection_body' | t
+      assign default_label = 'general.empty_state.shop_all' | t
+      assign default_href = routes.all_products_collection_url
+    when 'no-results'
+      assign default_heading = 'general.empty_state.no_results_title' | t
+      assign default_body = 'general.empty_state.no_results_body' | t
+      assign default_label = 'general.empty_state.clear_filters' | t
+      assign default_href = ''
+      assign primary_attributes = 'data-filter-clear'
+    else
+      assign default_heading = 'general.empty_state.generic_title' | t
+      assign default_body = 'general.empty_state.generic_body' | t
+      assign default_label = 'general.empty_state.back_home' | t
+      assign default_href = routes.root_url
+  endcase
+  assign heading = heading | default: default_heading
+  assign body = body | default: default_body
+  assign primary_label = primary_label | default: default_label
+  assign primary_href = primary_href | default: default_href
+-%}
+<div class="empty-state mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center {{ class }}" data-empty-state="{{ type }}">
+  <div class="flex flex-col items-center gap-2">
+    {%- if code != blank -%}<p class="text-label-caps text-text-muted">{{ code }}</p>{%- endif -%}
+    <h2 class="text-heading-4 text-text">{{ heading }}</h2>
+    <p class="text-body-base text-text-muted">{{ body }}</p>
+  </div>
+  <div class="flex flex-wrap items-center justify-center gap-3">
+    {% render 'button', label: primary_label, href: primary_href, style: 'primary', size: 'md', attributes: primary_attributes %}
+    {%- if secondary_label != blank -%}
+      {% render 'button', label: secondary_label, href: secondary_href, style: 'secondary', size: 'md' %}
+    {%- endif -%}
+  </div>
+</div>

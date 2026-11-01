@@ -1,0 +1,64 @@
+{%- comment -%}
+  Figma: Components Atoms / Localization menu
+  field      language | country                    (Figma: Field)
+  languages  array of language objects (localization.available_languages), each with iso_code and endonym_name
+  countries  array of country objects (localization.available_countries), each with iso_code, name and currency
+  items      captured localization-item markup instead of languages (demos, tests)
+  current    iso code of the current language or country
+  id         listbox id (the trigger points at it with aria-controls)
+  labelledby id of the trigger
+  open       boolean, renders without the hidden attribute
+  placement  bottom | top    (Figma: Placement) opens below (default) or above the trigger
+  align      start | end      (Figma: Align) which edge of the trigger the menu lines up with; default end
+  class      placement only
+  One localization-item per language or country, in the order Shopify returns them. The country list scrolls past 18rem.
+{%- endcomment -%}
+{%- liquid
+  assign field = field | default: 'language'
+  assign align_class = 'right-0'
+  if align == 'start'
+    assign align_class = 'left-0'
+  endif
+  assign place_class = 'top-full mt-1'
+  if placement == 'top'
+    assign place_class = 'bottom-full mb-1'
+  endif
+  assign min_w = 'min-w-24'
+  if field == 'country'
+    assign min_w = 'min-w-48 max-h-72 overflow-y-auto'
+  endif
+-%}
+<ul
+  class="localization-menu absolute {{ align_class }} {{ place_class }} z-20 flex {{ min_w }} flex-col rounded-input border border-border bg-background p-1 {{ class }}"
+  role="listbox"
+  {%- if id %} id="{{ id }}"{% endif %}
+  {%- if labelledby %} aria-labelledby="{{ labelledby }}"{% endif %}
+  tabindex="-1"
+  {%- unless open %} hidden{% endunless %}
+>
+  {%- if items != blank -%}
+    {{ items }}
+  {%- elsif field == 'country' -%}
+  {%- for country in countries -%}
+    {%- liquid
+      assign is_current = false
+      if country.iso_code == current
+        assign is_current = true
+      endif
+      assign item_id = id | append: '-' | append: country.iso_code
+      render 'localization-item', field: 'country', code: country.iso_code, name: country.name, currency: country.currency, current: is_current, id: item_id
+    -%}
+  {%- endfor -%}
+  {%- else -%}
+  {%- for language in languages -%}
+    {%- liquid
+      assign is_current = false
+      if language.iso_code == current
+        assign is_current = true
+      endif
+      assign item_id = id | append: '-' | append: language.iso_code
+      render 'localization-item', code: language.iso_code, name: language.endonym_name, current: is_current, id: item_id
+    -%}
+  {%- endfor -%}
+  {%- endif -%}
+</ul>

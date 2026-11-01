@@ -1,0 +1,68 @@
+{%- comment -%}
+  Figma: Components Atoms / Variant pill
+  label      value text                                     (Figma: Label)
+  size       sm | md                                        (Figma: Size)
+  sold_out   boolean                                        (Figma: State=Sold out)
+  Modes: name + value render a radio (product form); type 'submit' or 'button' renders a <button> with name/value (quick add); otherwise a plain span.
+  id, checked, form, class, attributes
+  States: Hover = :hover, Selected = :checked, Focus = :focus-visible (outline with offset, so it also shows on the selected pill)
+  Selected + sold_out (Figma: State=Selected sold out): keeps the accent border and disabled text, no accent fill, line turns border-strong.
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  if size == 'sm'
+    assign dim = 'h-9 px-4 text-label-base'
+  else
+    assign dim = 'h-11 px-4 text-label-lg'
+  endif
+  assign pill = 'variant-pill__box relative inline-flex items-center justify-center rounded-button border bg-background text-text transition-colors hover:border-border-strong overflow-hidden'
+  if sold_out
+    assign pill = pill | append: ' border-border text-text-disabled'
+  else
+    assign pill = pill | append: ' border-border'
+  endif
+  if name and type == blank
+    if sold_out
+      assign pill = pill | append: ' peer-checked:border-accent peer-checked:[&_svg]:text-border-strong peer-focus-visible:outline-1 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus'
+    else
+      assign pill = pill | append: ' peer-checked:bg-accent peer-checked:border-accent peer-checked:text-accent-contrast peer-focus-visible:outline-1 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus'
+    endif
+  elsif checked
+    if sold_out
+      assign pill = pill | append: ' border-accent [&_svg]:text-border-strong'
+    else
+      assign pill = pill | append: ' bg-accent border-accent text-accent-contrast'
+    endif
+  endif
+  assign tag = 'span'
+  if type == 'submit' or type == 'button'
+    assign tag = 'button'
+  elsif name
+    assign tag = 'label'
+  endif
+  if tag == 'button'
+    assign pill = pill | append: ' cursor-pointer outline-none focus-visible:border-focus disabled:cursor-not-allowed'
+  endif
+-%}
+{%- if tag == 'button' -%}
+<button type="{{ type }}" class="variant-pill {{ pill }} {{ dim }} {{ class }}" data-size="{{ size }}"{% if name %} name="{{ name | escape }}"{% endif %}{% if value %} value="{{ value | escape }}"{% endif %}{% if id %} id="{{ id }}"{% endif %}{% if sold_out %} disabled{% endif %}{% if attributes %} {{ attributes }}{% endif %}>
+  {{- label -}}
+  {%- if sold_out -%}
+    <svg class="pointer-events-none absolute inset-0 size-full text-border" viewBox="0 0 10 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="10" x2="10" y2="0" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>
+    <span class="sr-only">{{ 'products.product.variant_sold_out_or_unavailable' | t }}</span>
+  {%- endif -%}
+</button>
+{%- else -%}
+<{{ tag }} class="variant-pill inline-flex cursor-pointer {{ class }}" data-size="{{ size }}"{% if tag == 'label' and id %} for="{{ id }}"{% endif %}>
+  {%- if tag == 'label' -%}
+    <input type="radio" class="peer sr-only" id="{{ id }}" name="{{ name | escape }}" value="{{ value | escape }}"{% if form %} form="{{ form }}"{% endif %}{% if checked %} checked{% endif %}{% if attributes %} {{ attributes }}{% endif %}>
+  {%- endif -%}
+  <span class="{{ pill }} {{ dim }}">
+    {{- label -}}
+    {%- if sold_out -%}
+      <svg class="pointer-events-none absolute inset-0 size-full text-border" viewBox="0 0 10 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="10" x2="10" y2="0" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>
+      <span class="sr-only">{{ 'products.product.variant_sold_out_or_unavailable' | t }}</span>
+    {%- endif -%}
+  </span>
+</{{ tag }}>
+{%- endif -%}

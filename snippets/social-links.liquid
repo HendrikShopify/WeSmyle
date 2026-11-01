@@ -1,0 +1,32 @@
+{%- comment -%}
+  Figma: Components Molecules / Social links
+  size    sm | md                                   (Figma: Size)
+  class
+  Row of ghost icon buttons, one per platform with a link in the theme settings (social_*_link). Renders nothing when no link is set.
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  assign platforms = 'instagram,facebook,tiktok,youtube,pinterest,twitter,linkedin' | split: ','
+  assign icons = 'icon__instagram.svg,icon__facebook.svg,icon__tiktok.svg,icon__youtube.svg,icon__pinterest.svg,icon__x-social.svg,icon__linkedin.svg' | split: ','
+  assign labels = 'Instagram,Facebook,TikTok,YouTube,Pinterest,X,LinkedIn' | split: ','
+  assign count = 0
+  for platform in platforms
+    assign key = 'social_' | append: platform | append: '_link'
+    if settings[key] != blank
+      assign count = count | plus: 1
+    endif
+  endfor
+-%}
+{%- if count > 0 -%}
+  <ul class="social-links flex flex-wrap items-center gap-1 {{ class }}" role="list" data-size="{{ size }}">
+    {%- for platform in platforms -%}
+      {%- liquid
+        assign key = 'social_' | append: platform | append: '_link'
+        assign href = settings[key]
+      -%}
+      {%- if href != blank -%}
+        <li>{% render 'icon-button', icon: icons[forloop.index0], label: labels[forloop.index0], style: 'ghost', size: size, href: href, attributes: 'target="_blank" rel="noopener"' %}</li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+{%- endif -%}

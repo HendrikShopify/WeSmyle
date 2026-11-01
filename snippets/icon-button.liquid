@@ -1,0 +1,87 @@
+{%- comment -%}
+  Figma: Components Atoms / Icon button
+  icon        asset name, e.g. icon__cart.svg     (Figma: Icon swap)
+  label       accessible name; visible when type is text   (Figma: Label)
+  type        icon | text                        (Figma: Type)
+  style       primary | secondary | ghost        (Figma: Style)
+  size        sm | md | lg                       (Figma: Size)
+  count       number, shows the Count badge; 0 renders it hidden so JS can fill it  (Figma: Show count + Count)
+  tag         button | a | summary; href implies a       (DOM concern, not a Figma variant)
+  submit      boolean, type="submit" instead of "button" (inside forms)
+  attributes  extra attributes for JS hooks, e.g. 'data-mobile-menu-open aria-expanded="false"'
+  href, id, name, value, disabled, class
+  States: Hover = :hover, Focus = :focus-visible, Disabled = [disabled]
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'icon'
+  assign style = style | default: 'primary'
+  assign size = size | default: 'md'
+  if type == 'text'
+    assign base = 'icon-button relative inline-flex items-center gap-1 rounded-xs text-text transition-colors cursor-pointer hover:text-text-muted focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:text-text-disabled disabled:cursor-not-allowed'
+    assign look = ''
+    case size
+      when 'sm'
+        assign dim = 'h-9 text-label-base'
+      when 'lg'
+        assign dim = 'h-13 text-label-lg'
+      else
+        assign dim = 'h-11 text-label-lg'
+    endcase
+  else
+    assign base = 'icon-button relative inline-flex items-center justify-center rounded-button border transition-colors cursor-pointer focus-visible:outline-none focus-visible:border-focus disabled:cursor-not-allowed'
+    case style
+      when 'secondary'
+        assign look = 'bg-background text-accent border-accent hover:bg-accent-subtle disabled:border-disabled disabled:text-text-disabled'
+      when 'ghost'
+        assign look = 'bg-transparent text-text border-transparent hover:bg-accent-subtle disabled:text-text-disabled disabled:hover:bg-transparent'
+      else
+        assign look = 'bg-accent text-accent-contrast border-accent hover:bg-accent-hover hover:border-accent-hover disabled:bg-disabled disabled:border-disabled disabled:text-text-disabled'
+    endcase
+    case size
+      when 'sm'
+        assign dim = 'size-9'
+        assign icon_size = 'size-4'
+      when 'lg'
+        assign dim = 'size-13'
+        assign icon_size = 'size-5'
+      else
+        assign dim = 'size-11'
+        assign icon_size = 'size-5'
+    endcase
+  endif
+  if tag == blank
+    assign tag = 'button'
+  endif
+  if href != blank
+    assign tag = 'a'
+  endif
+  assign show_count = false
+  assign count_hidden = ''
+  if count != blank
+    assign show_count = true
+    if count == 0
+      assign count_hidden = 'hidden'
+    endif
+  endif
+-%}
+<{{ tag }}
+  class="{{ base }} {{ look }} {{ dim }} {{ class }}"
+  data-type="{{ type }}" data-style="{{ style }}" data-size="{{ size }}"
+  {%- if id %} id="{{ id }}"{% endif -%}
+  {%- if tag == 'a' %} href="{{ href }}"{% elsif tag == 'button' %} type="{% if submit %}submit{% else %}button{% endif %}"{% endif -%}
+  {%- if attributes %} {{ attributes }}{% endif -%}
+  {%- if name %} name="{{ name }}"{% endif -%}
+  {%- if value %} value="{{ value }}"{% endif -%}
+  {%- if disabled %} disabled{% endif -%}
+  {%- if type == 'icon' and label %} aria-label="{{ label | escape }}"{% endif -%}
+>
+  {%- if type == 'text' -%}
+    <span>{{ label }}</span>
+    {%- if show_count and count != 0 %}<span class="text-text-muted">({{ count }})</span>{% endif -%}
+  {%- else -%}
+    <span class="{{ icon_size }} shrink-0 [&>svg]:size-full" aria-hidden="true">{{ icon | inline_asset_content }}</span>
+    {%- if show_count -%}
+      {% render 'count-badge', count: count, style: 'neutral', size: 'sm', class: 'absolute -top-1 -right-1', attributes: count_hidden %}
+    {%- endif -%}
+  {%- endif -%}
+</{{ tag }}>

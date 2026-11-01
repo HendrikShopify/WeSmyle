@@ -1,0 +1,35 @@
+{%- comment -%}
+  Figma: Components Molecules / Add-on
+  product   the add-on product (its first available variant is added to the cart)
+  badge     text on the top border, optional                      (Figma: Show badge)
+  uid       unique suffix for the input id, e.g. the section id and index
+  checked   boolean                                               (Figma: Checked)
+  class
+  Selectable card: checkbox, small image, title, description (the product's first sentence) and a +price. The title is the label of the checkbox and stretches over the whole card, so the card is one click target.
+  JS: product-form.js reads [data-add-on]:checked (data-variant-id, data-price) on submit and for the total in the Add to cart button.
+  States: Hover = :hover, Focus = :has(:focus-visible), Checked = :has(:checked)
+{%- endcomment -%}
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign input_id = 'AddOn-' | append: uid
+  assign price_money = variant.price | money
+  assign price_text = 'products.product.add_ons.price' | t: price: price_money
+  assign description = product.description | strip_html | truncate: 80
+-%}
+{%- capture input_attributes -%}data-add-on data-variant-id="{{ variant.id }}" data-price="{{ variant.price }}"{%- endcapture -%}
+<div class="add-on relative flex items-center gap-4 rounded-input border border-border bg-background p-4 transition-colors hover:not-has-[:checked]:border-border-strong has-[:checked]:border-accent has-[:checked]:bg-surface has-[:checked]:shadow-[inset_0_0_0_1px_var(--color-accent)] has-[:focus-visible]:border-focus has-[:focus-visible]:shadow-[inset_0_0_0_1px_var(--color-focus)] {{ class }}">
+  {%- if badge != blank -%}
+    <span class="absolute -top-2.5 right-4">{% render 'badge', type: 'neutral', size: 'sm', label: badge %}</span>
+  {%- endif -%}
+  <span class="relative z-10">
+    {% render 'checkbox', id: input_id, name: 'add_on', value: variant.id, checked: checked, attributes: input_attributes %}
+  </span>
+  {% render 'media', media: product.featured_media, ratio: '1:1', sizes: '48px', class: 'size-12 shrink-0' %}
+  <div class="flex min-w-0 flex-1 flex-col gap-1">
+    <label for="{{ input_id }}" class="text-label-base text-text cursor-pointer after:absolute after:inset-0 after:content-['']">{{ product.title | escape }}</label>
+    {%- if description != blank -%}
+      <p class="truncate text-body-sm text-text-muted">{{ description }}</p>
+    {%- endif -%}
+  </div>
+  <span class="text-label-base text-text whitespace-nowrap">{{ price_text }}</span>
+</div>

@@ -1,0 +1,1 @@
+{ "snippet": "side-drawer", "figma": "Atoms / Side drawer", "matrix": { "position": ["right","left"], "size": ["sm","md","lg"] }, "params": { "id": "demo", "title": "Filters", "subtitle": "24 results", "body": "<p>Body</p>", "footer": "<button>Apply</button>" } }

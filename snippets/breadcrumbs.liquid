@@ -1,0 +1,77 @@
+{%- comment -%}
+  Figma: Components Atoms / Breadcrumbs
+  style   chevron | slash | back                                   (Figma: Style)
+  Items are derived from the template (Dawn-style): home, collection / blog, current page.
+  back renders a single arrow link to the parent (collection, blog or home).
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'chevron'
+  assign t = template | split: '.' | first
+  assign home_label = 'general.breadcrumbs.home' | t
+  assign parent_url = nil
+  assign parent_title = nil
+  case t
+    when 'product'
+      if collection.url
+        assign parent_url = collection.url
+        assign parent_title = collection.title
+      endif
+      assign current_url = product.url
+      assign current_title = product.title
+    when 'collection'
+      if current_tags
+        assign parent_url = collection.url
+        assign parent_title = collection.title
+        assign current_url = collection.url | append: '/' | append: current_tags | join: '+'
+        assign current_title = current_tags | join: ' + '
+      else
+        assign current_url = collection.url
+        assign current_title = collection.title
+      endif
+    when 'blog'
+      assign current_url = blog.url
+      assign current_title = blog.title
+    when 'article'
+      assign parent_url = blog.url
+      assign parent_title = blog.title
+      assign current_url = article.url
+      assign current_title = article.title
+    when 'page'
+      assign current_url = page.url
+      assign current_title = page.title
+    else
+      assign current_url = request.path
+      assign current_title = page_title
+  endcase
+  assign item = 'text-body-sm text-text-muted rounded-xs transition-colors hover:text-text focus-visible:outline-none focus-visible:border focus-visible:border-focus'
+-%}
+{%- unless t == 'index' or t == 'cart' or t == 'list-collections' or t == '404' -%}
+  <nav class="breadcrumbs {{ class }}" aria-label="{{ 'general.breadcrumbs.label' | t }}" data-style="{{ style }}">
+    {%- if style == 'back' -%}
+      {%- liquid
+        assign back_url = parent_url | default: shop.url
+        assign back_title = parent_title | default: home_label
+        assign back_title = 'general.breadcrumbs.back_to' | t: title: back_title
+      -%}
+      <a class="inline-flex items-center gap-1 {{ item }}" href="{{ back_url }}">
+        <span class="size-4 [&>svg]:size-full" aria-hidden="true">{{ 'icon__arrow-left.svg' | inline_asset_content }}</span>
+        <span>{{ back_title }}</span>
+      </a>
+    {%- else -%}
+      {%- capture separator -%}
+        {%- if style == 'chevron' -%}
+          <span class="size-3.5 text-text-muted [&>svg]:size-full" aria-hidden="true">{{ 'icon__chevron-right.svg' | inline_asset_content }}</span>
+        {%- else -%}
+          <span class="text-body-sm text-text-muted" aria-hidden="true">/</span>
+        {%- endif -%}
+      {%- endcapture -%}
+      <ol class="flex flex-wrap items-center gap-2 m-0 p-0" role="list">
+        <li class="inline-flex items-center gap-2"><a class="{{ item }}" href="{{ shop.url }}">{{ home_label }}</a></li>
+        {%- if parent_url -%}
+          <li class="inline-flex items-center gap-2">{{ separator }}<a class="{{ item }}" href="{{ parent_url }}">{{ parent_title }}</a></li>
+        {%- endif -%}
+        <li class="inline-flex items-center gap-2">{{ separator }}<a class="text-body-sm text-text rounded-xs focus-visible:outline-none focus-visible:border focus-visible:border-focus" href="{{ current_url }}" aria-current="page">{{ current_title }}</a></li>
+      </ol>
+    {%- endif -%}
+  </nav>
+{%- endunless -%}

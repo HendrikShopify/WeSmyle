@@ -1,0 +1,87 @@
+{%- comment -%}
+  Figma: Components Molecules / Article card
+  article       the article object
+  layout        vertical | horizontal | overlay | featured       (Figma: Layout)
+  show_meta     boolean (default true)                           (Figma: Show meta)
+  show_excerpt  boolean (default true)                           (Figma: Show excerpt)
+  show_link     boolean, the Read article link (default true)    (Figma: Show link)
+  sizes         the sizes attribute for the image; the parent owns the layout
+  heading       heading tag (default h3)
+  fill          boolean, overlay only: from lg the card fills the height its grid cell gets (blog-posts Featured)
+  class         placement only
+  The title is the link and stretches over the whole card; the Read article link is decorative for assistive tech.
+  Featured is Vertical below lg (Figma Mobile shows the first article as a Vertical card) and the 6 + 6 column grid from lg. Horizontal is Vertical below lg too (240px image beside the text from lg). Overlay with fill takes the height of its grid cell from lg.
+  States: Hover = :hover (title underline, image at 90%), Focus = :focus-visible on the title link.
+{%- endcomment -%}
+{%- liquid
+  assign layout = layout | default: 'vertical'
+  assign heading = heading | default: 'h3'
+  if show_meta == nil
+    assign show_meta = true
+  endif
+  if show_excerpt == nil
+    assign show_excerpt = true
+  endif
+  if show_link == nil
+    assign show_link = true
+  endif
+  assign sizes = sizes | default: '(min-width: 1024px) 33vw, 100vw'
+  assign read_label = 'blogs.article.read_article' | t
+  assign excerpt = article.excerpt_or_content | strip_html | truncatewords: 30
+  assign tone = 'default'
+  assign media_class = 'w-full transition-opacity group-hover/card:opacity-90'
+  assign title_class = 'text-text group-hover/card:underline underline-offset-[0.15em]'
+  case layout
+    when 'featured'
+      assign card = 'flex flex-col gap-4 lg:grid lg:grid-cols-12 lg:gap-x-4 lg:items-start'
+      assign ratio = '3:2'
+      assign media_class = media_class | append: ' lg:col-span-6 lg:aspect-[4/3]'
+      assign content = 'flex flex-col gap-2 lg:col-span-6 lg:gap-4'
+      assign title_class = title_class | append: ' text-heading-6 lg:text-heading-3'
+      assign excerpt_class = 'text-body-sm text-text-muted line-clamp-2 lg:text-body-base'
+    when 'horizontal'
+      assign card = 'flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6'
+      assign ratio = '3:2'
+      assign media_class = media_class | append: ' lg:w-60 lg:shrink-0 lg:aspect-[4/3]'
+      assign content = 'flex min-w-0 flex-1 flex-col gap-2'
+      assign title_class = title_class | append: ' text-heading-6'
+      assign excerpt_class = 'text-body-sm text-text-muted line-clamp-2'
+    when 'overlay'
+      assign card = 'flex'
+      assign ratio = '4:5'
+      assign media_class = 'w-full transition-opacity group-hover/card:opacity-90'
+      if fill
+        assign card = card | append: ' lg:h-full'
+        assign media_class = media_class | append: ' lg:absolute lg:inset-0 lg:aspect-auto lg:h-full'
+      endif
+      assign content = 'absolute inset-x-0 bottom-0 flex flex-col gap-2 p-6'
+      assign title_class = title_class | append: ' text-heading-6 text-text-inverse'
+      assign excerpt_class = 'text-body-sm text-text-inverse/80 line-clamp-2'
+      assign tone = 'inverse'
+      assign show_link = false
+    else
+      assign card = 'flex flex-col gap-4'
+      assign ratio = '3:2'
+      assign content = 'flex flex-col gap-2'
+      assign title_class = title_class | append: ' text-heading-6'
+      assign excerpt_class = 'text-body-sm text-text-muted line-clamp-2'
+  endcase
+-%}
+<article class="article-card group/card relative {{ card }} {{ class }}" data-layout="{{ layout }}">
+  {% render 'media', media: article.image, ratio: ratio, sizes: sizes, class: media_class %}
+  {%- if layout == 'overlay' -%}
+    <div class="absolute inset-0 bg-overlay/30" aria-hidden="true"></div>
+  {%- endif -%}
+  <div class="{{ content }}">
+    {%- if show_meta %}{% render 'article-meta', article: article, tone: tone %}{% endif -%}
+    <{{ heading }} class="{{ title_class }}">
+      <a class="outline-none after:absolute after:inset-0 after:rounded-xs focus-visible:after:outline-1 focus-visible:after:outline-offset-2 focus-visible:after:outline-focus" href="{{ article.url }}">{{ article.title | escape }}</a>
+    </{{ heading }}>
+    {%- if show_excerpt and excerpt != blank -%}
+      <p class="{{ excerpt_class }}">{{ excerpt }}</p>
+    {%- endif -%}
+    {%- if show_link -%}
+      {% render 'link', label: read_label, href: article.url, size: 'sm', class: 'relative', attributes: 'tabindex="-1" aria-hidden="true"' %}
+    {%- endif -%}
+  </div>
+</article>

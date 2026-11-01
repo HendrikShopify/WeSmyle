@@ -1,0 +1,6 @@
+{%- comment -%}
+  The count lives in localStorage, so the badge renders hidden with 0 and wishlist.js fills it.
+{%- endcomment -%}
+<wishlist-link class="inline-flex">
+  {% render 'icon-button', href: '/pages/wishlist', icon: 'icon__heart.svg', label: 'Wishlist', style: 'ghost', size: 'md', count: 0 %}
+</wishlist-link>

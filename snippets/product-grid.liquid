@@ -1,0 +1,39 @@
+{%- comment -%}
+  Figma: Components Sections / Collection grid, Grid frame (12px columns, 24px rows)
+  products        array of products (collection.products, search.results); items that are not products are skipped
+  section_id      for unique card ids
+  density         large | small, desktop columns: large 4, small 6        (Figma: Grid density)
+  density_mobile  large | small, mobile columns: large 1, small 2
+  quick_add       passed to product-card, default button
+  id              default product-grid
+  class
+  No CSS file: the layout is Tailwind classes on the list. The density switch (grid-density.js) flips data-density and data-density-mobile on the ancestor
+  that carries the class "group/grid" (#ProductGridContainer); the group-data variants below follow it, so switching needs no re-render.
+  Small density hides rating and swatches on the cards from lg.
+{%- endcomment -%}
+{%- liquid
+  assign density = density | default: 'large'
+  assign density_mobile = density_mobile | default: 'small'
+  assign quick_add = quick_add | default: 'button'
+  assign id = id | default: 'product-grid'
+  if density == 'small'
+    assign columns = 'grid-cols-2 lg:grid-cols-6'
+  else
+    assign columns = 'grid-cols-2 lg:grid-cols-4'
+  endif
+  if density_mobile == 'large'
+    assign columns = columns | replace: 'grid-cols-2 ', 'grid-cols-1 '
+  endif
+-%}
+<ul
+  id="{{ id }}"
+  data-id="{{ section_id }}"
+  role="list"
+  class="grid gap-x-grid-gap-x gap-y-grid-gap-y {{ columns }} group-data-[density=large]/grid:lg:grid-cols-4 group-data-[density=small]/grid:lg:grid-cols-6 group-data-[density-mobile=large]/grid:max-lg:grid-cols-1 group-data-[density-mobile=small]/grid:max-lg:grid-cols-2 group-data-[density=small]/grid:lg:[&_:is(.rating,.card-swatches)]:hidden {{ class }}"
+>
+  {%- for product in products -%}
+    {%- if product.object_type == 'product' -%}
+      <li>{% render 'product-card', product: product, section_id: section_id, quick_add: quick_add, sizes: '(min-width: 1024px) 25vw, 50vw' %}</li>
+    {%- endif -%}
+  {%- endfor -%}
+</ul>

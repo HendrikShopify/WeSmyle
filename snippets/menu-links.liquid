@@ -1,0 +1,26 @@
+{%- comment -%}
+  Figma: Components Atoms / Menu links (Menu link)
+  links   array of linklist links (title, url, current)
+  size    sm | md                                       (Figma: Size)
+  class
+  Vertical list of plain links, 8px apart for sm and 12px for md. Used in the footer columns, the footer accordions and the mega menu panel.
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'sm'
+  if size == 'md'
+    assign link_class = 'text-body-base'
+    assign gap = 'gap-3'
+  else
+    assign link_class = 'text-body-sm'
+    assign gap = 'gap-2'
+  endif
+-%}
+{%- if links.size > 0 -%}
+  <ul class="menu-links flex flex-col {{ gap }} {{ class }}" role="list">
+    {%- for link in links -%}
+      <li>
+        <a href="{{ link.url }}" class="{{ link_class }} rounded-xs text-text transition-colors hover:text-text-muted focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+      </li>
+    {%- endfor -%}
+  </ul>
+{%- endif -%}

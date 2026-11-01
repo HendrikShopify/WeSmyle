@@ -1,0 +1,106 @@
+{%- comment -%}
+  Figma: Components Atoms / Cart line item
+  item      cart line item
+  layout    drawer | page | drawer-row                              (Figma: Layout)
+  show_options, show_selling_plan, show_discount, show_error       booleans, default true (Figma: Show …)
+  id_prefix id prefix, e.g. CartDrawer-Item or CartItem
+  Keeps the hooks cart.js relies on: quantity input with name="updates[]", data-index, data-quantity-variant-id;
+  <cart-remove-button data-index>; per-line error with data-cart-item-error.
+{%- endcomment -%}
+{%- liquid
+  assign layout = layout | default: 'drawer'
+  assign line = item.index | plus: 1
+  assign id_prefix = id_prefix | default: 'CartItem'
+  if show_options == nil
+    assign show_options = true
+  endif
+  if show_selling_plan == nil
+    assign show_selling_plan = true
+  endif
+  if show_discount == nil
+    assign show_discount = true
+  endif
+  if show_error == nil
+    assign show_error = true
+  endif
+  case layout
+    when 'page'
+      assign image = 'w-35'
+      assign gap = 'gap-5'
+      assign actions = 'flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-col lg:items-end lg:justify-start'
+      assign actions_in_content = false
+    when 'drawer-row'
+      assign image = 'w-30'
+      assign gap = 'gap-4'
+      assign actions = 'flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-col lg:items-end lg:justify-start'
+      assign actions_in_content = false
+    else
+      assign image = 'w-24'
+      assign gap = 'gap-4'
+      assign actions = 'flex items-center gap-4'
+      assign actions_in_content = true
+  endcase
+  assign qty_id = id_prefix | append: '-quantity-' | append: line
+  assign qty_label = 'products.product.quantity.input_label' | t: product: item.product.title
+  assign cart_qty = cart | item_count_for_variant: item.variant.id
+  assign qty_attrs = 'data-index="' | append: line | append: '" data-quantity-variant-id="' | append: item.variant.id | append: '"'
+  assign remove_label = 'sections.cart.remove' | t
+  assign error_id = id_prefix | append: '-error-' | append: line
+-%}
+{%- capture actions_html -%}
+  <div class="{{ actions }}">
+    {% render 'quantity-selector', id: qty_id, name: 'updates[]', value: item.quantity, min: item.variant.quantity_rule.min, max: item.variant.quantity_rule.max, step: item.variant.quantity_rule.increment, size: 'sm', product_title: item.product.title, label: qty_label, cart_qty: cart_qty, attributes: qty_attrs %}
+    <cart-remove-button data-index="{{ line }}" class="inline-flex">
+      {% render 'link', label: remove_label, size: 'sm' %}
+    </cart-remove-button>
+  </div>
+{%- endcapture -%}
+<li class="line-item flex flex-wrap lg:flex-nowrap {{ gap }}" id="{{ id_prefix }}-{{ line }}" data-line="{{ line }}" data-layout="{{ layout }}">
+  <a href="{{ item.url }}" class="{{ image }} shrink-0" tabindex="-1" aria-hidden="true">
+    {% render 'media', media: item.image, ratio: '1:1', sizes: '140px' %}
+  </a>
+
+  <div class="flex min-w-0 flex-1 flex-col gap-3">
+    <div class="flex flex-col gap-1">
+      <a href="{{ item.url }}" class="text-label-base text-text hover:underline">{{ item.product.title | escape }}</a>
+      {%- if show_options -%}
+        {%- if item.product.has_only_default_variant == false or item.properties.size > 0 -%}
+          <dl class="flex flex-col gap-0 m-0">
+            {%- unless item.product.has_only_default_variant -%}
+              {%- for option in item.options_with_values -%}
+                {% render 'attribute', label: option.name, value: option.value, size: 'sm' %}
+              {%- endfor -%}
+            {%- endunless -%}
+            {%- for property in item.properties -%}
+              {%- assign first_char = property.first | slice: 0 -%}
+              {%- if property.last != blank and first_char != '_' -%}
+                {%- if property.last contains '/uploads/' -%}
+                  {%- assign file_name = property.last | split: '/' | last -%}
+                  {% render 'attribute', label: property.first, value: file_name, href: property.last, size: 'sm' %}
+                {%- else -%}
+                  {% render 'attribute', label: property.first, value: property.last, size: 'sm' %}
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+          </dl>
+        {%- endif -%}
+      {%- endif -%}
+      {%- if show_selling_plan and item.selling_plan_allocation %}<span class="text-body-xs text-text-muted">{{ item.selling_plan_allocation.selling_plan.name }}</span>{% endif -%}
+    </div>
+
+    <div class="flex flex-col items-start gap-2">
+      {% render 'price', price: item.final_price, compare_at_price: item.original_price, size: 'sm' %}
+      {%- if show_discount and item.line_level_discount_allocations != blank -%}
+        {%- for discount in item.line_level_discount_allocations -%}
+          {%- capture discount_label -%}{{ discount.discount_application.title }} (-{{ discount.discount_application.total_allocated_amount | money }}){%- endcapture -%}
+          {% render 'discount-tag', label: discount_label %}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- if actions_in_content %}{{ actions_html }}{% endif -%}
+    {%- if show_error %}{% render 'helper-text', text: '', type: 'error', id: error_id, attributes: 'hidden data-cart-item-error' %}{% endif -%}
+  </div>
+
+  {%- unless actions_in_content %}{{ actions_html }}{% endunless -%}
+</li>

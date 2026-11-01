@@ -1,0 +1,55 @@
+{%- comment -%}
+  Figma: Components Sections / Blog posts (216:8617)
+  blog           blog object
+  title          heading text                                       (Figma: Title)
+  layout         grid | featured, default grid                      (Figma: Layout)
+  show_view_all  boolean, default true                              (Figma: Show view all)
+  limit          number of articles, default 3
+  section_id     unique ids
+  class
+  Grid: three Vertical cards (one column below lg). Featured: one Overlay card (6 columns) with two Horizontal cards beside it; below lg the cards stack (Figma has no mobile Featured, so Overlay stays 4:5 and the Horizontal cards become Vertical).
+  Viewport Desktop / Mobile is responsive: heading-3 and 80px padding from lg, heading-4 and 48px below.
+{%- endcomment -%}
+{%- liquid
+  assign layout = layout | default: 'grid'
+  assign limit = limit | default: 3
+  if show_view_all == nil
+    assign show_view_all = true
+  endif
+  assign view_all_label = 'sections.blog_posts.view_all' | t
+  assign heading_id = 'BlogPostsTitle-' | append: section_id
+  assign card_sizes = '(min-width: 1440px) 445px, (min-width: 1024px) 33vw, 100vw'
+  assign wide_sizes = '(min-width: 1440px) 672px, (min-width: 1024px) 50vw, 100vw'
+  assign row_sizes = '(min-width: 1024px) 240px, 100vw'
+-%}
+{%- if blog.articles_count > 0 -%}
+  <section class="blog-posts py-12 lg:py-20 {{ class }}" data-layout="{{ layout }}" aria-labelledby="{{ heading_id }}">
+    <div class="mx-auto w-full max-w-page px-page-margin flex flex-col gap-6 lg:gap-10">
+      <div class="flex items-end justify-between gap-6">
+        <h2 id="{{ heading_id }}" class="text-heading-4 text-text lg:text-heading-3">{{ title }}</h2>
+        {%- if show_view_all -%}
+          {% render 'link', label: view_all_label, href: blog.url, size: 'md', icon_trailing: 'icon__arrow-right.svg', class: 'shrink-0' %}
+        {%- endif -%}
+      </div>
+      {%- if layout == 'featured' -%}
+        <div class="grid gap-4 lg:grid-cols-12 lg:gap-x-4">
+          {%- for article in blog.articles limit: limit -%}
+            {%- if forloop.first -%}
+              {% render 'article-card', article: article, layout: 'overlay', fill: true, sizes: wide_sizes, class: 'lg:col-span-6' %}
+              <div class="flex flex-col gap-4 lg:col-span-6 lg:gap-8">
+            {%- else -%}
+              {% render 'article-card', article: article, layout: 'horizontal', sizes: row_sizes %}
+            {%- endif -%}
+            {%- if forloop.last %}</div>{% endif -%}
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="grid gap-4 lg:grid-cols-3 lg:gap-3">
+          {%- for article in blog.articles limit: limit -%}
+            {% render 'article-card', article: article, layout: 'vertical', sizes: card_sizes %}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+{%- endif -%}

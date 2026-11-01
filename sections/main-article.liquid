@@ -1,0 +1,60 @@
+{%- comment -%}
+  Figma: Sections / Main article (Desktop, Mobile)
+  Header column at prose width: back link, meta with author, title, lead (article.excerpt). Hero image 21:9 (4:3 below lg), body as Rich text, Share row, Keep reading with 3 other articles of the blog.
+  JS: article-share.js (native share when available, copy link, email)
+{%- endcomment -%}
+{%- liquid
+  assign share_label = 'blogs.article.share' | t
+  assign share_action = 'blogs.article.share_article' | t
+  assign copy_label = 'blogs.article.copy_link' | t
+  assign copied_label = 'blogs.article.link_copied' | t
+  assign email_label = 'blogs.article.email' | t
+  assign related_title = 'blogs.article.keep_reading' | t
+  assign share_url = shop.url | append: article.url
+  assign subject = article.title | url_param_escape
+  assign mail_href = 'mailto:?subject=' | append: subject | append: '&body=' | append: share_url
+  assign card_sizes = '(min-width: 1440px) 445px, (min-width: 1024px) 33vw, 100vw'
+-%}
+<script src="{{ 'article-share.js' | asset_url }}" defer="defer"></script>
+<article class="mx-auto w-full max-w-page px-page-margin pt-8 pb-12 lg:pt-12 lg:pb-20 flex flex-col items-center gap-8 lg:gap-12">
+  <header class="flex w-full max-w-prose-width flex-col gap-5">
+    {% render 'breadcrumbs', style: 'back' %}
+    {% render 'article-meta', article: article, show_author: true %}
+    <h1 class="text-heading-2 lg:text-heading-1 text-text">{{ article.title | escape }}</h1>
+    {%- if article.excerpt != blank -%}
+      <p class="text-body-lg text-text">{{ article.excerpt | strip_html }}</p>
+    {%- endif -%}
+  </header>
+
+  {%- if article.image -%}
+    {% render 'media', media: article.image, ratio: '4:3', loading: 'eager', sizes: '(min-width: 1440px) 1360px, 100vw', class: 'w-full lg:aspect-[21/9]' %}
+  {%- endif -%}
+
+  {% render 'rich-text', content: article.content, class: 'w-full max-w-prose-width' %}
+
+  <article-share class="flex w-full max-w-prose-width items-center gap-3 pt-6" data-url="{{ share_url | escape }}" data-title="{{ article.title | escape }}" data-copied-label="{{ copied_label | escape }}">
+    <span class="text-label-base text-text">{{ share_label }}</span>
+    {% render 'icon-button', icon: 'icon__share-2.svg', label: share_action, style: 'secondary', size: 'sm', attributes: 'data-share hidden' %}
+    {% render 'icon-button', icon: 'icon__copy.svg', label: copy_label, style: 'secondary', size: 'sm', attributes: 'data-copy-link' %}
+    {% render 'icon-button', icon: 'icon__mail.svg', label: email_label, style: 'secondary', size: 'sm', href: mail_href %}
+    <span class="sr-only" role="status" data-share-status></span>
+  </article-share>
+
+  {%- if blog.articles_count > 1 -%}
+    <aside class="flex w-full flex-col gap-8 pt-8 lg:pt-16" aria-labelledby="related-articles-title">
+      <h2 id="related-articles-title" class="text-heading-4 lg:text-heading-3 text-text">{{ related_title }}</h2>
+      <div class="grid gap-y-4 lg:grid-cols-3 lg:gap-x-3 lg:gap-y-6">
+        {%- assign shown = 0 -%}
+        {%- for related in blog.articles -%}
+          {%- if related.id == article.id or shown >= 3 %}{% continue %}{% endif -%}
+          {%- assign shown = shown | plus: 1 -%}
+          {% render 'article-card', article: related, layout: 'vertical', sizes: card_sizes %}
+        {%- endfor -%}
+      </div>
+    </aside>
+  {%- endif -%}
+</article>
+
+<script type="application/ld+json">
+  {{ article | structured_data }}
+</script>

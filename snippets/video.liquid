@@ -1,0 +1,59 @@
+{%- comment -%}
+  Figma: Components Atoms / Media / Video (Ratio, State, Sound; Show progress, Show sound)
+  media          Shopify video media. Empty plays a lorem.video placeholder clip (see `placeholder`).
+  ratio          4:5 | 9:16, default 4:5                          (Figma: Ratio)
+  show_progress  boolean, default true                              (Figma: Show progress)
+  show_sound     boolean, default true                              (Figma: Show sound)
+  placeholder    bunny | cat | corgi | test. Used when `media` is empty: plays a clip from lorem.video at the ratio's size. Default cat.
+  class          placement only
+  State is data-state on <video-player> (paused, playing), Sound is data-muted (true, false). assets/video-player.js sets both.
+  Paused shows the Play button in the centre. Playing shows the sound toggle and the progress bar; tapping the video pauses it.
+  The video is muted and looped, loads on first play (preload none) and only one video plays at a time.
+{%- endcomment -%}
+{%- liquid
+  assign ratio = ratio | default: '4:5'
+  if ratio == '9:16'
+    assign ratio_class = 'aspect-[9/16]'
+    assign placeholder_size = '540x960'
+  else
+    assign ratio_class = 'aspect-[4/5]'
+    assign placeholder_size = '720x900'
+  endif
+  assign placeholder = placeholder | default: 'cat'
+  assign placeholder_src = 'https://lorem.video/' | append: placeholder | append: '_' | append: placeholder_size | append: '_10s.mp4'
+  if show_progress == nil
+    assign show_progress = true
+  endif
+  if show_sound == nil
+    assign show_sound = true
+  endif
+  assign play_label = 'sections.ugc.play' | t
+  assign pause_label = 'sections.ugc.pause' | t
+  assign mute_label = 'sections.ugc.mute' | t
+  assign unmute_label = 'sections.ugc.unmute' | t
+  assign progress_label = 'sections.ugc.progress' | t
+-%}
+<script src="{{ 'video-player.js' | asset_url }}" defer="defer"></script>
+<video-player class="group/video relative block overflow-hidden rounded-media bg-surface-alt {{ ratio_class }} {{ class }}" data-state="paused" data-muted="true" data-ratio="{{ ratio }}">
+  {%- if media.media_type == 'video' -%}
+    {{ media | video_tag: image_size: '1080x', controls: false, loop: true, muted: true, playsinline: true, preload: 'none', class: 'absolute inset-0 block size-full object-cover' }}
+  {%- else -%}
+    <video class="absolute inset-0 block size-full object-cover" src="{{ placeholder_src }}" loop muted playsinline preload="none"></video>
+    <span class="absolute inset-0 -z-10 flex items-center justify-center text-text-muted" aria-hidden="true"><span class="size-6 [&>svg]:size-full">{{ 'icon__image.svg' | inline_asset_content }}</span></span>
+  {%- endif -%}
+  <button type="button" class="absolute inset-0 hidden cursor-pointer group-data-[state=playing]/video:block" aria-label="{{ pause_label | escape }}" data-video-pause></button>
+  <div class="pointer-events-none absolute inset-0 flex items-center justify-center group-data-[state=playing]/video:hidden">
+    {% render 'play-button', label: play_label, size: 'md', class: 'pointer-events-auto', attributes: 'data-video-play' %}
+  </div>
+  {%- if show_sound -%}
+    <div class="absolute right-3 bottom-4 hidden group-data-[state=playing]/video:block">
+      <span class="group-data-[muted=false]/video:hidden">{% render 'play-button', label: unmute_label, size: 'sm', icon: 'icon__volume-x.svg', attributes: 'data-video-sound' %}</span>
+      <span class="hidden group-data-[muted=false]/video:block">{% render 'play-button', label: mute_label, size: 'sm', icon: 'icon__volume-2.svg', attributes: 'data-video-sound' %}</span>
+    </div>
+  {%- endif -%}
+  {%- if show_progress -%}
+    <div class="absolute inset-x-0 bottom-0 hidden group-data-[state=playing]/video:block" data-video-progress>
+      {% render 'progress-bar', value: 0, size: 'sm', label: progress_label %}
+    </div>
+  {%- endif -%}
+</video-player>

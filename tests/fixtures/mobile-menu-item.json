@@ -1,0 +1,49 @@
+{
+ "snippet": "mobile-menu-item",
+ "figma": "Atoms / Mobile menu item (163:5299)",
+ "width": 358,
+ "matrix": {},
+ "params": {
+  "label": "Skincare",
+  "href": "#"
+ },
+ "extras": [
+  {
+   "label": "Skincare",
+   "type": "link",
+   "current": false
+  },
+  {
+   "label": "Skincare",
+   "type": "link",
+   "current": true
+  },
+  {
+   "label": "Skincare",
+   "type": "drill-down",
+   "target": "x"
+  },
+  {
+   "label": "All skincare",
+   "type": "link",
+   "level": 2
+  },
+  {
+   "label": "Face oils",
+   "type": "link",
+   "level": 2,
+   "current": true
+  },
+  {
+   "label": "Skincare",
+   "type": "accordion",
+   "content": "<a href=\"#\" class=\"flex min-h-11 items-center pl-4 text-label-base text-text-muted\">Face oils</a>",
+   "open": true
+  },
+  {
+   "label": "Body",
+   "type": "accordion",
+   "content": "<a href=\"#\">x</a>"
+  }
+ ]
+}

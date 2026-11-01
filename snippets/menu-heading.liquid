@@ -1,0 +1,27 @@
+{%- comment -%}
+  Figma: Components Atoms / Menu heading
+  title      required                                 (Figma: Title)
+  style      caps | default | link                    (Figma: Style)
+  href       with style link, makes it an <a>
+  tag        h2 | h3 | span (default h3)
+  id, class
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'caps'
+  assign tag = tag | default: 'h3'
+  case style
+    when 'default'
+      assign cls = 'text-label-lg text-text'
+    when 'link'
+      assign cls = 'text-label-lg text-text transition-colors hover:text-text-muted'
+    else
+      assign cls = 'text-label-caps text-text'
+  endcase
+-%}
+<{{ tag }} class="menu-heading {{ cls }} {{ class }}"{% if id %} id="{{ id }}"{% endif %}>
+  {%- if style == 'link' and href -%}
+    <a href="{{ href }}" class="rounded-xs focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus">{{ title }}</a>
+  {%- else -%}
+    {{ title }}
+  {%- endif -%}
+</{{ tag }}>

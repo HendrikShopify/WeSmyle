@@ -1,0 +1,25 @@
+{%- comment -%}
+  Figma: Sections / Section breakout, Preset=Bleed right
+  Placeholder copy and no media until the section is composed for a client. Replace the strings; the layout stays in snippets/section-breakout.liquid.
+{%- endcomment -%}
+{% render 'section-breakout',
+  preset: 'bleed_right',
+  eyebrow: 'Our process',
+  heading: 'Made slowly, in small batches',
+  body: 'Every batch is pressed, tasted and signed off by hand before it leaves the kitchen. Nothing is rushed and nothing is wasted.',
+  button_label: 'Shop now',
+  button_url: '/collections/all',
+  secondary_label: 'Learn more',
+  secondary_url: '/pages/about'
+%}
+
+{% schema %}
+{
+  "name": "Breakout bleed right",
+  "presets": [
+    {
+      "name": "Breakout bleed right"
+    }
+  ]
+}
+{% endschema %}

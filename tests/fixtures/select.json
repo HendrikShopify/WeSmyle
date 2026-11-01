@@ -1,0 +1,4 @@
+{ "snippet": "select", "figma": "Atoms / Select (72:435)", "width": 320,
+  "matrix": { "size": ["sm","md","lg"], "state": ["default","hover","focus","disabled"] },
+  "params": { "options": ["Netherlands","Belgium","Germany"], "selected": "Netherlands", "name": "country" },
+  "extras": [ { "options": ["Netherlands","Belgium","Germany"], "placeholder": "Choose a country", "selected": "", "name": "c2" }, { "options": ["Netherlands","Belgium","Germany"], "selected": "Netherlands", "error": true, "name": "c3" }, { "options": ["Netherlands","Belgium","Germany"], "selected": "Netherlands", "open": true, "name": "c4" } ] }

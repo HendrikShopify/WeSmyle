@@ -1,0 +1,83 @@
+{
+ "snippet": "mobile-menu",
+ "figma": "Atoms / Mobile menu (165:5887)",
+ "width": 390,
+ "height": 844,
+ "matrix": {
+  "style": [
+   "accordion",
+   "drill-down"
+  ]
+ },
+ "params": {
+  "menu": {
+   "links": [
+    {
+     "title": "New",
+     "url": "/collections/new",
+     "links": []
+    },
+    {
+     "title": "Skincare",
+     "url": "/collections/skincare",
+     "child_active": true,
+     "links": [
+      {
+       "title": "Face oils",
+       "url": "/collections/face-oils",
+       "current": true,
+       "links": []
+      },
+      {
+       "title": "Serums",
+       "url": "/collections/serums",
+       "links": []
+      },
+      {
+       "title": "Cleansers",
+       "url": "/collections/cleansers",
+       "links": []
+      }
+     ]
+    },
+    {
+     "title": "Body",
+     "url": "/collections/body",
+     "links": [
+      {
+       "title": "Oils",
+       "url": "#",
+       "links": [
+        {
+         "title": "Massage",
+         "url": "/x"
+        },
+        {
+         "title": "Bath",
+         "url": "/y"
+        }
+       ]
+      },
+      {
+       "title": "Lotions",
+       "url": "/z",
+       "links": []
+      }
+     ]
+    },
+    {
+     "title": "Gifts",
+     "url": "/collections/gifts",
+     "links": []
+    },
+    {
+     "title": "Journal",
+     "url": "/blogs/journal",
+     "links": []
+    }
+   ]
+  },
+  "open": true
+ },
+ "extras": []
+}

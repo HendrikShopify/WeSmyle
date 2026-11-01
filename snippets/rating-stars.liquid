@@ -1,0 +1,41 @@
+{%- comment -%}
+  Figma: Components Atoms / Rating stars
+  value   0 to 5, any decimal (Figma: Value, in halves)
+  size    sm | md | lg                                   (Figma: Size)
+  class   placement only
+  Each star is the empty icon with a width-clipped filled icon on top, so 4.3 fills 30% of the fifth star.
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  assign value = value | default: 0 | times: 1.0
+  case size
+    when 'sm'
+      assign gap = 'gap-0'
+      assign star = 'size-3'
+    when 'lg'
+      assign gap = 'gap-1'
+      assign star = 'size-6'
+    else
+      assign gap = 'gap-1'
+      assign star = 'size-4'
+  endcase
+-%}
+<span class="rating-stars inline-flex {{ gap }} {{ class }}" data-size="{{ size }}" role="img" aria-label="{{ 'products.product.rating_stars' | t: value: value }}">
+  {%- for i in (1..5) -%}
+    {%- liquid
+      assign fill = value | minus: i | plus: 1
+      if fill > 1
+        assign fill = 1
+      elsif fill < 0
+        assign fill = 0
+      endif
+      assign pct = fill | times: 100 | round
+    -%}
+    <span class="relative {{ star }} shrink-0 text-rating-empty [&_svg]:size-full">
+      {{- 'icon__star.svg' | inline_asset_content -}}
+      {%- if pct > 0 -%}
+        <span class="absolute inset-y-0 left-0 overflow-hidden text-rating" style="width: {{ pct }}%"><span class="block {{ star }}">{{ 'icon__star.svg' | inline_asset_content }}</span></span>
+      {%- endif -%}
+    </span>
+  {%- endfor -%}
+</span>

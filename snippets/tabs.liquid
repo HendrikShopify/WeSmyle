@@ -1,0 +1,23 @@
+{%- comment -%}
+  Figma: Components Atoms / Tabs
+  tabs      captured tab-item markup
+  panels    captured panels: <div id="…" role="tabpanel" data-tab-panel aria-labelledby="…" hidden>…</div>
+  style     underline | pill                                        (Figma: Style)
+  label     accessible name of the tab list
+  class
+  custom-tabs.js handles selection and arrow keys.
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'underline'
+  if style == 'pill'
+    assign list = 'flex flex-wrap gap-2'
+  else
+    assign list = 'flex gap-6 border-b border-border overflow-x-auto'
+  endif
+-%}
+<custom-tabs class="tabs flex w-full flex-col gap-6 {{ class }}" data-style="{{ style }}">
+  <div class="{{ list }}" role="tablist" data-tab-list{% if label %} aria-label="{{ label | escape }}"{% endif %}>
+    {{ tabs }}
+  </div>
+  {{ panels }}
+</custom-tabs>

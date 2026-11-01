@@ -1,0 +1,22 @@
+.header__mobile-panel {
+    @apply fixed inset-0 z-30;
+}
+
+.header__mobile-backdrop {
+    @apply absolute inset-0 bg-black/30;
+}
+
+.header__mobile-drawer {
+    @apply relative z-[1] h-full w-full overflow-hidden;
+}
+
+
+/* States */
+
+.header__mobile-panel[data-state='closed'] {
+    visibility: hidden;
+}
+
+html {
+    scrollbar-gutter: stable;
+}

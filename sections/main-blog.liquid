@@ -1,0 +1,56 @@
+{%- comment -%}
+  Figma: Sections / Main blog (Desktop, Mobile)
+  Header: title and the tag chips (All + blog.all_tags). First article on the page is the Featured card, the rest a 3-column grid (1 column on mobile).
+  Shopify blogs have no description field, so the Figma Description text is not rendered.
+{%- endcomment -%}
+{%- liquid
+  assign all_label = 'blogs.blog.all' | t
+  assign tags_label = 'blogs.blog.tags_label' | t
+  assign card_sizes = '(min-width: 1440px) 445px, (min-width: 1024px) 33vw, 100vw'
+  assign featured_sizes = '(min-width: 1440px) 672px, (min-width: 1024px) 50vw, 100vw'
+  assign all_selected = true
+  if current_tags
+    assign all_selected = false
+  endif
+-%}
+{% paginate blog.articles by 7 %}
+  <div class="mx-auto w-full max-w-page px-page-margin pt-8 pb-12 lg:pt-12 lg:pb-20 flex flex-col gap-8 lg:gap-12">
+    <header class="flex flex-col gap-4">
+      <h1 class="text-heading-2 lg:text-heading-1 text-text">{{ blog.title | escape }}</h1>
+      {%- if blog.all_tags.size > 0 -%}
+        <nav class="flex flex-wrap gap-2" aria-label="{{ tags_label | escape }}">
+          {% render 'chip', type: 'filter', label: all_label, href: blog.url, selected: all_selected %}
+          {%- for tag in blog.all_tags -%}
+            {%- liquid
+              assign tag_handle = tag | handleize
+              assign tag_href = blog.url | append: '/tagged/' | append: tag_handle
+              assign tag_selected = false
+              if current_tags contains tag
+                assign tag_selected = true
+              endif
+            -%}
+            {% render 'chip', type: 'filter', label: tag, href: tag_href, selected: tag_selected %}
+          {%- endfor -%}
+        </nav>
+      {%- endif -%}
+    </header>
+
+    {%- if blog.articles.size == 0 -%}
+      <div class="py-16">{% render 'empty-state', type: 'generic' %}</div>
+    {%- else -%}
+      {%- for article in blog.articles limit: 1 -%}
+        {% render 'article-card', article: article, layout: 'featured', heading: 'h2', sizes: featured_sizes %}
+      {%- endfor -%}
+      {%- if blog.articles.size > 1 -%}
+        <div class="grid gap-y-4 lg:grid-cols-3 lg:gap-x-3 lg:gap-y-6">
+          {%- for article in blog.articles offset: 1 -%}
+            {% render 'article-card', article: article, layout: 'vertical', heading: 'h2', sizes: card_sizes %}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+      {%- if paginate.pages > 1 -%}
+        {% render 'pagination', paginate: paginate %}
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+{% endpaginate %}

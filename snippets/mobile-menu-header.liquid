@@ -1,0 +1,19 @@
+{%- comment -%}
+  Figma: Components Atoms / Mobile menu header
+  Top of a drill-down panel: back button and the parent category name.
+  title   parent category name                                 (Figma: Title)
+  label   accessible name of the back button, default "Back"
+  class, attributes
+  The back button carries data-drill-back (mobile-menu.js).
+{%- endcomment -%}
+{%- liquid
+  if label == blank
+    assign label = 'mobile_menu.back' | t
+  endif
+-%}
+<div class="mobile-menu-header flex h-14 items-center gap-2 border-b border-border {{ class }}"{% if attributes %} {{ attributes }}{% endif %}>
+  <button type="button" class="inline-flex size-9 items-center justify-center rounded-xs text-text transition-colors cursor-pointer hover:text-text-muted focus-visible:outline-none focus-visible:outline-1 focus-visible:outline-focus" data-drill-back aria-label="{{ label | escape }}">
+    <span class="size-5" aria-hidden="true">{{ 'icon__chevron-left.svg' | inline_asset_content }}</span>
+  </button>
+  <span class="text-label-lg text-text">{{ title }}</span>
+</div>

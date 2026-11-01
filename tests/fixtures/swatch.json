@@ -1,0 +1,4 @@
+{ "snippet": "swatch", "figma": "Atoms / Swatch (69:208)",
+  "matrix": { "size": ["xs","sm","md"], "state": ["default","hover","focus"] },
+  "params": { "color": "#78716c", "label": "Stone", "name": "color" },
+  "extras": [ { "color": "#78716c", "label": "Stone", "name": "c2", "checked": true }, { "color": "#78716c", "label": "Stone", "name": "c3", "sold_out": true }, { "color": "#78716c", "label": "Stone", "href": "#", "checked": true, "size": "xs" }, { "swatch": { "image": { "src": "x" } }, "color": "", "label": "Linen", "name": "c4", "size": "md" }, { "swatch": { "image": { "src": "x" } }, "color": "", "label": "Linen", "name": "c5", "size": "md", "checked": true }, { "swatch": { "image": { "src": "x" } }, "color": "", "label": "Linen", "name": "c6", "size": "xs", "sold_out": true } ] }

@@ -1,0 +1,30 @@
+{
+ "snippet": "pagination-status",
+ "figma": "Atoms / Pagination status (92:570)",
+ "width": 300,
+ "matrix": {
+  "size": [
+   "sm",
+   "md"
+  ]
+ },
+ "params": {
+  "paginate": {
+   "items": 65,
+   "current_offset": 0,
+   "pages": 3,
+   "page_size": 24
+  }
+ },
+ "extras": [
+  {
+   "size": "sm",
+   "paginate": {
+    "items": 65,
+    "current_offset": 48,
+    "pages": 3,
+    "page_size": 24
+   }
+  }
+ ]
+}

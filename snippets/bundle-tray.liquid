@@ -1,0 +1,48 @@
+{%- comment -%}
+  Figma: Components Atoms / Bundle tray (Layout Desktop, Mobile; Fill Empty, Partial, Complete)
+  tier_items     array of item counts per tier
+  tier_percents  array of discount percents per tier
+  Desktop is a sticky sidebar card, mobile a sticky bottom bar; the parent owns the sticky placement.
+  Layout and Fill are not variants in code: the viewport switches the layout, bundle-builder.js fills the slots, count, totals and the add button.
+  The add button stays disabled until the first tier is reached. Prices are estimates from the static tiers; the real discount is made in the Shopify admin.
+  Hooks: data-bundle-count, data-bundle-subtotal, data-bundle-discount-row, data-bundle-discount, data-bundle-total, data-bundle-compare, data-bundle-submit, data-bundle-error
+{%- endcomment -%}
+{%- liquid
+  assign zero = 0 | money
+  assign slot_count = tier_items.last | plus: 0
+  assign subtotal_label = 'sections.bundle_builder.subtotal' | t
+  assign discount_label = 'sections.bundle_builder.discount' | t
+  assign total_label = 'sections.bundle_builder.total' | t
+  assign add_label = 'sections.bundle_builder.add_to_cart' | t
+  assign selected_label = 'sections.bundle_builder.selected' | t: selected: '[selected]', total: '[total]' | escape
+-%}
+<section class="bundle-tray flex flex-col gap-4 border-t border-border bg-background p-4 lg:gap-6 lg:rounded-lg lg:border lg:p-6 {{ class }}" aria-label="{{ 'sections.bundle_builder.tray_title' | t }}">
+  <div class="flex items-baseline justify-between gap-2">
+    <h2 class="text-label-lg text-text lg:text-heading-5">{{ 'sections.bundle_builder.tray_title' | t }}</h2>
+    <span class="text-label-sm text-text-muted" data-bundle-count data-template="{{ selected_label }}"></span>
+  </div>
+  {% render 'bundle-tier-progress', tier_items: tier_items, tier_percents: tier_percents %}
+  <ul class="flex flex-wrap gap-1 lg:gap-3" role="list">
+    {%- for items in (1..slot_count) %}
+      {% render 'bundle-slot' %}
+    {%- endfor %}
+  </ul>
+  <dl class="flex flex-col gap-2 max-lg:hidden">
+    {%- capture subtotal_value %}<span data-bundle-subtotal>{{ zero }}</span>{% endcapture %}
+    {%- capture discount_value %}<span data-bundle-discount>{{ zero }}</span>{% endcapture %}
+    {%- capture total_value %}<span data-bundle-total>{{ zero }}</span>{% endcapture %}
+    {% render 'summary-row', label: subtotal_label, value: subtotal_value %}
+    <div data-bundle-discount-row hidden>{% render 'summary-row', type: 'discount', label: discount_label, value: discount_value %}</div>
+    {% render 'summary-row', type: 'total', label: total_label, value: total_value %}
+  </dl>
+  <p class="flex items-baseline justify-between gap-2 lg:hidden">
+    <span class="text-label-base text-text">{{ 'sections.bundle_builder.total' | t }}</span>
+    <span class="flex items-baseline gap-2">
+      <s class="text-body-sm text-text-muted" data-bundle-compare hidden></s>
+      <span class="text-heading-6 text-text" data-bundle-total-mobile>{{ zero }}</span>
+    </span>
+  </p>
+  <p class="text-body-xs text-text-muted max-lg:hidden">{{ 'sections.bundle_builder.discount_note' | t }}</p>
+  {% render 'button', label: add_label, size: 'lg', type: 'button', disabled: true, attributes: 'data-bundle-submit', class: 'w-full' %}
+  <p class="text-body-sm text-sale" role="alert" data-bundle-error hidden></p>
+</section>

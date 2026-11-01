@@ -1,0 +1,49 @@
+{%- comment -%}
+  Figma: Components Atoms / Rating histogram (five Histogram rows, 5 to 1 stars)
+  total    review count
+  counts   comma separated counts for 5,4,3,2,1 stars
+  Histogram row: star + rating (32px mark), bar (progress bar sm, accent), count. Clicking filters by that rating; Selected = aria-pressed="true" (label sm).
+  JS: reviews__ui.js re-renders the rows from <template data-reviews-histogram-row> and sets the fill width.
+{%- endcomment -%}
+{%- liquid
+  assign row_class = 'group/row flex h-4.5 w-full items-center gap-3 rounded-xs text-text-muted transition-colors cursor-pointer outline-none hover:text-text focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus aria-pressed:text-text'
+  assign mark_class = 'flex w-8 shrink-0 items-center gap-1'
+  assign star_class = 'size-3 shrink-0 text-rating [&>svg]:size-full'
+  assign num_class = 'text-body-xs group-aria-pressed/row:text-label-sm'
+  assign track_class = 'h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-surface-alt'
+  assign fill_class = 'block h-full rounded-full bg-accent transition-[width] duration-300'
+  assign count_class = 'w-6 shrink-0 text-right text-body-xs group-aria-pressed/row:text-label-sm'
+-%}
+<div class="flex w-full flex-col gap-2" data-reviews-histogram>
+  {%- assign histogram_counts = counts | split: ',' -%}
+  {%- for count in histogram_counts -%}
+    {%- liquid
+      assign rating = 6 | minus: forloop.index
+      if total == 0
+        assign width = 0
+      else
+        assign width = count | times: 100.0 | divided_by: total
+      endif
+      assign row_label = 'reviews.histogram' | t: rating: rating, count: count
+    -%}
+    <button type="button" class="{{ row_class }}" data-reviews-histogram-row data-rating="{{ rating }}" aria-pressed="false" aria-label="{{ row_label }}">
+      <span class="{{ mark_class }}">
+        <span class="{{ star_class }}" aria-hidden="true">{{ 'icon__star.svg' | inline_asset_content }}</span>
+        <span class="{{ num_class }}" data-reviews-histogram-rating>{{ rating }}</span>
+      </span>
+      <span class="{{ track_class }}"><span class="{{ fill_class }}" data-reviews-histogram-fill style="width: {{ width }}%"></span></span>
+      <span class="{{ count_class }}" data-reviews-histogram-count>{{ count }}</span>
+    </button>
+  {%- endfor -%}
+</div>
+
+<template data-reviews-histogram-row>
+  <button type="button" class="{{ row_class }}" data-reviews-histogram-row>
+    <span class="{{ mark_class }}">
+      <span class="{{ star_class }}" aria-hidden="true">{{ 'icon__star.svg' | inline_asset_content }}</span>
+      <span class="{{ num_class }}" data-reviews-histogram-rating></span>
+    </span>
+    <span class="{{ track_class }}"><span class="{{ fill_class }}" data-reviews-histogram-fill></span></span>
+    <span class="{{ count_class }}" data-reviews-histogram-count></span>
+  </button>
+</template>

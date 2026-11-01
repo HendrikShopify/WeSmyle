@@ -1,0 +1,27 @@
+{%- comment -%}
+  Figma: Components Atoms / Helper text
+  text    the message
+  type    default | error | success | disabled     (Figma: Type)
+  id      so the control can point at it with aria-describedby
+  class   placement only
+  attributes  JS hooks, e.g. 'hidden data-product-form-error'
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'default'
+  case type
+    when 'error'
+      assign color = 'text-error'
+      assign icon = 'icon__error.svg'
+    when 'success'
+      assign color = 'text-success'
+      assign icon = 'icon__success.svg'
+    when 'disabled'
+      assign color = 'text-text-disabled'
+    else
+      assign color = 'text-text-muted'
+  endcase
+-%}
+<p class="helper-text flex items-start gap-1 text-body-sm {{ color }} {{ class }}"{% if id %} id="{{ id }}"{% endif %}{% if type == 'error' %} role="alert"{% endif %} data-type="{{ type }}"{% if attributes %} {{ attributes }}{% endif %}>
+  {%- if icon %}<span class="size-4 shrink-0 mt-0.5 [&>svg]:size-full" aria-hidden="true">{{ icon | inline_asset_content }}</span>{% endif -%}
+  <span data-helper-text>{{ text }}</span>
+</p>

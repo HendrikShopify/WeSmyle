@@ -1,0 +1,27 @@
+{%- comment -%}
+  Figma: Components Molecules / Product form / Title block
+  product        product object
+  show_vendor    boolean, default true                 (Figma: Show vendor)
+  show_rating    boolean, default true                 (Figma: Show rating)
+  class
+  Vendor (label caps), title (h1, heading 3) and rating. Rating reads product.metafields.reviews.rating / rating_count and renders only when there are reviews.
+{%- endcomment -%}
+{%- liquid
+  if show_vendor == nil
+    assign show_vendor = true
+  endif
+  if show_rating == nil
+    assign show_rating = true
+  endif
+  assign rating_value = product.metafields.reviews.rating.value.rating
+  assign rating_count = product.metafields.reviews.rating_count.value
+-%}
+<div class="product-title-block flex flex-col gap-2 {{ class }}">
+  {%- if show_vendor and product.vendor != blank -%}
+    <span class="text-label-caps text-text-muted">{{ product.vendor }}</span>
+  {%- endif -%}
+  <h1 class="text-heading-3 text-text">{{ product.title }}</h1>
+  {%- if show_rating and rating_count > 0 -%}
+    {% render 'rating', value: rating_value, count: rating_count, size: 'sm' %}
+  {%- endif -%}
+</div>

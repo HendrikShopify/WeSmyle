@@ -1,0 +1,3 @@
+{ "snippet": "menu-item", "figma": "Atoms / Menu item (73:259)", "width": 312,
+  "matrix": { "state": ["default","hover","focus"] }, "params": { "label": "Netherlands" },
+  "extras": [ { "label": "Netherlands", "selected": true }, { "label": "Netherlands", "disabled": true }, { "label": "English", "icon": "icon__account.svg" } ] }

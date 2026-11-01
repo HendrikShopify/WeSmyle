@@ -1,0 +1,41 @@
+/*
+  Shopify policy pages (/policies/...). Shopify renders this markup itself inside layout/theme.liquid,
+  so this is the one place the theme styles classes it does not own:
+  .shopify-policy__container > .shopify-policy__title > h1, .shopify-policy__body > .rte
+  Mirrors sections/main-page.liquid and snippets/rich-text.liquid with the same utilities. Keep the two in step.
+*/
+.shopify-policy__container {
+  @apply mx-auto w-full max-w-page px-page-margin pt-8 pb-12 lg:pt-12 lg:pb-20 flex flex-col items-center gap-8 lg:gap-12;
+}
+.shopify-policy__title {
+  @apply w-full max-w-prose-width text-left;
+}
+.shopify-policy__title h1 {
+  @apply text-heading-2 lg:text-heading-1 text-text text-left;
+}
+.shopify-policy__body {
+  @apply w-full max-w-prose-width;
+}
+.shopify-policy__body .rte {
+  @apply text-body-base text-text;
+}
+.shopify-policy__body .rte > div {
+  @apply flex flex-col gap-6;
+}
+.shopify-policy__body .rte h1 { @apply text-heading-1; }
+.shopify-policy__body .rte h2 { @apply text-heading-2 mt-4; }
+.shopify-policy__body .rte h3 { @apply text-heading-3 mt-4; }
+.shopify-policy__body .rte h4 { @apply text-heading-4; }
+.shopify-policy__body .rte a { @apply text-accent underline underline-offset-[0.15em]; }
+.shopify-policy__body .rte a:hover { @apply no-underline text-accent-hover; }
+.shopify-policy__body .rte strong,
+.shopify-policy__body .rte b { @apply font-semibold; }
+.shopify-policy__body .rte ul { @apply flex flex-col gap-2 list-disc pl-7; }
+.shopify-policy__body .rte ol { @apply flex flex-col gap-2 list-decimal pl-7; }
+.shopify-policy__body .rte li { @apply pl-1; }
+.shopify-policy__body .rte blockquote { @apply border-l-2 border-text pl-6 text-heading-5; }
+.shopify-policy__body .rte hr { @apply my-4 h-px border-0 bg-border; }
+.shopify-policy__body .rte table { @apply w-full text-body-sm; }
+.shopify-policy__body .rte th { @apply py-2 text-left text-label-base; }
+.shopify-policy__body .rte td { @apply py-2 border-t border-border; }
+.shopify-policy__body .rte div:empty { @apply hidden; }

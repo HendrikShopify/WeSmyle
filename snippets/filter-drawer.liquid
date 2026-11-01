@@ -1,0 +1,42 @@
+{%- comment -%}
+  Figma: Components Molecules / Filter drawer (Filter drawer content + Filter drawer footer, on Drawer panel)
+  Filter and sort drawer, slides in from the left: Sort group, then every Shopify filter as a Filter group, with Clear all and Show N products in the footer. Active filter chips are not shown here; they live above the product grid (collection-toolbar).
+  results    collection or search object (needs filters, sort_options, products_count)
+  id         drawer id, default filter-drawer; open it with data-drawer-trigger="filter-drawer"
+  form_id    id of the filter form, default filters-form (the toolbar's sort dropdown points at it with form="")
+  count      product count for the footer, defaults to results.products_count or results.results_count
+  clear_href url that removes every filter
+  JS: filters.js submits the form live (section rendering) and updates counts; Show results just closes the drawer.
+{%- endcomment -%}
+{%- liquid
+  assign id = id | default: 'filter-drawer'
+  assign form_id = form_id | default: 'filters-form'
+  assign sort_by = results.sort_by | default: results.default_sort_by
+  assign total = count | default: results.products_count | default: results.results_count | default: 0
+  assign title = 'products.facets.filter_and_sort' | t
+  assign sort_title = 'products.facets.sort_title' | t
+  assign clear_label = 'products.facets.clear_all' | t
+  assign show_label = 'products.facets.show_results' | t: count: total
+  assign sort_id = id | append: '-sort'
+-%}
+{%- capture body -%}
+  <form id="{{ form_id }}" class="flex flex-col gap-2" data-filters-form>
+    {%- if results.terms -%}
+      <input type="hidden" name="q" value="{{ results.terms | escape }}">
+      <input type="hidden" name="options[prefix]" value="last">
+      {%- if results.types.size > 0 %}<input type="hidden" name="type" value="{{ results.types | join: ',' }}">{% endif -%}
+    {%- endif -%}
+    {% render 'filter-group', type: 'sort', title: sort_title, options: results.sort_options, current: sort_by, open: true, id: sort_id %}
+    {%- for filter in results.filters -%}
+      {%- assign group_id = id | append: '-' | append: forloop.index -%}
+      {% render 'filter-group', filter: filter, id: group_id %}
+    {%- endfor -%}
+  </form>
+{%- endcapture -%}
+{%- capture footer -%}
+  <div class="flex gap-3">
+    {% render 'button', label: clear_label, style: 'secondary', size: 'lg', attributes: 'data-filter-clear' %}
+    {% render 'button', label: show_label, size: 'lg', class: 'flex-1', attributes: 'data-drawer-close data-filter-show-results' %}
+  </div>
+{%- endcapture -%}
+{% render 'side-drawer', id: id, title: title, position: 'left', size: 'xs', body: body, footer: footer %}

@@ -1,0 +1,63 @@
+{%- comment -%}
+  Figma: Components Atoms / Quantity selector
+  product_title (sr labels), value, min (1), max, step (1), id, name (quantity), form, label (sr), disabled, cart_qty
+  size        sm | md | lg                                   (Figma: Size)
+  class, attributes (on the input)
+  Driven by quantity-input in global.js: buttons named minus/plus, min/max validation disables them.
+  States: Focus = :focus-within, Min reached = decrease [disabled], Disabled = [disabled]
+{%- endcomment -%}
+{%- liquid
+  assign size = size | default: 'md'
+  assign min = min | default: 1
+  assign step = step | default: 1
+  assign value = value | default: min
+  assign name = name | default: 'quantity'
+  assign id = id | default: 'Quantity'
+  case size
+    when 'sm'
+      assign height = 'h-9'
+      assign btn = 'h-full w-9 [&>svg]:size-4'
+      assign field = 'w-7 text-label-base'
+    when 'lg'
+      assign height = 'h-13'
+      assign btn = 'h-full w-13 [&>svg]:size-5'
+      assign field = 'w-11 text-label-lg'
+    else
+      assign height = 'h-11'
+      assign btn = 'h-full w-11 [&>svg]:size-4'
+      assign field = 'w-9 text-label-lg'
+  endcase
+  assign button = 'inline-flex shrink-0 items-center justify-center text-text cursor-pointer outline-none transition-colors hover:text-text-muted disabled:text-text-disabled disabled:cursor-not-allowed [&>svg]:pointer-events-none'
+  assign decrease_label = 'products.product.quantity.decrease' | t: product: product_title
+  assign increase_label = 'products.product.quantity.increase' | t: product: product_title
+  if label == blank
+    assign label = 'products.product.quantity.label' | t
+  endif
+  assign qty_label = label
+-%}
+<quantity-input class="quantity-selector inline-flex {{ height }} items-stretch rounded-input border border-border-strong bg-background transition-colors focus-within:border-focus has-[input:disabled]:bg-surface-alt has-[input:disabled]:border-disabled {{ class }}" data-size="{{ size }}">
+  <label class="sr-only" for="{{ id }}">{{ qty_label }}</label>
+  <button class="{{ button }} {{ btn }}" name="minus" type="button"{% if disabled %} disabled{% endif %}>
+    <span class="sr-only">{{ decrease_label }}</span>
+    {{ 'icon__min.svg' | inline_asset_content }}
+  </button>
+  <input
+    class="{{ field }} min-w-0 bg-transparent text-center text-text outline-none appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none disabled:text-text-disabled"
+    type="number"
+    id="{{ id }}"
+    name="{{ name }}"
+    value="{{ value }}"
+    min="{{ min }}"
+    data-min="{{ min }}"
+    {%- if max %} max="{{ max }}" data-max="{{ max }}"{% endif %}
+    step="{{ step }}"
+    {%- if cart_qty %} data-cart-quantity="{{ cart_qty }}"{% endif %}
+    {%- if form %} form="{{ form }}"{% endif %}
+    {%- if disabled %} disabled{% endif %}
+    {%- if attributes %} {{ attributes }}{% endif %}
+  >
+  <button class="{{ button }} {{ btn }}" name="plus" type="button"{% if disabled %} disabled{% endif %}>
+    <span class="sr-only">{{ increase_label }}</span>
+    {{ 'icon__plus.svg' | inline_asset_content }}
+  </button>
+</quantity-input>

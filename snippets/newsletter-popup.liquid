@@ -1,0 +1,50 @@
+{%- comment -%}
+  Figma: Components Molecules / Newsletter popup (605:47504)
+  image     image or media object for the left column (desktop) or the top (mobile); without one the popup is a single column
+  delay     seconds before it opens, default 8
+  snooze    days before it can open again after it is closed, default 7
+  Behaviour (newsletter-popup.js): opens once after the delay, not while the cookie banner or another drawer is open, and
+  remembers the close in localStorage. After a submit the page reloads with the form result, so the popup opens at once to show it.
+  Escape, the overlay and the Close button dismiss it. Focus is trapped while it is open.
+  Hooks: data-popup-bg, data-popup-content, data-popup-close
+{%- endcomment -%}
+{%- liquid
+  assign delay = delay | default: 8
+  assign snooze = snooze | default: 7
+  assign popup_id = 'newsletter-popup'
+  assign form_id = 'popup-newsletter'
+  assign close_label = 'accessibility.close' | t
+  assign label = 'newsletter.popup_label' | t
+-%}
+<script src="{{ 'newsletter-popup.js' | asset_url }}" defer="defer"></script>
+<newsletter-popup
+  hidden
+  class="group/popup fixed inset-0 z-[600] flex items-center justify-center p-4"
+  data-delay="{{ delay }}"
+  data-snooze="{{ snooze }}"
+  data-form-id="{{ form_id }}"
+  data-scroll-lock="false"
+>
+  <div class="absolute inset-0 bg-overlay opacity-0 transition-opacity duration-300 group-data-[open=true]/popup:opacity-30" data-popup-bg aria-hidden="true"></div>
+  <div
+    id="{{ popup_id }}"
+    class="relative flex max-h-full w-full max-w-120 flex-col outline-none overflow-y-auto rounded-lg bg-background opacity-0 transition-opacity duration-300 lg:overflow-hidden group-data-[open=true]/popup:opacity-100 {% if image != blank %}lg:max-w-200 lg:flex-row{% endif %}"
+    data-popup-content
+    role="dialog"
+    aria-modal="true"
+    aria-label="{{ label | escape }}"
+    tabindex="-1"
+  >
+    {%- if image != blank -%}
+      <div class="w-full lg:w-90 lg:shrink-0">
+        {% render 'media', media: image, ratio: '4:3', sizes: '(min-width: 1024px) 360px, 100vw', class: 'lg:h-full lg:rounded-none [&>img]:lg:h-full' %}
+      </div>
+    {%- endif -%}
+    <div class="flex w-full flex-1 items-center p-6 lg:p-12">
+      {% render 'newsletter-signup', id: form_id, layout: 'stacked-left', input_style: 'inline' %}
+    </div>
+    <div class="absolute top-4 right-4">
+      {% render 'icon-button', icon: 'icon__close.svg', label: close_label, style: 'secondary', size: 'md', attributes: 'data-popup-close' %}
+    </div>
+  </div>
+</newsletter-popup>

@@ -1,0 +1,12 @@
+# Not part of the theme: tooling, docs and sources that compile into assets/
+package.json
+package-lock.json
+node_modules
+tailwind
+tokens
+scripts
+tests
+docs
+CLAUDE.md
+*.md
+.claude

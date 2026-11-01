@@ -1,0 +1,30 @@
+{
+ "snippet": "product-count",
+ "figma": "Atoms / Product count (82:423)",
+ "width": 280,
+ "matrix": {
+  "style": [
+   "text",
+   "progress"
+  ]
+ },
+ "params": {
+  "count": 50,
+  "shown": 20
+ },
+ "extras": [
+  {
+   "count": 50,
+   "style": "text"
+  },
+  {
+   "count": 1,
+   "style": "text"
+  },
+  {
+   "count": 13,
+   "total": 64,
+   "style": "text"
+  }
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "snippet": "purchase-option",
+ "figma": "Atoms / Purchase option (152:5207)",
+ "width": 480,
+ "matrix": {
+  "type": [
+   "one-time",
+   "subscription"
+  ]
+ },
+ "params": {
+  "label": "One-time purchase",
+  "price": 4900,
+  "name": "demo",
+  "value": "x",
+  "id": "po"
+ },
+ "extras": [
+  {
+   "type": "one-time",
+   "checked": true,
+   "id": "po2",
+   "label": "One-time purchase"
+  },
+  {
+   "type": "subscription",
+   "label": "Subscribe & save",
+   "badge": "Save 10%",
+   "price": 4410,
+   "compare_at_price": 4900,
+   "id": "po3"
+  },
+  {
+   "type": "subscription",
+   "label": "Subscribe & save",
+   "badge": "Save 10%",
+   "price": 4410,
+   "compare_at_price": 4900,
+   "checked": true,
+   "id": "po4",
+   "content": "<p class=\"text-body-sm text-text-muted\">Delivered on your schedule.</p>"
+  }
+ ]
+}

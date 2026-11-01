@@ -1,0 +1,3 @@
+{ "snippet": "link", "figma": "Components Atoms / Link (65:205)",
+  "matrix": { "size": ["sm","md"], "state": ["default","hover","focus","disabled"] }, "params": { "label": "Link", "href": "#" },
+  "extras": [ { "label": "View all", "icon_trailing": "icon__arrow-right.svg", "href": "#" }, { "label": "Size guide", "size": "sm" } ] }

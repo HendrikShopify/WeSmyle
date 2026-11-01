@@ -1,0 +1,71 @@
+{%- comment -%}
+  Figma: Molecules / Media lightbox
+  product    Product object (omit with dynamic: true)
+  dynamic    true = no server-rendered slides; scripts call setItems([{ type: 'photo'|'video', src, poster }]) then open(index), e.g. reviews
+  label      dialog aria-label for dynamic mode
+  Full-screen viewer in a native <dialog>. The image fills the window height (4:5, cover, like the gallery) and is centered; close top right;
+  one control pill at the bottom with previous, counter and next. No thumbnails, no dots.
+  Click the image to zoom to ~2.5x at the click point (Figma: State=Zoomed); while zoomed, drag to pan. Click again to zoom out.
+  Opened by media-gallery ([data-lightbox-open]); open(index) / close() / setItems(items) for scripts.
+  Video slides play with native controls and do not zoom.
+  JS: media-gallery.js
+{%- endcomment -%}
+{%- liquid
+  assign media_list = product.media
+  assign count = media_list.size
+  if dynamic
+    assign count = 0
+  endif
+  assign dialog_label = label | default: 'products.product.media.gallery_label' | t
+  assign close_label = 'products.product.media.close' | t
+  assign prev_label = 'products.product.media.previous' | t
+  assign next_label = 'products.product.media.next' | t
+  assign zoom_media = 'cursor-zoom-in [&_img]:transition-transform [&_img]:duration-200 [&_img]:origin-center data-[zoomed=true]:cursor-grab data-[zoomed=true]:touch-none data-[dragging=true]:cursor-grabbing [&[data-zoomed=true]_img]:scale-250 [&[data-zoomed=true]_img]:translate-x-[var(--tx,0px)] [&[data-zoomed=true]_img]:translate-y-[var(--ty,0px)] [&[data-dragging=true]_img]:transition-none'
+  assign media_class = zoom_media | append: ' w-full lg:aspect-[4/5] lg:h-full lg:w-auto select-none [&_img]:pointer-events-none'
+-%}
+<media-lightbox class="media-lightbox" data-count="{{ count }}">
+  <dialog
+    class="group/lb fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none overflow-hidden bg-background p-0 text-text backdrop:bg-transparent"
+    aria-label="{{ dialog_label }}"
+    data-scroll-lock="false"
+    data-zoomed="false"
+  >
+    <div class="relative flex h-full w-full flex-col">
+      <span class="absolute right-4 top-4 z-[2] lg:right-10 lg:top-5">{% render 'icon-button', icon: 'icon__x.svg', label: close_label, style: 'ghost', size: 'md', class: 'group-data-[zoomed=true]/lb:bg-background', attributes: 'data-lightbox-close' %}</span>
+
+      <div class="swiper h-full w-full overflow-hidden" data-lightbox-track>
+        <div class="swiper-wrapper flex h-full">
+          {%- unless dynamic -%}
+          {%- for m in media_list -%}
+            <div class="swiper-slide flex h-full w-full shrink-0 items-center justify-center" data-lightbox-slide>
+              {% render 'media', media: m, ratio: '4:5', sizes: '(min-width: 1024px) 720px, 100vw', fit: 'cover', class: media_class, attributes: 'data-zoom-target' %}
+            </div>
+          {%- endfor -%}
+          {%- endunless -%}
+        </div>
+      </div>
+
+      <div class="absolute bottom-6 left-1/2 z-[2] flex -translate-x-1/2 items-center gap-2 bg-background p-2">
+        {%- if count > 1 or dynamic -%}
+          {% render 'icon-button', icon: 'icon__chevron-left.svg', label: prev_label, style: 'ghost', size: 'md', attributes: 'data-lightbox-prev' %}
+        {%- endif -%}
+        <span class="px-1 text-label-sm text-text" aria-live="polite"><span data-lightbox-current>1</span> / <span data-lightbox-total>{{ count }}</span></span>
+        {%- if count > 1 or dynamic -%}
+          {% render 'icon-button', icon: 'icon__chevron-right.svg', label: next_label, style: 'ghost', size: 'md', attributes: 'data-lightbox-next' %}
+        {%- endif -%}
+      </div>
+    </div>
+  </dialog>
+  {%- if dynamic -%}
+    <template data-lightbox-photo>
+      <div class="swiper-slide flex h-full w-full shrink-0 items-center justify-center" data-lightbox-slide>
+        <div class="relative overflow-hidden bg-surface-alt {{ media_class }}" data-zoom-target><img class="size-full object-cover" width="2048" height="2048" src="" alt="" data-lightbox-photo-img></div>
+      </div>
+    </template>
+    <template data-lightbox-video>
+      <div class="swiper-slide flex h-full w-full shrink-0 items-center justify-center" data-lightbox-slide>
+        <div class="w-full bg-surface-alt lg:aspect-[4/5] lg:h-full lg:w-auto"><video class="size-full object-contain" controls playsinline preload="metadata" data-lightbox-video></video></div>
+      </div>
+    </template>
+  {%- endif -%}
+</media-lightbox>

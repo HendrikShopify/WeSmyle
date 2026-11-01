@@ -1,0 +1,46 @@
+{
+ "snippet": "sort-menu",
+ "figma": "Atoms / Sort menu (139:3191)",
+ "width": 260,
+ "height": 380,
+ "params": {
+  "options": [
+   {
+    "name": "Featured",
+    "value": "manual"
+   },
+   {
+    "name": "Best selling",
+    "value": "best-selling"
+   },
+   {
+    "name": "Alphabetically, A–Z",
+    "value": "title-ascending"
+   },
+   {
+    "name": "Alphabetically, Z–A",
+    "value": "title-descending"
+   },
+   {
+    "name": "Price, low to high",
+    "value": "price-ascending"
+   },
+   {
+    "name": "Price, high to low",
+    "value": "price-descending"
+   },
+   {
+    "name": "Date, old to new",
+    "value": "created-ascending"
+   },
+   {
+    "name": "Date, new to old",
+    "value": "created-descending"
+   }
+  ],
+  "current": "manual",
+  "id": "sm",
+  "open": true
+ },
+ "matrix": {}
+}

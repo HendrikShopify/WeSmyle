@@ -1,0 +1,34 @@
+{%- comment -%}
+  Figma: Components Atoms / Media / Play button (Style, Size)
+  style       light | dark                   (Figma: Style)
+  size        sm | md | lg                   (Figma: Size)   36, 56, 72px
+  label       accessible name
+  icon        asset name, default icon__play.svg. The Video component also uses it for the sound toggle.
+  attributes  JS hooks, e.g. 'data-video-play'
+  class       placement only
+  Round button that sits on media. Hover and focus follow the other icon buttons.
+{%- endcomment -%}
+{%- liquid
+  assign style = style | default: 'light'
+  assign size = size | default: 'md'
+  assign icon = icon | default: 'icon__play.svg'
+  if style == 'dark'
+    assign tone = 'bg-text text-text-inverse hover:bg-accent-hover'
+  else
+    assign tone = 'bg-background text-text hover:bg-surface-alt'
+  endif
+  case size
+    when 'sm'
+      assign box = 'size-9'
+      assign glyph = 'size-4'
+    when 'lg'
+      assign box = 'size-18'
+      assign glyph = 'size-7'
+    else
+      assign box = 'size-14'
+      assign glyph = 'size-6'
+  endcase
+-%}
+<button type="button" class="play-button inline-flex {{ box }} shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-150 focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus {{ tone }} {{ class }}" aria-label="{{ label | escape }}"{% if attributes %} {{ attributes }}{% endif %}>
+  <span class="{{ glyph }} [&>svg]:size-full" aria-hidden="true">{{ icon | inline_asset_content }}</span>
+</button>

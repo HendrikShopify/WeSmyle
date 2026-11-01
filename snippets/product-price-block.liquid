@@ -1,0 +1,22 @@
+{%- comment -%}
+  Figma: Components Molecules / Product form / Price block
+  product         product object
+  show_tax_note   boolean, default true                (Figma: Show tax note)
+  class
+  Price for the selected variant (data-replace="price", refreshed by product-info.js) and the tax note.
+{%- endcomment -%}
+{%- liquid
+  if show_tax_note == nil
+    assign show_tax_note = true
+  endif
+-%}
+<div class="product-price-block flex flex-col gap-1 {{ class }}">
+  {% render 'price', product: product, use_variant: true, size: 'md', show_savings: true, show_unit_price: true, attributes: 'data-replace="price"' %}
+  {%- if show_tax_note -%}
+    {%- if cart.taxes_included -%}
+      <p class="text-body-xs text-text-muted">{{ 'products.product.tax_note_included' | t }}</p>
+    {%- else -%}
+      <p class="text-body-xs text-text-muted">{{ 'products.product.tax_note_excluded' | t }}</p>
+    {%- endif -%}
+  {%- endif -%}
+</div>

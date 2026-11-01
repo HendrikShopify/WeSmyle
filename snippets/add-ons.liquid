@@ -1,0 +1,31 @@
+{%- comment -%}
+  Figma: Components Molecules / Add-ons (the "Complete your order" block of Product form Type=Add-ons)
+  product     the page product; the add-ons are its metafield custom.add_ons (list of product references)
+  section_id  used for unique input ids
+  class
+  Renders nothing when the product has no available add-ons. Each add-on is an add-on card; checked cards are added to the cart together with the page product (product-form.js).
+{%- endcomment -%}
+{%- liquid
+  assign add_ons = product.metafields.custom.add_ons.value
+  assign has_add_ons = false
+  for add_on in add_ons
+    if add_on.available
+      assign has_add_ons = true
+      break
+    endif
+  endfor
+-%}
+{%- if has_add_ons -%}
+  <fieldset class="add-ons flex min-w-0 flex-col gap-3 {{ class }}" data-add-ons>
+    <legend class="mb-3 flex items-baseline gap-1">
+      <span class="text-label-lg text-text">{{ 'products.product.add_ons.title' | t }}</span>
+      <span class="text-body-base text-text-muted">{{ 'products.product.add_ons.optional' | t }}</span>
+    </legend>
+    {%- for add_on in add_ons -%}
+      {%- if add_on.available -%}
+        {%- assign uid = section_id | append: '-' | append: forloop.index -%}
+        {% render 'add-on', product: add_on, uid: uid %}
+      {%- endif -%}
+    {%- endfor -%}
+  </fieldset>
+{%- endif -%}

@@ -1,0 +1,248 @@
+{% liquid
+  assign policy_url = section.settings.policy_link
+  if policy_url == blank and shop.privacy_policy != blank
+    assign policy_url = shop.privacy_policy.url
+  endif
+
+  assign prefs_title_id = 'cc-prefs-title-' | append: section.id
+  assign prefs_intro_id = 'cc-prefs-intro-' | append: section.id
+  assign opt_title_id = 'cc-opt-title-' | append: section.id
+  assign opt_text_id = 'cc-opt-text-' | append: section.id
+  assign necessary_title_id = 'cc-necessary-title-' | append: section.id
+  assign always_id = 'cc-always-' | append: section.id
+%}
+
+<cookie-consent
+  class="cookie-consent"
+  data-section-id="{{ section.id }}"
+  data-preview-preferences="{% if section.settings.preview_preferences %}true{% else %}false{% endif %}"
+  data-scroll-lock="false"
+>
+  <div class="cc-banner-screen" data-banner hidden>
+    <div class="cc-banner-backdrop" aria-hidden="true"></div>
+    <div
+      class="cc-banner"
+      role="region"
+      aria-label="{{ 'cookie_consent.banner.heading' | t | escape }}"
+      aria-live="polite"
+    >
+      <div class="cc-copy">
+        <h2 class="cc-heading" tabindex="-1" data-focus>{{ 'cookie_consent.banner.heading' | t }}</h2>
+
+        <div class="cc-body">
+          <p>{{ 'cookie_consent.banner.body' | t }}</p>
+        </div>
+
+        {% if policy_url != blank %}
+          <a class="cc-policy" href="{{ policy_url }}">
+            {{ 'cookie_consent.banner.policy' | t }}
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="cc-actions">
+        <button class="cc-manage" type="button" data-action="preferences">
+          {{ 'cookie_consent.banner.preferences' | t }}
+        </button>
+        <button class="cc-reject" type="button" data-action="reject">
+          {{ 'cookie_consent.banner.reject' | t }}
+        </button>
+        <button class="cc-accept" type="button" data-action="accept">
+          {{ 'cookie_consent.banner.accept' | t }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cc-overlay" data-overlay="preferences" hidden>
+    <div
+      class="cc-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="{{ prefs_title_id }}"
+      aria-describedby="{{ prefs_intro_id }}"
+    >
+      <div class="cc-panel-body">
+        <div class="cc-header">
+          <h2 class="cc-title" id="{{ prefs_title_id }}" tabindex="-1" data-focus>
+            {{ 'cookie_consent.panel.title' | t }}
+          </h2>
+          <button
+            class="cc-close"
+            type="button"
+            data-action="close"
+            aria-label="{{ 'cookie_consent.panel.close' | t | escape }}"
+          >
+            <span class="cc-close-icon" aria-hidden="true">{{ 'icon__close.svg' | inline_asset_content }}</span>
+          </button>
+        </div>
+
+        <p class="cc-intro" id="{{ prefs_intro_id }}">
+          {{ 'cookie_consent.panel.intro' | t }}
+        </p>
+
+        <div class="cc-choices">
+          <div class="cc-choice">
+            <input
+              class="sr-only peer"
+              type="checkbox"
+              checked
+              disabled
+              aria-labelledby="{{ necessary_title_id }} {{ always_id }}"
+            >
+            <span class="cc-check" aria-hidden="true">
+              <span class="cc-check-icon">{{ 'icon__check.svg' | inline_asset_content }}</span>
+            </span>
+            <span class="cc-choice-copy">
+              <span class="cc-name" id="{{ necessary_title_id }}">
+                {{ 'cookie_consent.necessary.title' | t }}
+              </span>
+              <span class="sr-only" id="{{ always_id }}">
+                {{ 'cookie_consent.necessary.always' | t }}
+              </span>
+              <span class="cc-desc">
+                {{ 'cookie_consent.necessary.text' | t }}
+              </span>
+            </span>
+          </div>
+
+          <label class="cc-choice">
+            <input
+              class="sr-only peer"
+              type="checkbox"
+              name="preferences"
+              data-consent-toggle
+            >
+            <span class="cc-check" aria-hidden="true">
+              <span class="cc-check-icon">{{ 'icon__check.svg' | inline_asset_content }}</span>
+            </span>
+            <span class="cc-choice-copy">
+              <span class="cc-name">{{ 'cookie_consent.preferences.title' | t }}</span>
+              <span class="cc-desc">{{ 'cookie_consent.preferences.text' | t }}</span>
+            </span>
+          </label>
+
+          <label class="cc-choice">
+            <input
+              class="sr-only peer"
+              type="checkbox"
+              name="analytics"
+              data-consent-toggle
+            >
+            <span class="cc-check" aria-hidden="true">
+              <span class="cc-check-icon">{{ 'icon__check.svg' | inline_asset_content }}</span>
+            </span>
+            <span class="cc-choice-copy">
+              <span class="cc-name">{{ 'cookie_consent.analytics.title' | t }}</span>
+              <span class="cc-desc">{{ 'cookie_consent.analytics.text' | t }}</span>
+            </span>
+          </label>
+
+          <label class="cc-choice">
+            <input
+              class="sr-only peer"
+              type="checkbox"
+              name="marketing"
+              data-consent-toggle
+            >
+            <span class="cc-check" aria-hidden="true">
+              <span class="cc-check-icon">{{ 'icon__check.svg' | inline_asset_content }}</span>
+            </span>
+            <span class="cc-choice-copy">
+              <span class="cc-name">{{ 'cookie_consent.marketing.title' | t }}</span>
+              <span class="cc-desc">{{ 'cookie_consent.marketing.text' | t }}</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="cc-panel-actions">
+        <button class="cc-panel-accept" type="button" data-action="accept">
+          {{ 'cookie_consent.banner.accept' | t }}
+        </button>
+        <button class="cc-panel-reject" type="button" data-action="reject">
+          {{ 'cookie_consent.banner.reject' | t }}
+        </button>
+        <button class="cc-panel-save" type="button" data-action="save">
+          {{ 'cookie_consent.panel.save' | t }}
+        </button>
+      </div>
+    </div>
+    <button
+      class="cc-backdrop"
+      type="button"
+      data-action="close"
+      aria-label="{{ 'cookie_consent.panel.close' | t | escape }}"
+    ></button>
+  </div>
+
+  <div class="cc-overlay" data-overlay="opt-out" hidden>
+    <div
+      class="cc-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="{{ opt_title_id }}"
+      aria-describedby="{{ opt_text_id }}"
+    >
+      <div class="cc-panel-body">
+        <div class="cc-header">
+          <h2 class="cc-title" id="{{ opt_title_id }}" tabindex="-1" data-focus>
+            {{ 'cookie_consent.opt_out.title' | t }}
+          </h2>
+          <button
+            class="cc-close"
+            type="button"
+            data-action="close"
+            aria-label="{{ 'cookie_consent.panel.close' | t | escape }}"
+          >
+            <span class="cc-close-icon" aria-hidden="true">{{ 'icon__close.svg' | inline_asset_content }}</span>
+          </button>
+        </div>
+        <p class="cc-intro" id="{{ opt_text_id }}">
+          {{ 'cookie_consent.opt_out.text' | t }}
+        </p>
+      </div>
+      <div class="cc-panel-actions">
+        <button class="cc-panel-button" type="button" data-action="opt-out-confirm">
+          {{ 'cookie_consent.opt_out.confirm' | t }}
+        </button>
+        <button class="cc-panel-button" type="button" data-action="opt-out-cancel">
+          {{ 'cookie_consent.opt_out.cancel' | t }}
+        </button>
+      </div>
+    </div>
+    <button
+      class="cc-backdrop"
+      type="button"
+      data-action="close"
+      aria-label="{{ 'cookie_consent.panel.close' | t | escape }}"
+    ></button>
+  </div>
+</cookie-consent>
+
+<script src="{{ 'cookie-consent.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Cookie consent",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Policy"
+    },
+    {
+      "type": "url",
+      "id": "policy_link",
+      "label": "Policy link",
+      "info": "Leave empty to use the store privacy policy. Link text is translated in the locale files."
+    },
+    {
+      "type": "checkbox",
+      "id": "preview_preferences",
+      "label": "Preview preferences",
+      "info": "Opens the preferences panel while this section is selected. Nothing is saved.",
+      "default": false
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,31 @@
+{%- comment -%}
+  Figma: Components Molecules / Cart drawer (side-drawer with header / body / footer)
+  Section rendering replaces #cart-drawer-inner, so header, body and footer all live inside it.
+  cart.js: CartItems (updates), DiscountCode. Open/close is side-drawer.js.
+{%- endcomment -%}
+<script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
+{%- liquid
+  assign title = 'sections.cart.title' | t
+  assign count_label = 'sections.cart.item_count' | t: count: cart.item_count
+-%}
+{%- capture content -%}
+  <div id="cart-drawer-inner" class="flex min-h-0 flex-1 flex-col">
+    {%- if cart == empty -%}
+      {% render 'drawer-header', title: title, id: 'cart-drawer' %}
+      <div class="flex flex-1 flex-col items-center justify-center overflow-y-auto p-6">
+        {% render 'cart-empty-state' %}
+      </div>
+    {%- else -%}
+      {% render 'drawer-header', title: title, subtitle: count_label, id: 'cart-drawer' %}
+      <div class="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-6">
+        {% render 'free-shipping-bar' %}
+        {% render 'cart-drawer__line-items' %}
+        {% render 'helper-text', text: '', type: 'error', id: 'cart-drawer-error', attributes: 'hidden' %}
+      </div>
+      <div class="border-t border-border bg-background p-6">
+        {% render 'cart-summary', form_id: 'cart-drawer-form', id: 'CartDrawer' %}
+      </div>
+    {%- endif -%}
+  </div>
+{%- endcapture -%}
+{% render 'side-drawer', id: 'cart-drawer', title: title, size: 'sm', content: content %}

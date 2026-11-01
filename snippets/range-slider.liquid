@@ -1,0 +1,45 @@
+{%- comment -%}
+  Figma: Components Atoms / Range slider (+ Slider handle)
+  Two-handle range, built from two native range inputs on one track. Pair it with two Inputs (see filter-group Price).
+  min, max          bounds of the track
+  value_min         current low value, defaults to min
+  value_max         current high value, defaults to max
+  step              default 1
+  name_min, name_max  input names; omit them to keep the inputs out of the form (the number inputs carry the values)
+  label_min, label_max  accessible names ("From", "To")
+  disabled          boolean                                   (Figma: State=Disabled)
+  id, class
+  JS: range-slider.js keeps the handles ordered and syncs them with [data-range-input="min|max"] fields in the nearest [data-range-group].
+  States: Handle Hover = :hover, Focus = :focus-visible, Disabled = [disabled]
+{%- endcomment -%}
+{%- liquid
+  assign min = min | default: 0
+  assign max = max | default: 100
+  assign step = step | default: 1
+  assign value_min = value_min | default: min
+  assign value_max = value_max | default: max
+  assign span = max | minus: min
+  if span <= 0
+    assign span = 1
+  endif
+  assign lo = value_min | minus: min | times: 100.0 | divided_by: span
+  assign hi = value_max | minus: min | times: 100.0 | divided_by: span
+  assign track = 'bg-disabled'
+  assign fill = 'bg-accent'
+  if disabled
+    assign track = 'bg-surface-alt'
+    assign fill = 'bg-text-disabled'
+  endif
+-%}
+<range-slider class="range-slider relative block h-5 w-full {{ class }}" style="--lo: {{ lo }}; --hi: {{ hi }}"{% if id %} id="{{ id }}"{% endif %} data-min="{{ min }}" data-max="{{ max }}" data-step="{{ step }}">
+  <span class="absolute inset-x-0 top-2 h-1 rounded-full {{ track }}" aria-hidden="true"></span>
+  <span class="range-slider__fill absolute top-2 h-1 {{ fill }}" style="left: calc(var(--lo) / 100 * (100% - 20px) + 10px); right: calc((100 - var(--hi)) / 100 * (100% - 20px) + 10px)" aria-hidden="true"></span>
+  <input type="range" class="range-slider__input" data-range-handle="min" min="{{ min }}" max="{{ max }}" step="{{ step }}" value="{{ value_min }}"
+    {%- if name_min %} name="{{ name_min }}"{% endif -%}
+    {%- if label_min %} aria-label="{{ label_min | escape }}"{% endif -%}
+    {%- if disabled %} disabled{% endif -%}>
+  <input type="range" class="range-slider__input" data-range-handle="max" min="{{ min }}" max="{{ max }}" step="{{ step }}" value="{{ value_max }}"
+    {%- if name_max %} name="{{ name_max }}"{% endif -%}
+    {%- if label_max %} aria-label="{{ label_max | escape }}"{% endif -%}
+    {%- if disabled %} disabled{% endif -%}>
+</range-slider>

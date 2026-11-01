@@ -1,0 +1,28 @@
+<shopify-wishlist class="min-h-screen flex flex-col justify-center items-center">
+  <div class="mx-auto w-full max-w-page px-page-margin">
+    <div class="flex flex-col h-full items-center">
+      <div class="hidden flex-col items-center justify-center text-center" data-wishlist-empty>
+        <p class="text-lg font-medium text-gray-500">Your wishlist is empty.</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn mt-4">Browse Products</a>
+      </div>
+
+      <div class="product-grid relative w-full min-h-30" grid-wishlist>
+        <div class="absolute inset-0 align-middle flex justify-center items-center">
+          {% render 'loading-spinner' %}
+        </div>
+      </div>
+
+      <div class="">
+        <div class="" data-wishlist-error-message-wrapper role="alert" hidden>
+          <span class="icon-5">
+            {{- 'icon__error.svg' | inline_asset_content -}}
+          </span>
+          <span data-wishlist-error-message class=""></span>
+        </div>
+
+        <button class="btn hidden" data-add-to-cart>add to cart</button>
+      </div>
+    </div>
+  </div>
+</shopify-wishlist>
+

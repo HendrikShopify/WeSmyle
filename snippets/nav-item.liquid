@@ -1,0 +1,46 @@
+{%- comment -%}
+  Figma: Components Atoms / Nav item
+  label     text                                          (Figma: Label)
+  href      url; a dropdown without href is a button
+  type      link | dropdown                               (Figma: Type)
+  current   boolean, 2px underline                        (Figma: State=Current)
+  open      boolean, flips the chevron                    (Figma: State=Open)
+  controls  id of the panel a dropdown opens
+  class
+  A dropdown with an href keeps the label a real link and puts the chevron in its own toggle button, so both stay reachable. The toggle carries data-nav-toggle for header-nav.js; the chevron also flips when an ancestor has group + data-open (the header's list item).
+  States: Hover = :hover, Focus = :focus-visible, Current = data-current, Open = group data-open
+{%- endcomment -%}
+{%- liquid
+  assign type = type | default: 'link'
+  assign base = 'nav-item inline-flex h-11 items-center gap-1 border-b-2 border-transparent px-2 text-label-base text-text transition-colors hover:text-text-muted data-[current=true]:border-text'
+  assign focus = 'rounded-xs focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-focus'
+  assign is_current = 'false'
+  if current
+    assign is_current = 'true'
+  endif
+  assign is_open = 'false'
+  if open
+    assign is_open = 'true'
+  endif
+  assign label_text = label | escape
+  assign submenu_label = 'sections.header.submenu' | t: title: label_text
+-%}
+{%- capture chevron -%}
+  <span class="size-4 shrink-0 group-data-[open]:rotate-180{% if open %} rotate-180{% endif %} [&>svg]:size-full" aria-hidden="true">{{ 'icon__chevron-down.svg' | inline_asset_content }}</span>
+{%- endcapture -%}
+{%- if type == 'dropdown' and href != blank -%}
+  <span class="{{ base }} {{ class }}" data-current="{{ is_current }}">
+    <a href="{{ href }}" class="{{ focus }}"{% if current %} aria-current="page"{% endif %}>{{ label_text }}</a>
+    <button type="button" class="inline-flex cursor-pointer {{ focus }}" data-nav-toggle aria-expanded="{{ is_open }}"{% if controls %} aria-controls="{{ controls }}"{% endif %}>
+      <span class="sr-only">{{ submenu_label }}</span>
+      {{ chevron }}
+    </button>
+  </span>
+{%- elsif type == 'dropdown' -%}
+  <button type="button" class="{{ base }} cursor-pointer {{ focus }} {{ class }}" data-current="{{ is_current }}" data-nav-toggle aria-expanded="{{ is_open }}"{% if controls %} aria-controls="{{ controls }}"{% endif %}>
+    {{ label_text }}
+    {{ chevron }}
+  </button>
+{%- else -%}
+  <a href="{{ href }}" class="{{ base }} {{ focus }} {{ class }}" data-current="{{ is_current }}"{% if current %} aria-current="page"{% endif %}>{{ label_text }}</a>
+{%- endif -%}

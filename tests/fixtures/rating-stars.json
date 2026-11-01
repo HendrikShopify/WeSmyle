@@ -1,0 +1,2 @@
+{ "snippet": "rating-stars", "figma": "Components Atoms / Rating stars (115:1930)",
+  "matrix": { "size": ["sm","md","lg"], "value": ["0","2.5","4.3","5"] }, "params": {} }
